@@ -2,6 +2,6 @@
 data/
 *.simg
 
-# Because we don't want byte-compiled lol
+# Unnecessary
 **/__pycache__/
-
+*.ipynb_checkpoints

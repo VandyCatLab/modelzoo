@@ -9,6 +9,7 @@ def make_test_data():
     Obtain data as described in paper, 1000 images, 100 per category
     Post: Returns curated dataset
     '''
+    print('Making test data...')
     (x_train, y_train), (x_test, y_test) = cifar10.load_data()
 
     x_predict = np.empty((1000, 32, 32, 3))
@@ -20,7 +21,6 @@ def make_test_data():
     counts = [0] * 10
     i = 0
     while not full:
-        print('Image', str(i))
         x = x_test[i]
         y = y_test[i] # also serves as index
         # Check if the category is full first, otherwise skip
@@ -29,11 +29,10 @@ def make_test_data():
             x_predict[100 * y[0] + cur_count] = x
             y_predict[100 * y[0] + cur_count] = y
             counts[y[0]] += 1
-        print('Counts: ', counts)
         # Quit when all categories are full
         full = all(count == 100 for count in counts)
         i += 1
-
+    print('Done!')
     return x_predict, y_predict
 
         
