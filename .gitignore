@@ -1,2 +1,7 @@
-# Because it's way too chunky. Will need to either compress or provide setup scripts
+# Because they're way too chunky. Will need to either compress or provide setup scripts
 data/
+*.simg
+
+# Because we don't want byte-compiled lol
+**/__pycache__/
+
