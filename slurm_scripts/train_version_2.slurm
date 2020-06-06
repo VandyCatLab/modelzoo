@@ -11,4 +11,4 @@ echo "SLURM_ARRAY_TASK_ID: " $SLURM_ARRAY_TASK_ID
 echo "SLURM_ARRAY_JOB_ID: " $SLURM_ARRAY_JOB_ID
 
 # Do the stuff
-singularity exec project_baseline.simg python train.py ${SLURM_ARRAY_TASK_ID}
+singularity exec ../project_baseline.simg python ../python_scripts/train.py ${SLURM_ARRAY_TASK_ID}

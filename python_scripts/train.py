@@ -26,10 +26,10 @@ tf.random.set_seed(seed_value)
 
 # Load predict datasets and whitened datasets
 x_predict, y_predict = correlations.make_test_data()
-x_train_new = np.load('cifar10_modified/x_train_new.npy')
-y_train_new = np.load('cifar10_modified/y_train_new.npy')
-x_test_new = np.load('cifar10_modified/x_test_new.npy')
-y_test_new = np.load('cifar10_modified/y_test_new.npy')
+x_train_new = np.load('../data/cifar10_modified/x_train_new.npy')
+y_train_new = np.load('../data/cifar10_modified/y_train_new.npy')
+x_test_new = np.load('../data/cifar10_modified/x_test_new.npy')
+y_test_new = np.load('../data/cifar10_modified/y_test_new.npy')
 
 # Function to make models
 def init_model(architecture: str, seed: int):
@@ -116,7 +116,7 @@ class Trajectory_Callback(Callback):
             # It's really nice how I can update instance_num outside of the def of this and it updates inside            
             print('\n\nSnapshot instance', str(instance_num+1), 'at epoch', str(int(epoch)+1))
             acts = correlations.get_acts(self.model, layer_arr, x_predict)
-            np.save('RDMs_and_Acts/Acts/Version_3/Instance'+str(instance_num+1)+'_Epoch'+str(int(epoch)+1)+'.npy', acts)
+            np.save('../outputs/representations/acts/Version_4/Instance'+str(instance_num+1)+'_Epoch'+str(int(epoch)+1)+'.npy', acts)
             print('\n')
             
 # All_CNN_C
@@ -136,4 +136,4 @@ a_history = all_cnn_c.fit(
         validation_data=(x_test_new, y_test_new),
         shuffle=False)
     
-all_cnn_c.save('Models/Primary/Version_4/all_cnn_c_instance_'+str(i)+'.h5')
+all_cnn_c.save('../outputs/models/primary/Version_4/all_cnn_c_instance_'+str(i)+'.h5')
