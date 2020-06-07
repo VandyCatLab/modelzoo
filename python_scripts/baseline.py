@@ -1,5 +1,5 @@
-import os
-import sys
+import os, sys
+import correlations
 import numpy as np
 from PIL import Image
 from scipy.stats import spearmanr
@@ -8,7 +8,8 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from tensorflow.keras.applications.vgg16 import VGG16, decode_predictions
 from tensorflow.keras.applications.xception import Xception, decode_predictions
-import cca_core
+sys.path.append('../imported_code/svcca')
+import cca_core, pwcca
 
 def transform_baseline(imgset, transform, full_model, layer_num, correlate_func):
     '''
