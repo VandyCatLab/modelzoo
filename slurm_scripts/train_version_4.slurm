@@ -1,7 +1,6 @@
 #!/bin/bash
 #SBATCH --ntasks=1
 #SBATCH --nodes=1
-#SBATCH --nnodes=1
 #SBATCH --constrain=haswell 
 #SBATCH --mem=32G
 #SBATCH --cpus-per-task=12

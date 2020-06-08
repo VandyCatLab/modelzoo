@@ -134,6 +134,6 @@ a_history = all_cnn_c.fit(
         epochs=350,
         callbacks=[lr_callback, Trajectory_Callback()],
         validation_data=(x_test_new, y_test_new),
-        shuffle=False)
+        shuffle=True)
     
 all_cnn_c.save('../outputs/models/primary/Version_4/all_cnn_c_instance_'+str(i)+'.h5')
