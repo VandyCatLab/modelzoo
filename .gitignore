@@ -5,3 +5,6 @@ data/
 # Unnecessary
 **/__pycache__/
 *.ipynb_checkpoints
+
+# Not your code
+imported_code/
