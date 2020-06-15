@@ -4,16 +4,20 @@ from tensorflow.keras.models import load_model, Model
 from tensorflow.keras.layers import Flatten
 from scipy.stats import pearsonr, spearmanr
 
-def make_test_data():
+def make_test_data(whiten=True):
     '''
     Obtain data as described in paper, 1000 images, 100 per category
-    Post: Returns curated dataset
+    Post: Returns curated dataset, also whitened if necessary
     '''
     print('Making test data...')
-    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-
+    if whiten:
+        x_test = np.load('../data/cifar10_modified/x_test_new.npy')
+        y_test = np.load('../data/cifar10_modified/y_test_new.npy')
+    else:
+        (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+        
     x_predict = np.empty((1000, 32, 32, 3))
-    y_predict = np.empty((1000, 1))
+    y_predict = np.empty((1000, 10)) if whiten else np.empty((1000, 1))
 
     # Fill up 10 different categories with 100 images
     full = False
@@ -22,18 +26,19 @@ def make_test_data():
     i = 0
     while not full:
         x = x_test[i]
-        y = y_test[i] # also serves as index
+        y = y_test[i]
         # Check if the category is full first, otherwise skip
-        cur_count = counts[y[0]]
+        index = np.argmax(y) if whiten else y[0] # y[0] because non-categorical y is an array of len 1
+        cur_count = counts[index]
         if cur_count != 100:
-            x_predict[100 * y[0] + cur_count] = x
-            y_predict[100 * y[0] + cur_count] = y
-            counts[y[0]] += 1
+            x_predict[100 * index + cur_count] = x
+            y_predict[100 * index + cur_count] = y
+            counts[index] += 1
         # Quit when all categories are full
         full = all(count == 100 for count in counts)
         i += 1
     print('Done!')
-    return x_predict, y_predict
+    return x_predict.astype('uint8'), y_predict
 
         
 def make_RDMs(model, layer_arr, x_predict):
