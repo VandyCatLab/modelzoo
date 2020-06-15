@@ -1,6 +1,7 @@
 # Because they're way too chunky. Will need to either compress or provide setup scripts
 data/
 *.simg
+tests/gpu_variance/with_hash/outputs/*
 
 # Unnecessary
 **/__pycache__/
