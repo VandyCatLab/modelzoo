@@ -2,7 +2,7 @@
 data/
 *.simg
 tests/gpu_variance/with_hash/outputs/*
-
+*.npy
 # Unnecessary
 **/__pycache__/
 *.ipynb_checkpoints
