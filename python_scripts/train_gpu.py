@@ -118,7 +118,7 @@ if GPU_ID == '0':
         all_cnn_c.save('../outputs/models/primary/Version_5/instance_'+str(i)+'.h5')
 
 elif GPU_ID == '1':
-    os.environ['CUDA_VISIBLE_DEVICES']=1'
+    os.environ['CUDA_VISIBLE_DEVICES']='1'
     for i in range(5, 10):
         print('Training All_CNN_C with seed', i)
         K.clear_session()
