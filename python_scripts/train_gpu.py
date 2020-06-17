@@ -26,19 +26,13 @@ os.environ['TF_DETERMINISTIC_OPS'] = '1'
 random.seed(seed_value)
 np.random.seed(seed_value)
 
-# Load predict datasets and whitened datasets
-x_train_new = np.load('../data/cifar10_modified/x_train_new.npy')
-y_train_new = np.load('../data/cifar10_modified/y_train_new.npy')
-x_test_new = np.load('../data/cifar10_modified/x_test_new.npy')
-y_test_new = np.load('../data/cifar10_modified/y_test_new.npy')
-
 # Function to make models
 def init_model(architecture: str, seed: int):
     
     if (architecture == 'all_cnn_c'):
         model = Sequential()
         # model.add(Dropout(0.2, input_shape=x_train.shape[1:])) #input shape from keras cifar10 example
-        model.add(Conv2D(96, (3, 3), input_shape=x_train_new.shape[1:], padding='same', bias_regularizer=l2(1e-5),
+        model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same', bias_regularizer=l2(1e-5),
                          kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
                          bias_initializer='zeros', activation='relu'))
         model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
@@ -85,56 +79,72 @@ class Trajectory_Callback(Callback):
     Pre: Must define instance_num, layer_arr, x_predict
     '''
     def on_epoch_end(self, epoch, logs=None):
-        if epoch in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+        if epoch in [0, 1, 2, 3, 4, 5,
+                     6, 7, 8, 9,
                      49, 99, 149, 199, 249, 299, 349]:
-            # It's really nice how I can update instance_num outside of the def of this and it updates inside            
-            print('\n\nSnapshot instance', str(instance_num+1), 'at epoch', str(int(epoch)+1))
+            print('\n\nSnapshot instance', str(instance_num), 'at epoch', str(int(epoch)+1))
             acts = correlations.get_acts(self.model, layer_arr, x_predict)
             np.save('../outputs/representations/acts/Version_5/i'+str(instance_num)+'e'+str(epoch)+'.npy', acts)
             print('\n')
-            
+
+# Trajectory callback
+class Weights_Callback(Callback):
+    '''
+    Pre: Must define instance_num, layer_arr, x_predict
+    '''
+    epoch = 0
+    def on_epoch_begin(self, epoch, logs=None):
+        self.epoch = epoch
+    def on_train_batch_begin(self, batch, logs=None):
+        if (self.epoch % 50 == 0 and batch % 390 == 0):
+            self.model.save_weights('../outputs/weights/primary/Version_5/i'+str(instance_num)+'e'+str(self.epoch)+'b'+str(batch)+'.h5')            
+
 # Setup to train on both GPUs concurrently
+# This is kind of hacky, should really have just set up to user multi-GPU training but oh well
 GPU_ID = sys.argv[1]
 if GPU_ID == '0':
     os.environ['CUDA_VISIBLE_DEVICES']='0'
+    # Load predict datasets and whitened datasets
+    trainData, testData = correlations.make_train_data()
+    x_predict, y_predict = correlations.make_predict_data(testData)
     for i in range(5):
         print('Training All_CNN_C with seed', i)
         K.clear_session()
         tf.random.set_seed(seed_value)
-        all_cnn_c = init_model('all_cnn_c', seed=0)
+        all_cnn_c = init_model('all_cnn_c', seed=i)
 
         instance_num = i
         layer_arr = [7]
-
         history = all_cnn_c.fit(
-            x_train_new,
-                y_train_new,
-                batch_size=128,
-                epochs=350,
-                callbacks=[lr_callback, Trajectory_Callback()],
-                validation_data=(x_test_new, y_test_new),
-                shuffle=True)
+            trainData,
+            epochs=350,
+            validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
+                            .batch(128),
+            callbacks=[lr_callback, Trajectory_Callback(), Weights_Callback()],
+            shuffle=False)
 
         all_cnn_c.save('../outputs/models/primary/Version_5/instance_'+str(i)+'.h5')
 
 elif GPU_ID == '1':
     os.environ['CUDA_VISIBLE_DEVICES']='1'
+    # Load predict datasets and whitened datasets
+    trainData, testData = correlations.make_train_data()
+    x_predict, y_predict = correlations.make_predict_data(testData)
     for i in range(5, 10):
         print('Training All_CNN_C with seed', i)
         K.clear_session()
         tf.random.set_seed(seed_value)
-        all_cnn_c = init_model('all_cnn_c', seed=0)
+        all_cnn_c = init_model('all_cnn_c', seed=i)
 
         instance_num = i
         layer_arr = [7]
 
         history = all_cnn_c.fit(
-            x_train_new,
-                y_train_new,
-                batch_size=128,
-                epochs=350,
-                callbacks=[lr_callback, Trajectory_Callback()],
-                validation_data=(x_test_new, y_test_new),
-                shuffle=True)
+            trainData,
+            epochs=350,
+            validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
+                            .batch(128),
+            callbacks=[lr_callback, Trajectory_Callback(), Weights_Callback()],
+            shuffle=False)
 
         all_cnn_c.save('../outputs/models/primary/Version_5/instance_'+str(i)+'.h5')
