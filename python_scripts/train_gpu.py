@@ -121,7 +121,7 @@ if GPU_ID == '0':
             validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
                             .batch(128),
             callbacks=[lr_callback, Trajectory_Callback(), Weights_Callback()],
-            shuffle=False)
+            shuffle=True)
 
         all_cnn_c.save('../outputs/models/primary/Version_5/instance_'+str(i)+'.h5')
 
@@ -145,6 +145,6 @@ elif GPU_ID == '1':
             validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
                             .batch(128),
             callbacks=[lr_callback, Trajectory_Callback(), Weights_Callback()],
-            shuffle=False)
+            shuffle=True)
 
         all_cnn_c.save('../outputs/models/primary/Version_5/instance_'+str(i)+'.h5')
