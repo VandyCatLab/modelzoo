@@ -83,10 +83,11 @@ class Trajectory_Callback(Callback):
         if epoch in [0, 1, 2, 3, 4, 5,
                      6, 7, 8, 9,
                      49, 99, 149, 199, 249, 299, 349]:
-            print('\n\nSnapshot instance', str(i), 'at epoch', str(int(epoch)+1))
+            print('\n\nSnapshot instance', str(abort), 'at epoch', str(int(epoch)+1))
             acts = correlations.get_acts(self.model, layer_arr, x_predict)
             np.save('../outputs/representations/acts/Version_5/i'+str(i)+'e'+str(epoch)+'.npy', acts)
             print('\n')
+
 
 # Cut off training if local minimum hit  
 class Early_Abort_Callback(Callback):
@@ -94,6 +95,8 @@ class Early_Abort_Callback(Callback):
     Pre: abort is set to False at the beginning of each training instance
     '''
     def on_epoch_end(self, epoch, logs=None):
+        global abort
+        print('Abort:', str(abort))
         if (epoch > 10 and int(logs.get('accuracy')) <= 0.11 or
                 epoch == 70 and logs.get('accuracy') < 1.0):
             abort = True
@@ -103,7 +106,7 @@ class Early_Abort_Callback(Callback):
 num_trained = 0
 i = int(sys.argv[1])
 total = int(sys.argv[2])
-
+abort = False
 while num_trained < total: 
     print('Training All_CNN_C with seed', i)
     K.clear_session()
