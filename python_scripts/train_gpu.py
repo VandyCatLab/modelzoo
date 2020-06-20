@@ -32,26 +32,26 @@ def init_model(architecture: str, seed: int):
     if (architecture == 'all_cnn_c'):
         model = Sequential()
         # model.add(Dropout(0.2, input_shape=x_train.shape[1:])) #input shape from keras cifar10 example
-        model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same', bias_regularizer=l2(1e-5),
+        model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same',
                          kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
                          bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+        model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
                          kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(96, (3, 3), strides=2, padding='same', bias_regularizer=l2(1e-5),
+        model.add(Conv2D(96, (3, 3), strides=2, padding='same', 
                          kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
         # model.add(Dropout(0.5))
-        model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+        model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
                          kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+        model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
                          kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+        model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5),
                          kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
         # model.add(Dropout(0.5))
-        model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+        model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5),
                          kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
+        model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
                          kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(10, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
+        model.add(Conv2D(10, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
                          kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
         model.add(GlobalAveragePooling2D())
         model.add(Activation('softmax'))
@@ -71,80 +71,61 @@ def scheduler(epoch, lr):
         return lr * 0.1
     return lr
 
-lr_callback = LearningRateScheduler(scheduler)
+LR_Callback = LearningRateScheduler(scheduler)
 
 # Trajectory callback
 class Trajectory_Callback(Callback):
     '''
-    Pre: Must define instance_num, layer_arr, x_predict
+    Pre: Must define i, x_predict
     '''
     def on_epoch_end(self, epoch, logs=None):
+        layer_arr = [7]
         if epoch in [0, 1, 2, 3, 4, 5,
                      6, 7, 8, 9,
                      49, 99, 149, 199, 249, 299, 349]:
-            print('\n\nSnapshot instance', str(instance_num), 'at epoch', str(int(epoch)+1))
+            print('\n\nSnapshot instance', str(i), 'at epoch', str(int(epoch)+1))
             acts = correlations.get_acts(self.model, layer_arr, x_predict)
-            np.save('../outputs/representations/acts/Version_5/i'+str(instance_num)+'e'+str(epoch)+'.npy', acts)
+            np.save('../outputs/representations/acts/Version_5/i'+str(i)+'e'+str(epoch)+'.npy', acts)
             print('\n')
 
-# Trajectory callback
-class Weights_Callback(Callback):
+# Cut off training if local minimum hit  
+class Early_Abort_Callback(Callback):
     '''
-    Pre: Must define instance_num, layer_arr, x_predict
+    Pre: abort is set to False at the beginning of each training instance
     '''
-    epoch = 0
-    def on_epoch_begin(self, epoch, logs=None):
-        self.epoch = epoch
-    def on_train_batch_begin(self, batch, logs=None):
-        if (self.epoch % 50 == 0 and batch % 390 == 0):
-            self.model.save_weights('../outputs/weights/primary/Version_5/i'+str(instance_num)+'e'+str(self.epoch)+'b'+str(batch)+'.h5')            
+    def on_epoch_end(self, epoch, logs=None):
+        if (epoch > 10 and int(logs.get('accuracy')) <= 0.11 or
+                epoch == 70 and logs.get('accuracy') < 1.0):
+            abort = True
+            self.model.stop_training = True
 
-# Setup to train on both GPUs concurrently
-# This is kind of hacky, should really have just set up to user multi-GPU training but oh well
-GPU_ID = sys.argv[1]
-if GPU_ID == '0':
-    os.environ['CUDA_VISIBLE_DEVICES']='0'
-    # Load predict datasets and whitened datasets
+# Train until you get 10 successful runs (no local minima)
+num_trained = 0
+i = int(sys.argv[1])
+total = int(sys.argv[2])
+
+while num_trained < total: 
+    print('Training All_CNN_C with seed', i)
+    K.clear_session()
+    tf.random.set_seed(seed_value)
+
     trainData, testData = correlations.make_train_data()
     x_predict, y_predict = correlations.make_predict_data(testData)
-    for i in range(5):
-        print('Training All_CNN_C with seed', i)
-        K.clear_session()
-        tf.random.set_seed(seed_value)
-        all_cnn_c = init_model('all_cnn_c', seed=i)
+ 
+    model = init_model('all_cnn_c', seed=i)
 
-        instance_num = i
-        layer_arr = [7]
-        history = all_cnn_c.fit(
-            trainData,
-            epochs=350,
-            validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
-                            .batch(128),
-            callbacks=[lr_callback, Trajectory_Callback(), Weights_Callback()],
-            shuffle=True)
+    # Set flag to true if converges to local min
+    abort = False
+    history = model.fit(
+        trainData,
+        epochs=350,
+        validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
+                        .batch(128),
+        callbacks=[LR_Callback, Trajectory_Callback(), Early_Abort_Callback()])
 
-        all_cnn_c.save('../outputs/models/primary/Version_5/instance_'+str(i)+'.h5')
+    if not abort:
+        model.save('../outputs/models/primary/instance_'+str(i)+'.h5')
+        num_trained += 1
 
-elif GPU_ID == '1':
-    os.environ['CUDA_VISIBLE_DEVICES']='1'
-    # Load predict datasets and whitened datasets
-    trainData, testData = correlations.make_train_data()
-    x_predict, y_predict = correlations.make_predict_data(testData)
-    for i in range(5, 10):
-        print('Training All_CNN_C with seed', i)
-        K.clear_session()
-        tf.random.set_seed(seed_value)
-        all_cnn_c = init_model('all_cnn_c', seed=i)
+    i += 1
 
-        instance_num = i
-        layer_arr = [7]
-
-        history = all_cnn_c.fit(
-            trainData,
-            epochs=350,
-            validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
-                            .batch(128),
-            callbacks=[lr_callback, Trajectory_Callback(), Weights_Callback()],
-            shuffle=True)
-
-        all_cnn_c.save('../outputs/models/primary/Version_5/instance_'+str(i)+'.h5')
