@@ -97,9 +97,10 @@ class Early_Abort_Callback(Callback):
     def on_epoch_end(self, epoch, logs=None):
         global abort
         print('Abort:', str(abort))
-        if (epoch > 10 and int(logs.get('accuracy')) <= 0.11 or
+        if (epoch > 10 and logs.get('accuracy') <= 0.11 or
                 epoch == 70 and logs.get('accuracy') < 1.0):
             abort = True
+            print('Acc:', logs.get('accuracy'))
             self.model.stop_training = True
 
 # Train until you get 10 successful runs (no local minima)
@@ -125,7 +126,7 @@ while num_trained < total:
         validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
                         .batch(128),
         callbacks=[LR_Callback, Trajectory_Callback(), Early_Abort_Callback()])
-
+    print('After fit abort:', abort)
     if not abort:
         model.save('../outputs/models/primary/instance_'+str(i)+'.h5')
         num_trained += 1
