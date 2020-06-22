@@ -8,7 +8,7 @@ from tensorflow.keras.models import load_model, Model
 from tensorflow.keras.layers import Flatten
 from scipy.stats import pearsonr, spearmanr
 
-def make_train_data():
+def make_train_data(shuffle_seed=0):
     # Set seed values
     seed_value= 0
     os.environ['CUDA_DEVICE_ORDER']='PCI_BUS_ID'
@@ -50,7 +50,7 @@ def make_train_data():
     testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
     trainData = trainData.prefetch(tf.data.experimental.AUTOTUNE)\
-        .shuffle(x_train.shape[0])\
+        .shuffle(x_train.shape[0], seed=shuffle_seed)\
         .batch(128)
     
     print('Done!')
