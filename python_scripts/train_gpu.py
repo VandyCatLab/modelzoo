@@ -12,8 +12,7 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.initializers import he_normal
 from tensorflow.keras.callbacks import LearningRateScheduler, Callback
 from tensorflow.keras import backend as K 
-sys.path.append('../../../python_scripts/')
-import correlations
+import analysis, datasets
 
 # Set seed values
 seed_value= 0
@@ -24,41 +23,37 @@ random.seed(seed_value)
 np.random.seed(seed_value)
 
 # Function to make models
-def init_model(architecture: str, seed: int):
+def init_all_cnn_c(seed: int):
     
-    if (architecture == 'all_cnn_c'):
-        model = Sequential()
-        # model.add(Dropout(0.2, input_shape=x_train.shape[1:])) #input shape from keras cifar10 example
-        model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same',
-                         kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
-                         bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
-                         kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(96, (3, 3), strides=2, padding='same', 
-                         kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
-        # model.add(Dropout(0.5))
-        model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
-                         kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
-                         kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5),
-                         kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        # model.add(Dropout(0.5))
-        model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5),
-                         kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
-                         kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(Conv2D(10, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
-                         kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-        model.add(GlobalAveragePooling2D())
-        model.add(Activation('softmax'))
-        
-        model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9, clipnorm=500),
-                      loss='categorical_crossentropy',
-                      metrics=['accuracy'])
-
-    else:
-        raise
+    model = Sequential()
+    # model.add(Dropout(0.2, input_shape=x_train.shape[1:])) #input shape from keras cifar10 example
+    model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same',
+                        kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
+                        bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
+                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(96, (3, 3), strides=2, padding='same', 
+                        kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
+    # model.add(Dropout(0.5))
+    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
+                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
+                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5),
+                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    # model.add(Dropout(0.5))
+    model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5),
+                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
+                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(10, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
+                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(GlobalAveragePooling2D())
+    model.add(Activation('softmax'))
+    
+    model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9, clipnorm=500),
+                    loss='categorical_crossentropy',
+                    metrics=['accuracy'])
 
     return model
 
@@ -81,7 +76,7 @@ class Trajectory_Callback(Callback):
                      6, 7, 8, 9,
                      49, 99, 149, 199, 249, 299, 349]:
             print('\n\nSnapshot instance', str(i), 'at epoch', str(int(epoch)+1))
-            acts = correlations.get_acts(self.model, layer_arr, x_predict)
+            acts = analysis.get_acts(self.model, layer_arr, x_predict)
             np.save('../outputs/representations/acts/Version_5/i'+str(i)+'e'+str(epoch)+'.npy', acts)
             print('\n')
 
@@ -110,10 +105,10 @@ while num_trained < total:
     K.clear_session()
     tf.random.set_seed(seed_value)
 
-    trainData, testData = correlations.make_train_data()
-    x_predict, y_predict = correlations.make_predict_data(testData)
+    trainData, testData = datasets.make_train_data()
+    x_predict, y_predict = datasets.make_predict_data(testData)
  
-    model = init_model('all_cnn_c', seed=i)
+    model = init_all_cnn_c(seed=i)
 
     # Set flag to true if converges to local min
     abort = False
