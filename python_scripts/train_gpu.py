@@ -1,6 +1,3 @@
-# Everything is the same as with_hash, though without the snapshots.
-# Only difference is that I use the deterministic ops flag here.
-
 import sys
 import numpy as np
 import pickle
@@ -83,7 +80,7 @@ class Trajectory_Callback(Callback):
         if epoch in [0, 1, 2, 3, 4, 5,
                      6, 7, 8, 9,
                      49, 99, 149, 199, 249, 299, 349]:
-            print('\n\nSnapshot instance', str(abort), 'at epoch', str(int(epoch)+1))
+            print('\n\nSnapshot instance', str(i), 'at epoch', str(int(epoch)+1))
             acts = correlations.get_acts(self.model, layer_arr, x_predict)
             np.save('../outputs/representations/acts/Version_5/i'+str(i)+'e'+str(epoch)+'.npy', acts)
             print('\n')
