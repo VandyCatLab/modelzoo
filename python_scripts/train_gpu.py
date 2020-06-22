@@ -12,8 +12,7 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.initializers import he_normal
 from tensorflow.keras.callbacks import LearningRateScheduler, Callback
 from tensorflow.keras import backend as K 
-sys.path.append('../../../python_scripts/')
-import correlations
+import analysis, models
 
 # Set seed values
 seed_value= 0
@@ -81,7 +80,7 @@ class Trajectory_Callback(Callback):
                      6, 7, 8, 9,
                      49, 99, 149, 199, 249, 299, 349]:
             print('\n\nSnapshot instance', str(i), 'at epoch', str(int(epoch)+1))
-            acts = correlations.get_acts(self.model, layer_arr, x_predict)
+            acts = analysis.get_acts(self.model, layer_arr, x_predict)
             np.save('../outputs/representations/acts/Version_5/i'+str(i)+'e'+str(epoch)+'.npy', acts)
             print('\n')
 
@@ -110,8 +109,8 @@ while num_trained < total:
     K.clear_session()
     tf.random.set_seed(seed_value)
 
-    trainData, testData = correlations.make_train_data()
-    x_predict, y_predict = correlations.make_predict_data(testData)
+    trainData, testData = models.make_train_data()
+    x_predict, y_predict = models.make_predict_data(testData)
  
     model = init_model('all_cnn_c', seed=i)
 
