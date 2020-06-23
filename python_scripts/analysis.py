@@ -36,18 +36,21 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
                 if correlation_function == do_rsa:
                     imgs, h, w, channels = acts.shape
                     acts = np.reshape(acts, newshape=(imgs, h*w*channels))
+                    # Convert to RDM if using RSA
+                    acts = get_rdm(acts)
                 else:
-                    acts = np.mean(acts, axis=(1,2))             
-            all_acts[layer_num].append(acts.T)
+                    acts = np.mean(acts, axis=(1,2))            
+            all_acts[layer_num].append(acts)
             layer_num += 1
     
+        
     # Now do correlations
     print('**** Done gathering RDMs, now correlations ****')
     num_networks = 10
     correlations = np.zeros((90, 90))
     # Run SVCCA
     for i in range(correlations.shape[0]):
-        for j in range(correlations.shape[1] - i):
+        for j in range(i, correlations.shape[1]):
             print('Correlation', str(i), ',', str(j))
             # Decode into the org scheme we want (i.e. layer * instance)
             layer_i = i // num_networks
@@ -59,12 +62,13 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
             
             correlations[i, j] = correlation_function(acts1, acts2)
     
-    # OK this part might be a bit sketch. Basically, grab all the non-diag values
-    # into a second matrix, then transpose to flip, then add it to the orig matrix.
-    # This makes it so we don't need to compute every value twice
-    num_imgs = 90
-    correlations_lower = correlations[np.triu_indices(n=num_imgs, k=1)].T
-    correlations += correlations_lower
+    # OK this part might be a bit sketch. Basically, add correlations
+    # to its own transpose to fill the empty spaces. Then divide the diag
+    # by 2 to account for the fact that you added the diag to itself.
+    # This is sort of a hacky workaround to avoid double calculating.
+    correlations += correlations.T
+    for i in range(correlations.shape[0]):
+        correlations[i, i] /= 2
 
     print('Done!')
     return correlations
@@ -72,9 +76,12 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
 '''
 Correlation analysis functions
 '''
-def do_rsa(acts1, acts2):
-    rdm1 = get_rdm(acts1)
-    rdm2 = get_rdm(acts2)
+def do_rsa_from_acts(acts1, acts2):
+    rdm1 = get_rdm(acts1.T)
+    rdm2 = get_rdm(acts2.T)
+    return do_rsa(rdm1, rdm2)
+
+def do_rsa(rdm1, rdm2):
     assert rdm1.shape == rdm2.shape
     num_imgs = rdm1.shape[0]
     # Only use upper-triangular values
@@ -97,11 +104,11 @@ def do_svcca(acts1, acts2):
     svacts2 = np.dot(s2[:threshold2]*np.eye(threshold2), V2[:threshold2])
 
     svcca_results = cca_core.get_cca_similarity(svacts1, svacts2, epsilon=1e-10, verbose=False)
-    return svcca_results['cca_coef1']
+    return np.mean(svcca_results['cca_coef1'])
 
 def do_pwcca(acts1, acts2):
     # Just a wrapper to make passing easier
-    return pwcca.compute_pwcca(acts1, acts2)[0]
+    return pwcca.compute_pwcca(acts1.T, acts2.T)[0]
 
 '''
 Helper functions
@@ -143,12 +150,12 @@ def get_threshold(acts):
             ans = mid; 
             end = mid - 1;
     
-    print('Found', ans, '/', end, 'neurons accounts for', np.sum(s[:ans])/np.sum(s), 'of variance')
+    print('Found', ans, '/', acts.shape[0], 'neurons accounts for', np.sum(s[:ans])/np.sum(s), 'of variance')
 
     return ans
 
 def get_rdm(acts):
-    print('shape:', rep.shape)
-    num_imgs = rep.shape[0]
+    print('shape:', acts.shape)
+    num_imgs = acts.shape[0]
     print('num_images =', num_imgs)
-    return spearmanr(rep.T, rep.T)[0][0:num_imgs, 0:num_imgs]
+    return spearmanr(acts.T, acts.T)[0][0:num_imgs, 0:num_imgs]

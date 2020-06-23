@@ -8,7 +8,7 @@ import random
 import tensorflow as tf
 from tensorflow.keras.datasets import cifar10
 
-def make_train_data():
+def make_train_data(shuffle_seed):
     '''
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
     '''
@@ -51,7 +51,7 @@ def make_train_data():
     testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
     trainData = trainData.prefetch(tf.data.experimental.AUTOTUNE)\
-        .shuffle(x_train.shape[0])\
+        .shuffle(x_train.shape[0], seed=shuffle_seed)\
         .batch(128)
     
     print('Done!')
