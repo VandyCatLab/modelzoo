@@ -11,13 +11,14 @@ import sys
 sys.path.append('../imported_code/svcca')
 import cca_core, pwcca
 
-def correlate(correlation_function, path_to_instances, identifiers, x_predict):
+def correlate(method, path_to_instances, identifiers, x_predict):
     '''
     Pre: ***HARDCODED*** 10 instances at specified path with 9 layers each, 1000 images
     Post: returns 90x90 correlation matrix using RSA, SVCCA or PWCCA
     '''
-    # Check ahead of time for typos
-    assert correlation_function in [do_rsa, do_svcca, do_pwcca]
+    # Get necessary functions
+    preprocess_func, corr_func = get_funcs(method)
+    
     print('**** Load and Preprocess Acts ****')
     # Load up all acts into layer * instance grid
     all_acts = [[], [], [], [], [], [], [], [], []]
@@ -25,21 +26,12 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
         print('*** Working on model', str(i), '***')
         K.clear_session()
         model = load_model(path_to_instances + str(i) + '.h5')
-        print('** First, get acts')
         acts_list = get_acts(model, range(9), x_predict)
-        print('** Second, reorder to fit graph scheme')
         # Loop through layers
         layer_num = 0
         for acts in acts_list:
-            # Flatten by averaging if conv layer
-            if len(acts.shape) > 2:
-                if correlation_function == do_rsa:
-                    imgs, h, w, channels = acts.shape
-                    acts = np.reshape(acts, newshape=(imgs, h*w*channels))
-                    # Convert to RDM if using RSA
-                    acts = get_rdm(acts)
-                else:
-                    acts = np.mean(acts, axis=(1,2))            
+            print('* Preprocessing...')
+            acts = preprocess_func(acts)
             all_acts[layer_num].append(acts)
             layer_num += 1
     
@@ -50,7 +42,9 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
     correlations = np.zeros((90, 90))
     # Run SVCCA
     for i in range(correlations.shape[0]):
-        for j in range(i, correlations.shape[1]):
+        # Only perform on lower triangle, avoid repeats
+        # NOTE: Lower triangle b/c yields better separation with PWCCA
+        for j in range(i + 1):
             print('Correlation', str(i), ',', str(j))
             # Decode into the org scheme we want (i.e. layer * instance)
             layer_i = i // num_networks
@@ -60,12 +54,9 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
             acts1 = all_acts[layer_i][network_i]
             acts2 = all_acts[layer_j][network_j]
             
-            correlations[i, j] = correlation_function(acts1, acts2)
+            correlations[i, j] = corr_func(acts1, acts2)
     
-    # OK this part might be a bit sketch. Basically, add correlations
-    # to its own transpose to fill the empty spaces. Then divide the diag
-    # by 2 to account for the fact that you added the diag to itself.
-    # This is sort of a hacky workaround to avoid double calculating.
+    # Fill in other side of graph with reflection
     correlations += correlations.T
     for i in range(correlations.shape[0]):
         correlations[i, i] /= 2
@@ -73,15 +64,63 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
     print('Done!')
     return correlations
 
+def get_funcs(method):
+    assert method in ['RSA', 'SVCCA', 'PWCCA'], 'Invalid correlation method'
+    if method == 'RSA':
+        return preprocess_rsa, do_rsa
+    elif method == 'SVCCA':
+        return preprocess_svcca, do_svcca
+    elif method == 'PWCCA':
+        return preprocess_pwcca, do_pwcca
+
+'''
+Preprocessing functions
+'''
+def preprocess_rsa(acts):
+    if len(acts.shape) > 2:
+        imgs, h, w, channels = acts.shape
+        acts = np.reshape(acts, newshape=(imgs, h*w*channels))
+        
+    rdm = get_rdm(acts.T)
+    return rdm
+
+# TODO: merge with interpolate
+def preprocess_svcca(acts, interpolate=False):
+    if len(acts.shape) > 2:
+        acts = np.mean(acts, axis=(1,2))
+    # Transpose to get shape [neurons, datapoints]
+    threshold = get_threshold(acts.T)
+    # Mean subtract activations
+    cacts = acts.T - np.mean(acts.T, axis=1, keepdims=True)
+    # Perform SVD
+    _, s, V = np.linalg.svd(cacts, full_matrices=False)
+
+    svacts = np.dot(s[:threshold]*np.eye(threshold), V[:threshold])
+    return svacts
+
+# TODO: merge with interpolate
+def preprocess_pwcca(acts, interpolate=False):
+    if len(acts.shape) > 2:
+        acts = np.mean(acts, axis=(1,2))
+    
+    return acts
+
+
 '''
 Correlation analysis functions
 '''
 def do_rsa_from_acts(acts1, acts2):
-    rdm1 = get_rdm(acts1.T)
-    rdm2 = get_rdm(acts2.T)
+    '''
+    Pre: acts must be shape (neurons, datapoints)
+    '''
+    rdm1 = get_rdm(acts1)
+    rdm2 = get_rdm(acts2)
     return do_rsa(rdm1, rdm2)
 
 def do_rsa(rdm1, rdm2):
+    '''
+    Pre: RDMs must be same shape
+    '''
     assert rdm1.shape == rdm2.shape
     num_imgs = rdm1.shape[0]
     # Only use upper-triangular values
@@ -90,25 +129,20 @@ def do_rsa(rdm1, rdm2):
     return pearsonr(rdm1_flat, rdm2_flat)[0]    
 
 def do_svcca(acts1, acts2):
-    # Transpose to get shape [neurons, datapoints]
-    threshold1 = get_threshold(acts1.T)
-    threshold2 = get_threshold(acts2.T)
-    # Mean subtract activations
-    cacts1 = acts1.T - np.mean(acts1.T, axis=1, keepdims=True)
-    cacts2 = acts2.T - np.mean(acts2.T, axis=1, keepdims=True)
-    # Perform SVD
-    _, s1, V1 = np.linalg.svd(cacts1, full_matrices=False)
-    _, s2, V2 = np.linalg.svd(cacts2, full_matrices=False)
-
-    svacts1 = np.dot(s1[:threshold1]*np.eye(threshold1), V1[:threshold1])
-    svacts2 = np.dot(s2[:threshold2]*np.eye(threshold2), V2[:threshold2])
-
-    svcca_results = cca_core.get_cca_similarity(svacts1, svacts2, epsilon=1e-10, verbose=False)
+    '''
+    Pre: acts must be shape (neurons, datapoints) and preprocessed with SVD
+    '''
+    svcca_results = cca_core.get_cca_similarity(acts1, acts2, epsilon=1e-10, verbose=False)
     return np.mean(svcca_results['cca_coef1'])
 
 def do_pwcca(acts1, acts2):
-    # Just a wrapper to make passing easier
-    return pwcca.compute_pwcca(acts1.T, acts2.T)[0]
+    '''
+    Pre: acts must be shape (neurons, datapoints)
+    '''
+    # acts1.shape cannot be bigger than acts2.shape for pwcca
+    if acts1.shape <= acts2.shape:
+        return np.mean(pwcca.compute_pwcca(acts1.T, acts2.T, epsilon=1e-10)[0])
+    return np.mean(pwcca.compute_pwcca(acts2.T, acts1.T, epsilon=1e-10)[0])
 
 '''
 Helper functions
@@ -159,3 +193,4 @@ def get_rdm(acts):
     num_imgs = acts.shape[0]
     print('num_images =', num_imgs)
     return spearmanr(acts.T, acts.T)[0][0:num_imgs, 0:num_imgs]
+
