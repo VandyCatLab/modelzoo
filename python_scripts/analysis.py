@@ -4,6 +4,7 @@ UNTESTED!!
 
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
+from scipy import interpolate
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Flatten
 import tensorflow.keras.backend as K
@@ -33,13 +34,17 @@ def correlate(correlation_function, path_to_instances, identifiers, x_predict):
         for acts in acts_list:
             # Flatten by averaging if conv layer
             if len(acts.shape) > 2:
+                # Case: RSA
                 if correlation_function == do_rsa:
                     imgs, h, w, channels = acts.shape
                     acts = np.reshape(acts, newshape=(imgs, h*w*channels))
                     # Convert to RDM if using RSA
                     acts = get_rdm(acts)
-                else:
-                    acts = np.mean(acts, axis=(1,2))            
+                # Case: CCA
+                # else:
+                    # Alternatively, do this
+                    # acts = np.mean(acts, axis=(1,2))
+
             all_acts[layer_num].append(acts)
             layer_num += 1
     
@@ -89,8 +94,16 @@ def do_rsa(rdm1, rdm2):
     rdm2_flat = rdm2[np.triu_indices(n=num_imgs, k=1)]
     return pearsonr(rdm1_flat, rdm2_flat)[0]    
 
-def do_svcca(acts1, acts2):
-    # Transpose to get shape [neurons, datapoints]
+def do_svcca(acts1, acts2, use_interpolate=True):
+
+    if use_interpolate:
+        # Built-in flattening
+        if acts1.shape != acts2.shape:
+            acts1, acts2 = interpolate_and_flatten(acts1, acts2)
+
+    elif len(acts1.shape) != 2 or len(acts2.shape) != 2:
+        raise('Must preprocess acts if not using interpolate')
+
     threshold1 = get_threshold(acts1.T)
     threshold2 = get_threshold(acts2.T)
     # Mean subtract activations
@@ -106,9 +119,64 @@ def do_svcca(acts1, acts2):
     svcca_results = cca_core.get_cca_similarity(svacts1, svacts2, epsilon=1e-10, verbose=False)
     return np.mean(svcca_results['cca_coef1'])
 
-def do_pwcca(acts1, acts2):
-    # Just a wrapper to make passing easier
+def do_pwcca(acts1, acts2, use_interpolate=True):
+    if use_interpolate:
+        # Built-in flattening
+        if acts1.shape != acts2.shape:
+            acts1, acts2 = interpolate_and_flatten(acts1, acts2)
+    elif len(acts1.shape) != 2 or len(acts2.shape) != 2:
+        raise('Must preprocess acts if not using interpolate')
+
     return pwcca.compute_pwcca(acts1.T, acts2.T)[0]
+
+def interpolate_and_flatten(acts1, acts2):
+    '''
+    Largely stolen from svcca tutorial
+    '''
+    if acts1.shape[1] < acts.shape[2]:
+        smaller = acts1
+        larger = acts2
+    else:
+        smaller = acts2
+        larger = acts1
+    
+    num_d, h, w, _ = larger.shape
+    num_c = smaller.shape[-1]
+    smaller_interp = np.zeros((num_d, h, w, num_c))
+
+    for d in range(num_d):
+        for c in range(num_c):
+            # form interpolation function
+            idxs1 = np.linspace(0, smaller.shape[1],
+                                smaller.shape[1],
+                                endpoint=False)
+            idxs2 = np.linspace(0, smaller.shape[2],
+                                smaller.shape[2],
+                                endpoint=False)
+            arr = smaller[d,:,:,c]
+            f_interp = interpolate.interp2d(idxs1, idxs2, arr)
+            
+            # creater larger arr
+            large_idxs1 = np.linspace(0, smaller.shape[1],
+                                larger.shape[1],
+                                endpoint=False)
+            large_idxs2 = np.linspace(0, smaller.shape[2],
+                                larger.shape[2],
+                                endpoint=False)
+            
+            smaller_interp[d, :, :, c] = f_interp(large_idxs1, large_idxs2)
+
+    print("new shape", smaller.shape)
+
+    #Flatten
+    num_datapoints, h, w, channels = smaller_interp.shape
+    smaller_interp = smaller_interp.reshape((num_datapoints*h*w, channels))
+    num_datapoints, h, w, channels = larger.shape
+    larger = larger.reshape((num_datapoints*h*w, channels))
+    print(acts1.shape, acts2.shape)
+
+    return smaller_interp, larger
+
 
 '''
 Helper functions
