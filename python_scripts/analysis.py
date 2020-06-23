@@ -81,7 +81,7 @@ def preprocess_rsa(acts):
         imgs, h, w, channels = acts.shape
         acts = np.reshape(acts, newshape=(imgs, h*w*channels))
         
-    rdm = get_rdm(acts.T)
+    rdm = get_rdm(acts)
     return rdm
 
 # TODO: merge with interpolate
