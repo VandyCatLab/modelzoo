@@ -82,7 +82,7 @@ class Trajectory_Callback(Callback):
                      49, 99, 149, 199, 249, 299, 349]:
             print('\n\nSnapshot instance', str(shuffle_seed), 'at epoch', str(int(epoch)+1))
             acts = analysis.get_acts(self.model, layer_arr, x_predict)
-            np.save('../outputs/representations/acts/shuffle_seed/s'+str(shuffle_seed)+'e'+str(epoch)+'.npy', acts)
+            np.save('../outputs/representations/acts/both/w'+str(weight_seed)+'s'+str(shuffle_seed)+'e'+str(epoch)+'.npy', acts)
             print('\n')
 
 
@@ -124,7 +124,7 @@ while num_trained < total:
         callbacks=[LR_Callback, Trajectory_Callback(), Early_Abort_Callback()])
     print('After fit abort:', abort)
     if not abort:
-        model.save('../outputs/models/both/instance_'+str(shuffle_seed)+'.h5')
+        model.save('../outputs/models/both/w'+str(weight_seed)+'s'+str(shuffle_seed)+'.h5')
         num_trained += 1
         weight_seed += 1
 
