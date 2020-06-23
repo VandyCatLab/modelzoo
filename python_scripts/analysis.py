@@ -31,24 +31,8 @@ def correlate(method, path_to_instances, identifiers, x_predict):
         # Loop through layers
         layer_num = 0
         for acts in acts_list:
-<<<<<<< HEAD
             print('* Preprocessing...')
             acts = preprocess_func(acts)
-=======
-            # Flatten by averaging if conv layer
-            if len(acts.shape) > 2:
-                # Case: RSA
-                if correlation_function == do_rsa:
-                    imgs, h, w, channels = acts.shape
-                    acts = np.reshape(acts, newshape=(imgs, h*w*channels))
-                    # Convert to RDM if using RSA
-                    acts = get_rdm(acts)
-                # Case: CCA
-                # else:
-                    # Alternatively, do this
-                    # acts = np.mean(acts, axis=(1,2))
-
->>>>>>> 17916d56b24ce372d68cad270d65ace4f903dd00
             all_acts[layer_num].append(acts)
             layer_num += 1
     
@@ -86,9 +70,9 @@ def get_funcs(method):
     if method == 'RSA':
         return preprocess_rsa, do_rsa
     elif method == 'SVCCA':
-        return preprocess_svcca, do_svcca
+        return preprocess_cca, do_svcca
     elif method == 'PWCCA':
-        return preprocess_pwcca, do_pwcca
+        return preprocess_cca, do_pwcca
 
 '''
 Preprocessing functions
@@ -101,25 +85,10 @@ def preprocess_rsa(acts):
     rdm = get_rdm(acts.T)
     return rdm
 
-# TODO: merge with interpolate
-def preprocess_svcca(acts, interpolate=False):
-    if len(acts.shape) > 2:
+def preprocess_cca(acts, use_interpolate=True):
+    if len(acts.shape) > 2 and not use_interpolate:
         acts = np.mean(acts, axis=(1,2))
-    # Transpose to get shape [neurons, datapoints]
-    threshold = get_threshold(acts.T)
-    # Mean subtract activations
-    cacts = acts.T - np.mean(acts.T, axis=1, keepdims=True)
-    # Perform SVD
-    _, s, V = np.linalg.svd(cacts, full_matrices=False)
 
-    svacts = np.dot(s[:threshold]*np.eye(threshold), V[:threshold])
-    return svacts
-
-# TODO: merge with interpolate
-def preprocess_pwcca(acts, interpolate=False):
-    if len(acts.shape) > 2:
-        acts = np.mean(acts, axis=(1,2))
-    
     return acts
 
 
@@ -145,32 +114,20 @@ def do_rsa(rdm1, rdm2):
     rdm2_flat = rdm2[np.triu_indices(n=num_imgs, k=1)]
     return pearsonr(rdm1_flat, rdm2_flat)[0]    
 
-<<<<<<< HEAD
-def do_svcca(acts1, acts2):
-    '''
-    Pre: acts must be shape (neurons, datapoints) and preprocessed with SVD
-    '''
-    svcca_results = cca_core.get_cca_similarity(acts1, acts2, epsilon=1e-10, verbose=False)
-    return np.mean(svcca_results['cca_coef1'])
-
-def do_pwcca(acts1, acts2):
-    '''
-    Pre: acts must be shape (neurons, datapoints)
-    '''
-    # acts1.shape cannot be bigger than acts2.shape for pwcca
-    if acts1.shape <= acts2.shape:
-        return np.mean(pwcca.compute_pwcca(acts1.T, acts2.T, epsilon=1e-10)[0])
-    return np.mean(pwcca.compute_pwcca(acts2.T, acts1.T, epsilon=1e-10)[0])
-=======
 def do_svcca(acts1, acts2, use_interpolate=True):
 
-    if use_interpolate:
-        # Built-in flattening
-        if acts1.shape != acts2.shape:
-            acts1, acts2 = interpolate_and_flatten(acts1, acts2)
-
-    elif len(acts1.shape) != 2 or len(acts2.shape) != 2:
-        raise('Must preprocess acts if not using interpolate')
+    if (acts1.shape > 2 or acts2.shape > 2):
+        if use_interpolate:
+            if acts1.shape != acts2.shape:
+                acts1, acts2 = interpolate_acts(acts1, acts2)
+            #Flatten
+            num_datapoints, h, w, channels = acts1.shape
+            acts1 = acts1.reshape((num_datapoints*h*w, channels))
+            num_datapoints, h, w, channels = acts2.shape
+            acts2 = acts2.reshape((num_datapoints*h*w, channels))
+            print(acts1.shape, acts2.shape)
+        else:
+            raise('Must preprocess acts if not using interpolate')
 
     threshold1 = get_threshold(acts1.T)
     threshold2 = get_threshold(acts2.T)
@@ -188,17 +145,24 @@ def do_svcca(acts1, acts2, use_interpolate=True):
     return np.mean(svcca_results['cca_coef1'])
 
 def do_pwcca(acts1, acts2, use_interpolate=True):
-    if use_interpolate:
-        # Built-in flattening
-        if acts1.shape != acts2.shape:
-            acts1, acts2 = interpolate_and_flatten(acts1, acts2)
-    elif len(acts1.shape) != 2 or len(acts2.shape) != 2:
-        raise('Must preprocess acts if not using interpolate')
+    if (acts1.shape > 2 or acts2.shape > 2):
+        if use_interpolate:
+            if acts1.shape != acts2.shape:
+                acts1, acts2 = interpolate_acts(acts1, acts2)
+            #Flatten
+            num_datapoints, h, w, channels = acts1.shape
+            acts1 = acts1.reshape((num_datapoints*h*w, channels))
+            num_datapoints, h, w, channels = acts2.shape
+            acts2 = acts2.reshape((num_datapoints*h*w, channels))
+            print(acts1.shape, acts2.shape)
+        else:
+            raise('Must preprocess acts if not using interpolate')
 
-    return pwcca.compute_pwcca(acts1.T, acts2.T)[0]
->>>>>>> 17916d56b24ce372d68cad270d65ace4f903dd00
+    if acts1.shape <= acts2.shape:
+        return np.mean(pwcca.compute_pwcca(acts1.T, acts2.T, epsilon=1e-10)[0])
+    return np.mean(pwcca.compute_pwcca(acts2.T, acts1.T, epsilon=1e-10)[0])
 
-def interpolate_and_flatten(acts1, acts2):
+def interpolate_acts(acts1, acts2):
     '''
     Largely stolen from svcca tutorial
     '''
@@ -235,14 +199,7 @@ def interpolate_and_flatten(acts1, acts2):
             
             smaller_interp[d, :, :, c] = f_interp(large_idxs1, large_idxs2)
 
-    print("new shape", smaller.shape)
-
-    #Flatten
-    num_datapoints, h, w, channels = smaller_interp.shape
-    smaller_interp = smaller_interp.reshape((num_datapoints*h*w, channels))
-    num_datapoints, h, w, channels = larger.shape
-    larger = larger.reshape((num_datapoints*h*w, channels))
-    print(acts1.shape, acts2.shape)
+    print("new shape", smaller_interp.shape)
 
     return smaller_interp, larger
 
