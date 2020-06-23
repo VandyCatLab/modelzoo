@@ -1,11 +1,12 @@
+'''
+DEPRECATED, MISSING UPDATED DATA PREPROCESSING
+'''
 
-# Note: There are additional imports needed if you want VGG753
 import sys
 import numpy as np
 import tensorflow as tf
 import os
 import random
-import correlations
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (Conv2D, Dropout, GlobalAveragePooling2D,
                                     MaxPooling2D, Activation, Dense, Layer)
@@ -14,6 +15,7 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras.initializers import he_normal
 from tensorflow.keras.callbacks import LearningRateScheduler, Callback
 from tensorflow.keras import backend as K 
+import analysis, models
 
 # Set seed value for python and np
 seed_value= 0
@@ -25,7 +27,7 @@ tf.random.set_seed(seed_value)
 
 
 # Load predict datasets and whitened datasets
-x_predict, y_predict = correlations.make_test_data()
+x_predict, y_predict = models.make_test_data()
 x_train_new = np.load('../data/cifar10_modified/x_train_new.npy')
 y_train_new = np.load('../data/cifar10_modified/y_train_new.npy')
 x_test_new = np.load('../data/cifar10_modified/x_test_new.npy')
@@ -115,7 +117,7 @@ class Trajectory_Callback(Callback):
                      49, 99, 149, 199, 249, 299, 349]:
             # It's really nice how I can update instance_num outside of the def of this and it updates inside            
             print('\n\nSnapshot instance', str(instance_num+1), 'at epoch', str(int(epoch)+1))
-            acts = correlations.get_acts(self.model, layer_arr, x_predict)
+            acts = analysis.get_acts(self.model, layer_arr, x_predict)
             np.save('../outputs/representations/acts/Version_4/Instance'+str(instance_num+1)+'_Epoch'+str(int(epoch)+1)+'.npy', acts)
             print('\n')
             

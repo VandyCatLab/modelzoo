@@ -1,16 +1,16 @@
-import os, sys
-import correlations
+'''
+SAFE
+'''
+
+import sys
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-from scipy.stats import spearmanr, pearsonr
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
-from tensorflow.keras.applications.vgg16 import VGG16, decode_predictions
-from tensorflow.keras.applications.xception import Xception, decode_predictions
-sys.path.append('../imported_code/svcca')
-import cca_core, pwcca
+import analysis
+
 
 def transform_baseline(imgset, transform, full_model, layer_num, correlate_func):
     '''
@@ -38,15 +38,12 @@ def transform_baseline(imgset, transform, full_model, layer_num, correlate_func)
     out = layer.output
     # Flatten if necessary and using RSA
     if len(out.shape) != 2 and correlate_func == do_rsa:
-            out = Flatten()(out) 
+        out = Flatten()(out) 
     
     model = Model(inputs=inp, outputs=out)
 
     # Get reps for originals
     rep_orig = model.predict(imgset)
-    # Set orig RDM if using RSA
-    if correlate_func == do_rsa:
-        rep_orig = get_rdm(rep_orig)
 
     if transform == 'reflect':
         print(' - Working on version 1 of 1')
@@ -135,70 +132,6 @@ def transform_baseline(imgset, transform, full_model, layer_num, correlate_func)
     print('Done!\n')
     return correlations
 
-'''
-Correlations functions
-'''
-def do_rsa(rdm1, rep2):
-    rdm2 = get_rdm(rep2)
-    assert rdm1.shape == rdm2.shape
-    num_imgs = rdm1.shape[0]
-    rdm1_flat = rdm1[np.triu_indices(n=num_imgs, k=1)]
-    rdm2_flat = rdm2[np.triu_indices(n=num_imgs, k=1)]
-    return pearsonr(rdm1_flat, rdm2_flat)[0]
-
-def do_svcca(acts1, acts2):
-    # Not saving thresholds
-    # Transpose to get shape [neurons, datapoints]
-    threshold1 = find_threshold(acts1.T)
-    threshold2 = find_threshold(acts2.T)
-    # Mean subtract activations
-    cacts1 = acts1.T - np.mean(acts1.T, axis=1, keepdims=True)
-    cacts2 = acts2.T - np.mean(acts2.T, axis=1, keepdims=True)
-    # Perform SVD
-    U1, s1, V1 = np.linalg.svd(cacts1, full_matrices=False)
-    U2, s2, V2 = np.linalg.svd(cacts2, full_matrices=False)
-
-    svacts1 = np.dot(s1[:threshold1]*np.eye(threshold1), V1[:threshold1])
-    svacts2 = np.dot(s2[:threshold2]*np.eye(threshold2), V2[:threshold2])
-
-    svcca_results = cca_core.get_cca_similarity(svacts1, svacts2, epsilon=1e-10, verbose=False)
-    return svcca_results['cca_coef1']
-
-def do_pwcca(acts1, acts2):
-    # Just a wrapper to make passing easier
-    return pwcca.compute_pwcca(acts1, acts2)[0]
-
-'''
-Helper functions
-'''
-def find_threshold(acts):
-    start = 0
-    end = acts.shape[0]
-    return_dict = {}
-    ans = -1
-    while start <= end:
-        mid = (start + end) // 2
-        # Move to right side if target is 
-        # greater. 
-        s = np.linalg.svd(acts - np.mean(acts, axis=1, keepdims=True), full_matrices=False)[1]
-        # Note: normally comparing floating points is a bad bad but the precision we need is low enough
-        if (np.sum(s[:mid])/np.sum(s) <= 0.99): 
-            start = mid + 1;
-        # Move left side. 
-        else: 
-            ans = mid; 
-            end = mid - 1;
-    
-    print('Found', ans, '/', end, 'neurons accounts for', np.sum(s[:ans])/np.sum(s), 'of variance')
-
-    return ans
-
-def get_rdm(rep):
-    print('shape:', rep.shape)
-    num_imgs = rep.shape[0]
-    print('num_images =', num_imgs)
-    return spearmanr(rep.T, rep.T)[0][0:num_imgs, 0:num_imgs]
-
 """
 Sanity check/Visualization functions
 """
@@ -237,7 +170,7 @@ def visualize_transform(transform, depth, img_arr):
         left_transformed  = np.concatenate([img_arr[:, v:dim, :], empty[:, 0:v, :]], axis=1)
         right_transformed = np.concatenate([empty[:, 0:v, :], img_arr[:, 0:dim - v, :]], axis=1)
         
-        f, axarr = plt.subplots(2,2)
+        _, axarr = plt.subplots(2,2)
         axarr[0,0].imshow(up_transformed)
         axarr[0,1].imshow(down_transformed)
         axarr[1,0].imshow(left_transformed)
