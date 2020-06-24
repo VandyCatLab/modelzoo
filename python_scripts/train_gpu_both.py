@@ -126,7 +126,7 @@ while num_trained < total:
     if not abort:
         model.save('../outputs/models/both/w'+str(weight_seed)+'s'+str(shuffle_seed)+'.h5')
         num_trained += 1
-        weight_seed += 1
 
+    weight_seed += 1
     shuffle_seed += 1
 

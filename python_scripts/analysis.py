@@ -7,25 +7,29 @@ from scipy.stats import pearsonr, spearmanr
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Flatten
 import tensorflow.keras.backend as K
-import sys
+import sys, os
 sys.path.append('../imported_code/svcca')
 import cca_core, pwcca
 
-def correlate(method, path_to_instances, identifiers, x_predict):
+def correlate(method: str, path_to_instances: str, x_predict):
     '''
     Pre: ***HARDCODED*** 10 instances at specified path with 9 layers each, 1000 images
     Post: returns 90x90 correlation matrix using RSA, SVCCA or PWCCA
     '''
     # Get necessary functions
     preprocess_func, corr_func = get_funcs(method)
-    
+    # Get instances
+    instances = os.listdir(path_to_instances)
     print('**** Load and Preprocess Acts ****')
     # Load up all acts into layer * instance grid
     all_acts = [[], [], [], [], [], [], [], [], []]
-    for i in identifiers:
-        print('*** Working on model', str(i), '***')
+    for instance in instances:
+        # Skip any non-model files that may have snuck in
+        if '.h5' not in instance:
+            continue
+        print('*** Working on', instance, '***')
         K.clear_session()
-        model = load_model(path_to_instances + str(i) + '.h5')
+        model = load_model(path_to_instances+instance)
         acts_list = get_acts(model, range(9), x_predict)
         # Loop through layers
         layer_num = 0

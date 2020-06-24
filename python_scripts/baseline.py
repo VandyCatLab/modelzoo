@@ -37,7 +37,7 @@ def transform_baseline(imgset, transform, full_model, layer_num, correlate_func)
     layer = full_model.layers[layer_num]
     out = layer.output
     # Flatten if necessary and using RSA
-    if len(out.shape) != 2 and correlate_func == do_rsa:
+    if len(out.shape) != 2 and correlate_func == analysis.do_rsa:
         out = Flatten()(out) 
     
     model = Model(inputs=inp, outputs=out)
