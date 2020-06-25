@@ -76,8 +76,8 @@ class Trajectory_Callback(Callback):
                      6, 7, 8, 9,
                      49, 99, 149, 199, 249, 299, 349]:
             print('\n\nSnapshot instance', str(i), 'at epoch', str(int(epoch)+1))
-            acts = analysis.get_acts(self.model, layer_arr, x_predict)
-            np.save('../outputs/representations/acts/Version_5/i'+str(i)+'e'+str(epoch)+'.npy', acts)
+            acts = analysis.get_acts(self.model, layer_arr, x_predict, cocktail_blank=False)
+            np.save('../outputs/representations/acts/weights/i'+str(i)+'e'+str(epoch)+'.npy', acts)
             print('\n')
 
 
