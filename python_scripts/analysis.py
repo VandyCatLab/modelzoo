@@ -11,7 +11,7 @@ import sys, os
 sys.path.append('../imported_code/svcca')
 import cca_core, pwcca
 
-def correlate(method: str, path_to_instances: str, x_predict):
+def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=False):
     '''
     Pre: ***HARDCODED*** 10 instances at specified path with 9 layers each, 1000 images
     Post: returns 90x90 correlation matrix using RSA, SVCCA or PWCCA
@@ -30,7 +30,7 @@ def correlate(method: str, path_to_instances: str, x_predict):
         print('*** Working on', instance, '***')
         K.clear_session()
         model = load_model(path_to_instances+instance)
-        acts_list = get_acts(model, range(9), x_predict)
+        acts_list = get_acts(model, range(9), x_predict, cocktail_blank)
         # Loop through layers
         layer_num = 0
         for acts in acts_list:
@@ -151,7 +151,7 @@ def do_pwcca(acts1, acts2):
 '''
 Helper functions
 '''
-def get_acts(model, layer_arr, x_predict):
+def get_acts(model, layer_arr, x_predict, cocktail_blank):
     '''
     Pre: model exists, layer_arr contains valid layer numbers, x_predict is organized
     Post: Returns list of activations over x_predict for relevant layers in this particular model instance
@@ -166,6 +166,9 @@ def get_acts(model, layer_arr, x_predict):
         # Predict on x_predict, transpose for spearman
         print('Getting activations...')
         acts = temp_model.predict(x_predict)
+        if cocktail_blank:
+            # subtracting the mean activation pattern across all images from each network unit
+            acts -= np.mean(acts, axis=0)
         acts_list.append(acts)
     
     return acts_list
