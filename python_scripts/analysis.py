@@ -1,7 +1,3 @@
-'''
-UNTESTED!!
-'''
-
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
 from tensorflow.keras.models import Model, load_model
