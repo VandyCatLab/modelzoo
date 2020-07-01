@@ -88,7 +88,6 @@ class Early_Abort_Callback(Callback):
     '''
     def on_epoch_end(self, epoch, logs=None):
         global abort
-        print('Abort:', str(abort))
         if (epoch > 10 and logs.get('accuracy') <= 0.11 or
                 epoch == 70 and logs.get('accuracy') < 1.0):
             abort = True
