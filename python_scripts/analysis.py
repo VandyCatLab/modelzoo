@@ -74,32 +74,35 @@ def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str
     Pre:  Arbitrary number of instances and corresponding acts at specified paths
     Post: returns (num_epochs*num_instances) ^ 2 correlation matrix using RSA, SVCCA or PWCCA
     '''
-    # Establish epochs scheme
+    # Establish epochs scheme and corresponding acts list
     assert epochs_scheme in ['first_ten', 'fifties']
     if epochs_scheme == 'first_ten':
         epochs = range(10)
+        all_acts = [[], [], [], [], [], [], [], [], [], []]
     else:
         epochs = [0, 49, 99, 149, 199, 249, 299, 349]
+        all_acts = [[], [], [], [], [], [], [], []]
     # Get necessary functions
     preprocess_func, corr_func = get_funcs(method)
     # Get instance names
     instance_names = os.listdir(path_to_instances)
-    # Load up all acts
-    acts_list = [] * len(epochs)
     # TODO: remove the limiter when u do full experiment, right now limit to 10 for testing
     limiter_idx = 0 # Remove
     for name in instance_names:
         if limiter_idx == 10: break # Remove
         # Skip any non-model files that may have snuck in
-        if '.h5' not in instance:
+        if '.h5' not in name:
             continue
         # Grab the number from the instance name
         i = name[9:-3]
         # Get all the acts from the relevant epochs of that instance number
         epoch_index = 0
         for e in epochs:
-            acts = np.load(path_to_acts+'/i'+i+'e'+str(e)+'.npy')
-            acts_list[epoch_index].append(acts)
+            # Need to take [0] at the end because they were stored as arrays of 1
+            acts = np.load(path_to_acts+'i'+i+'e'+str(e)+'.npy')[0]
+            print('* Preprocessing...')
+            acts = preprocess_func(acts)
+            all_acts[epoch_index].append(acts)
             epoch_index += 1
     
         limiter_idx += 1 # Remove
@@ -119,9 +122,10 @@ def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str
             instance_i = i % num_instances
             epoch_j = j // num_instances
             instance_j = j % num_instances
-            acts1 = all_acts[layer_i][instance_i]
-            acts2 = all_acts[layer_j][instance_j]
-            
+            acts1 = all_acts[epoch_i][instance_i]
+            acts2 = all_acts[epoch_j][instance_j]
+            print('Acts1:', acts1.shape)
+            print('Acts2:', acts2.shape)
             correlations[i, j] = corr_func(acts1, acts2)
     
     # Fill in other side of graph with reflection
