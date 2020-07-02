@@ -1,3 +1,7 @@
+'''
+CORRELATE TRAJECTORY UNTESTED
+'''
+
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
 from tensorflow.keras.models import Model, load_model
@@ -37,10 +41,10 @@ def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=Fal
     
         
     # Now do correlations
-    print('**** Done gathering RDMs, now correlations ****')
+    print('**** Done gathering representations, now correlations ****')
     num_networks = 10
     correlations = np.zeros((90, 90))
-    # Run SVCCA
+    # Run Analysis
     for i in range(correlations.shape[0]):
         # Only perform on lower triangle, avoid repeats
         # NOTE: Lower triangle b/c yields better separation with PWCCA
@@ -63,6 +67,70 @@ def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=Fal
 
     print('Done!')
     return correlations
+
+def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str, 
+                         path_to_acts: str, x_predict, cocktail_black=False):
+    '''
+    Pre:  Arbitrary number of instances and corresponding acts at specified paths
+    Post: returns (num_epochs*num_instances) ^ 2 correlation matrix using RSA, SVCCA or PWCCA
+    '''
+    # Establish epochs scheme
+    assert epochs_scheme in ['first_ten', 'fifties']
+    if epochs_scheme == 'first_ten':
+        epochs = range(10)
+    else:
+        epochs = [0, 49, 99, 149, 199, 249, 299, 349]
+    # Get necessary functions
+    preprocess_func, corr_func = get_funcs(method)
+    # Get instance names
+    instance_names = os.listdir(path_to_instances)
+    # Load up all acts
+    acts_list = [] * len(epochs)
+    # TODO: remove the limiter when u do full experiment, right now limit to 10 for testing
+    limiter_idx = 0 # Remove
+    for name in instance_names:
+        if limiter_idx == 10: break # Remove
+        # Skip any non-model files that may have snuck in
+        if '.h5' not in instance:
+            continue
+        # Grab the number from the instance name
+        i = name[9:-3]
+        # Get all the acts from the relevant epochs of that instance number
+        epoch_index = 0
+        for e in epochs:
+            acts = np.load(path_to_acts+'/i'+i+'e'+str(e)+'.npy')
+            acts_list[epoch_index].append(acts)
+            epoch_index += 1
+    
+        limiter_idx += 1 # Remove
+    
+    # Now do correlations
+    print('**** Done gathering representations, now correlations ****')
+    num_instances = len(all_acts[0])
+    correlations = np.zeros((num_instances*len(epochs), num_instances*len(epochs)))
+    # Run analysis
+    for i in range(correlations.shape[0]):
+        # Only perform on lower triangle, avoid repeats
+        # NOTE: Lower triangle b/c yields better separation with PWCCA
+        for j in range(i + 1):
+            print('Correlation', str(i), ',', str(j))
+            # Decode into the org scheme we want (i.e. layer * instance)
+            epoch_i = i // num_instances
+            instance_i = i % num_instances
+            epoch_j = j // num_instances
+            instance_j = j % num_instances
+            acts1 = all_acts[layer_i][instance_i]
+            acts2 = all_acts[layer_j][instance_j]
+            
+            correlations[i, j] = corr_func(acts1, acts2)
+    
+    # Fill in other side of graph with reflection
+    correlations += correlations.T
+    for i in range(correlations.shape[0]):
+        correlations[i, i] /= 2
+
+    print('Done!')
+    return correlations 
 
 def get_funcs(method):
     assert method in ['RSA', 'SVCCA', 'PWCCA'], 'Invalid correlation method'
