@@ -69,7 +69,7 @@ def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=Fal
     return correlations
 
 def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str, 
-                         path_to_acts: str, x_predict, cocktail_black=False):
+                         category: str, x_predict, cocktail_black=False):
     '''
     Pre:  Arbitrary number of instances and corresponding acts at specified paths
     Post: returns (num_epochs*num_instances) ^ 2 correlation matrix using RSA, SVCCA or PWCCA
@@ -82,6 +82,14 @@ def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str
     else:
         epochs = [0, 49, 99, 149, 199, 249, 299, 349]
         all_acts = [[], [], [], [], [], [], [], []]
+    # Which category are we testing
+    assert category in ['weights', 'shuffle', 'both']
+    if category == 'weights':
+        path_to_acts = '../outputs/representations/acts/weights/'
+    elif category == 'shuffle':
+        path_to_acts = '../outputs/representations/acts/shuffle_seed/'
+    else:
+        path_to_acts = '../outputs/representations/acts/both/'
     # Get necessary functions
     preprocess_func, corr_func = get_funcs(method)
     # Get instance names
@@ -94,12 +102,17 @@ def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str
         if '.h5' not in name:
             continue
         # Grab the number from the instance name
-        i = name[9:-3]
+        i = name[:-3] if category == 'both' else name[9:-3]
         # Get all the acts from the relevant epochs of that instance number
         epoch_index = 0
         for e in epochs:
             # Need to take [0] at the end because they were stored as arrays of 1
-            acts = np.load(path_to_acts+'i'+i+'e'+str(e)+'.npy')[0]
+            if category == 'weights':
+                acts = np.load(path_to_acts+'i'+i+'e'+str(e)+'.npy')[0] 
+            elif category == 'shuffle':
+                acts = np.load(path_to_acts+'s'+i+'e'+str(e)+'.npy')[0] 
+            else:
+                acts = np.load(path_to_acts+i+'e'+str(e)+'.npy')[0]
             print('* Preprocessing...')
             acts = preprocess_func(acts)
             all_acts[epoch_index].append(acts)
