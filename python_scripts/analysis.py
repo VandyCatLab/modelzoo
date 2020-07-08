@@ -11,7 +11,11 @@ import sys, os
 sys.path.append('../imported_code/svcca')
 import cca_core, pwcca
 
-def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=False):
+'''
+For centroid RSA: 1st-level RDMs should be 10x10, not 1000x1000 (average before RSA-ing).
+CCAs should be averaged category-wise before reshaping.
+'''
+def correlate(method: str, path_to_instances: str, x_predict, consistency='exemplar', cocktail_blank=False):
     '''
     Pre: ***HARDCODED*** 10 instances at specified path with 9 layers each, 1000 images
     Post: returns 90x90 correlation matrix using RSA, SVCCA or PWCCA
@@ -35,7 +39,7 @@ def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=Fal
         layer_num = 0
         for acts in acts_list:
             print('* Preprocessing...')
-            acts = preprocess_func(acts)
+            acts = preprocess_func(acts, consistency)
             all_acts[layer_num].append(acts)
             layer_num += 1
     
@@ -161,11 +165,19 @@ def get_funcs(method):
 '''
 Preprocessing functions
 '''
-def preprocess_rsa(acts):
+def preprocess_rsa(acts, consistency):
+    # Note: Hardcoded on 10 categories
+    categories = 10
     if len(acts.shape) > 2:
         imgs, h, w, channels = acts.shape
         acts = np.reshape(acts, newshape=(imgs, h*w*channels))
-        
+    if consistency == 'centroid':
+        centroid_acts = np.empty((categories, acts.shape[1]))
+        # imgs/categories should be a clean divide
+        imgs_per_cat = imgs / categories
+        for i in range(0, imgs, imgs_per_cat):
+            centroid_acts[i/imgs_per_cat] = np.mean(acts[i:i+imgs_per_cat], axis=0)
+        acts = centroid_acts
     rdm = get_rdm(acts)
     return rdm
 
