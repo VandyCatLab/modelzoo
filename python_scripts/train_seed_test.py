@@ -129,7 +129,7 @@ for w in range(int(i), 10):
         K.clear_session()
         tf.random.set_seed(seed_value)
 
-        trainData, testData = datasets.make_train_data()
+        trainData, testData = datasets.make_train_data(shuffle_seed=s)
         x_predict, y_predict = datasets.make_predict_data(testData)
 
         print('Training throwaway...')
