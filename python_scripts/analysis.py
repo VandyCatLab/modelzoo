@@ -27,7 +27,10 @@ def correlate(method: str, path_to_instances: str, x_predict, consistency='exemp
     print('**** Load and Preprocess Acts ****')
     # Load up all acts into layer * instance grid
     all_acts = [[], [], [], [], [], [], [], [], []]
+    # TODO: remove the limiter when u do full experiment, right now limit to 10 for testing
+    limiter_idx = 0 # Remove
     for instance in instances:
+        if limiter_idx == 10: break # Remove
         # Skip any non-model files that may have snuck in
         if '.h5' not in instance:
             continue
@@ -42,6 +45,7 @@ def correlate(method: str, path_to_instances: str, x_predict, consistency='exemp
             acts = preprocess_func(acts, consistency)
             all_acts[layer_num].append(acts)
             layer_num += 1
+        limiter_idx += 1 # Remove
     
         
     # Now do correlations
@@ -73,7 +77,7 @@ def correlate(method: str, path_to_instances: str, x_predict, consistency='exemp
     return correlations
 
 def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str, 
-                         category: str, x_predict, cocktail_black=False):
+                         category: str, x_predict, consistency='exemplar', cocktail_black=False):
     '''
     Pre:  Arbitrary number of instances and corresponding acts at specified paths
     Post: returns (num_epochs*num_instances) ^ 2 correlation matrix using RSA, SVCCA or PWCCA
@@ -118,7 +122,7 @@ def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str
             else:
                 acts = np.load(path_to_acts+i+'e'+str(e)+'.npy')[0]
             print('* Preprocessing...')
-            acts = preprocess_func(acts)
+            acts = preprocess_func(acts, consistency)
             all_acts[epoch_index].append(acts)
             epoch_index += 1
     
@@ -174,9 +178,9 @@ def preprocess_rsa(acts, consistency):
     if consistency == 'centroid':
         centroid_acts = np.empty((categories, acts.shape[1]))
         # imgs/categories should be a clean divide
-        imgs_per_cat = imgs / categories
+        imgs_per_cat = int(imgs/categories)
         for i in range(0, imgs, imgs_per_cat):
-            centroid_acts[i/imgs_per_cat] = np.mean(acts[i:i+imgs_per_cat], axis=0)
+            centroid_acts[int(i/imgs_per_cat)] = np.mean(acts[i:i+imgs_per_cat], axis=0)
         acts = centroid_acts
     rdm = get_rdm(acts)
     return rdm
