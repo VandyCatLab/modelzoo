@@ -27,9 +27,9 @@ def correlate(method: str,
     for w in weight_seeds:
         for s in shuffle_seeds:
             # Not a real numpy file, just a naming mistake
-            instance = load_model('w'+str(w)+'s'+str(s)+'.npy')
-            acts = get_acts(instance, [7], x_predict, cocktail_blank)
-            all_acts[w][s] = preprocess_func(acts)
+            instance = load_model(os.path.join(path_to_instances, 'w'+str(w)+'s'+str(s)+'.npy'))
+            acts = get_acts(instance, [7], x_predict, cocktail_blank)[0]
+            all_acts[w].append(preprocess_func(acts, consistency))
 
     # Get the mean representation to compare everything against
     indices = np.argwhere(tracker == 2)
@@ -45,14 +45,25 @@ def correlate(method: str,
     avg /= total
 
     # Get the correlations
-    correlations = np.empty((10, 10))
-    for w in correlations.shape[0]:
-        for s in correlations.shape[1]:
-            correlations[w, s] = corr_func(all_acts[w][s], avg)
+    correlations = np.zeros((10, 10))
+    for w in range(correlations.shape[0]):
+        for s in range(correlations.shape[1]):
+            if tracker[w, s] == 2:
+                correlations[w, s] = corr_func(all_acts[w][s], avg)
     
     print('Done!')
     return correlations
 
+def get_funcs(method):
+    assert method in ['RSA', 'SVCCA', 'PWCCA'], 'Invalid correlation method'
+    if method == 'RSA':
+        return preprocess_rsa, do_rsa
+    elif method == 'SVCCA':
+        return preprocess_svcca, do_svcca
+    elif method == 'PWCCA':
+        return preprocess_pwcca, do_pwcca
+
+    
 '''
 Preprocessing functions
 '''

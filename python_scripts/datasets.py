@@ -8,18 +8,19 @@ import random
 import tensorflow as tf
 from tensorflow.keras.datasets import cifar10
 
-def make_train_data(shuffle_seed=None):
+def make_train_data(shuffle_seed=None, set_seed=False):
     '''
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
     '''
-    # Set seed values
-    seed_value= 0
-    os.environ['CUDA_DEVICE_ORDER']='PCI_BUS_ID'
-    os.environ['PYTHONHASHSEED']=str(seed_value)
-    os.environ['TF_DETERMINISTIC_OPS'] = '1'
-    random.seed(seed_value)
-    np.random.seed(seed_value)
-    tf.random.set_seed(seed_value)
+    # Set seed values only if calling program hasn't already, otherwise it will override
+    if set_seed:
+        seed_value= 0
+        os.environ['CUDA_DEVICE_ORDER']='PCI_BUS_ID'
+        os.environ['PYTHONHASHSEED']=str(seed_value)
+        os.environ['TF_DETERMINISTIC_OPS'] = '1'
+        random.seed(seed_value)
+        np.random.seed(seed_value)
+        tf.random.set_seed(seed_value)
     
     print('Making train data...')
     # Load CIFAR10
