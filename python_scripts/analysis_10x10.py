@@ -3,56 +3,286 @@ CORRELATE TRAJECTORY UNTESTED
 '''
 
 import numpy as np
+import sys, os, pickle
 from scipy.stats import pearsonr, spearmanr
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Flatten
 import tensorflow.keras.backend as K
-import sys, os
 sys.path.append('../imported_code/svcca')
 import cca_core, pwcca
 
+
+
 def correlate(method: str,
-              path_to_instances,
-              weight_seeds, 
-              shuffle_seeds,
+              primary: str,
+              path_to_instances: str,
+              save_dir: str,
               x_predict,
-              tracker,
               consistency='exemplar',
               cocktail_blank=False):
-
+    '''
+    Description:
+        Correlates a 10x10 set of models as ordered by either weightsXshuffle or shuffleXweight.
+        *** Note: instances must be in format 'w[weight_seed]s[shuffle_seed].h5'
+        *** Note: intended only for All-CNN-C or comparable 9-layer architectures
+        
+    Arguments:
+        method: correlation method, *choose from 'RSA', 'SVCCA' or 'PWCCA'
+        primary: sorting heirarchy, determines how graph is blocked, *choose from 'weights' or 'shuffle'
+        path_to_instances: absolute or relative path to instances as string
+        x_predict: data used to extract representations from instances, as np array or dataset
+        consistency: how categories are treated, choose from centroid or exemplar, *default exemplar
+        cocktail_blank: whether or not to use cocktail blank normalization, *default True
+    '''
+    
+    # Check that arguments are valid because you're a dumb dumb
+    assert method in ['RSA', 'SVCCA', 'PWCCA']
+    assert primary in ['weights', 'shuffle']
+    assert consistency in ['exemplar', 'centroid']
+    
+    # Get necessary functions and model instances
     preprocess_func, corr_func = get_funcs(method)
-
-    # Create matrix to store representations in
-    all_acts = [[], [], [], [], [], [], [], [], [], []]
-    for w in weight_seeds:
-        for s in shuffle_seeds:
-            # Not a real numpy file, just a naming mistake
-            instance = load_model(os.path.join(path_to_instances, 'w'+str(w)+'s'+str(s)+'.npy'))
-            acts = get_acts(instance, [7], x_predict, cocktail_blank)[0]
-            all_acts[w].append(preprocess_func(acts, consistency))
-
-    # Get the mean representation to compare everything against
-    indices = np.argwhere(tracker == 2)
-    avg = np.zeros(all_acts[0][0].shape)
-    total = 0
-    for index in indices:
-        w = index[0]
-        s = index[1]
-        acts = all_acts[w][s]
-        avg += acts
-        total += 0
+    instances = os.listdir(path_to_instances)
     
-    avg /= total
-
-    # Get the correlations
-    correlations = np.zeros((10, 10))
-    for w in range(correlations.shape[0]):
-        for s in range(correlations.shape[1]):
-            if tracker[w, s] == 2:
-                correlations[w, s] = corr_func(all_acts[w][s], avg)
+    # Apply method-specific preprocessing to all acts, save to disk to avoid overloading memory 
+    print('**** Load and Preprocess Acts ****')
+    for instance in instances:
+        
+        # Skip any non-model files that may have snuck in
+#         if '.h5' not in instance:
+#             continue
+        if '.h5' not in instance:
+            continue
+        
+        # Get acts for this instance
+        print(' *** Working on', instance, '***')
+        full_path = os.path.join(path_to_instances, instance)
+        K.clear_session()
+        model = load_model(full_path)
+        preprocessed_acts = []
+        raw_acts = get_acts(model, range(9), x_predict, cocktail_blank)
+        
+        # Preprocess
+        layer_num = 0
+        for acts in raw_acts:
+            print('  ** Preprocessing... **')
+#             try:
+#                 acts = preprocess_func(acts, consistency)
+#             except:
+#                 print('~~~~~ YO this model is a dud ~~~~~~')
+#                 acts = [0]
+#             finally:
+#                 preprocessed_acts.append(acts)
+            acts = preprocess_func(acts, consistency)
+            preprocessed_acts.append(acts)
+            
+            layer_num += 1
+            
+        
+        # Save to disk
+        filename = instance[:-3]
+        save_path = os.path.join(save_dir, filename+'.pickle')
+        with open(save_path, 'wb') as f:
+            pickle.dump(preprocessed_acts, f)
     
+    ################### Now do correlations ###################
+    
+    print('**** Done gathering representations, now correlations ****')
+    num_networks = 100
+    correlations = np.zeros((900, 900))
+    
+    # To simplify logic, instead of explicitly leaving out lower triangle comparisons, just pass them by when they come up
+
+    # Loop through vertical increments (base)
+    counter = 0
+    for i in range(100):
+        # Decode 'i' using the 'primary' setting
+        outer = i // 10
+        inner = i % 10
+        
+        w = outer if primary == 'weight' else inner
+        s = outer if primary == 'shuffle' else inner
+        
+        base_acts_path = os.path.join(save_dir, 'w'+str(w)+'s'+str(s)+'.pickle')
+        
+        print('Base Path:', base_acts_path)
+        
+        with open(base_acts_path, 'rb') as f:
+            base_acts = pickle.load(f)
+        
+        # Loop through horizontal increments (comparer)
+        for j in range(num_networks):
+            # Decode 'i' using the 'primary' setting
+            outer1 = j // 10
+            inner1 = j % 10
+
+            w1 = outer1 if primary == 'weight' else inner1
+            s1 = outer1 if primary == 'shuffle' else inner1
+            
+            compare_acts_path = os.path.join(save_dir, 'w'+str(w1)+'s'+str(s1)+'.pickle')
+            with open(compare_acts_path, 'rb') as f:
+                compare_acts = pickle.load(f)
+                
+            print('Compare Path:', compare_acts_path)
+            
+            # At this point we have a 9x9 layer-wise
+            # i is in 100, j is in 100
+            
+            for base_layer in range(len(base_acts)):
+                
+                placement_row = base_layer * num_networks + i
+                base_act = base_acts[base_layer]
+                
+                for compare_layer in range(len(compare_acts)):
+                    
+                    placement_col = compare_layer * num_networks + j
+                    compare_act = compare_acts[compare_layer]
+                    
+                    if placement_row <= placement_col:
+                        # Check for duds
+#                         if base_act == [0] or compare_act == [0]:
+#                             correlations[placement_row, placement_col] = 0
+#                         else:
+#                             correlations[placement_row, placement_col] = corr_func(base_act, compare_act)
+                        try:
+                            correlations[placement_row, placement_col] = corr_func(base_act, compare_act)
+                            print(counter, '*** Successful ***')
+                        except:
+                            print(counter, '~~~ DUD ~~~')
+                            correlations[placement_row, placement_col] = -1
+                        counter += 1
+                            
+    # Fill in other side of graph with reflection
+    correlations += correlations.T
+    for i in range(correlations.shape[0]):
+        correlations[i, i] /= 2
+
     print('Done!')
     return correlations
+
+
+def test_correlate(method: str,
+              primary: str,
+              path_to_instances: str,
+              save_path: str,
+              x_predict,
+              consistency='exemplar',
+              cocktail_blank=False):
+    '''
+    Description:
+        Correlates a 10x10 set of models as ordered by either weightsXshuffle or shuffleXweight.
+        *** Note: instances must be in format 'w[weight_seed]s[shuffle_seed].h5'
+        *** Note: intended only for All-CNN-C or comparable 9-layer architectures
+        
+    Arguments:
+        method: correlation method, *choose from 'RSA', 'SVCCA' or 'PWCCA'
+        primary: sorting heirarchy, determines how graph is blocked, *choose from 'weights' or 'shuffle'
+        path_to_instances: absolute or relative path to instances as string
+        x_predict: data used to extract representations from instances, as np array or dataset
+        consistency: how categories are treated, choose from centroid or exemplar, *default exemplar
+        cocktail_blank: whether or not to use cocktail blank normalization, *default True
+    '''
+    
+#     # Check that arguments are valid because you're a dumb dumb
+#     assert method in ['RSA', 'SVCCA', 'PWCCA']
+#     assert primary in ['weights', 'shuffle']
+#     assert consistency in ['exemplar', 'centroid']
+    
+#     # Get necessary functions and model instances
+#     preprocess_func, corr_func = get_funcs(method)
+#     instances = os.listdir(path_to_instances)
+    
+#     # Apply method-specific preprocessing to all acts, save to disk to avoid overloading memory 
+#     print('**** Load and Preprocess Acts ****')
+#     for instance in instances:
+        
+#         # Skip any non-model files that may have snuck in
+#         if '.h5' not in instance:
+#             continue
+        
+#         # Get acts for this instance
+#         print(' *** Working on', instance, '***')
+#         full_path = os.path.join(path_to_instances, instance)
+#         K.clear_session()
+#         model = load_model(full_path)
+#         preprocessed_acts = []
+#         raw_acts = get_acts(model, range(9), x_predict, cocktail_blank)
+        
+#         # Preprocess
+#         layer_num = 0
+#         for acts in acts_list:
+#             print('  ** Preprocessing... **')
+#             acts = preprocess_func(acts, consistency)
+#             preprocessed_acts.append(acts)
+#             layer_num += 1
+        
+#         # Save to disk
+#         filename = instance[:-3]
+#         save_path = os.path.join(save_path, filename, '.pickle')
+#         with open(save_path, 'wb') as f:
+#             pickle.dump(preprocessed_acts, f)
+    
+    ################### Now do correlations ###################
+    
+    print('**** Done gathering representations, now correlations ****')
+    num_networks = 100
+    correlations = np.zeros((900, 900))
+    
+    # To simplify logic, instead of explicitly leaving out lower triangle comparisons, just pass them by when they come up
+    
+    # Loop through vertical increments (base)
+    for i in range(100):
+        # Decode 'i' using the 'primary' setting
+        outer = i // 10
+        inner = i % 10
+        
+        w = outer if primary == 'weight' else inner
+        s = outer if primary == 'shuffle' else inner
+        
+#         base_acts_path = os.path.join(save_path, 'w'+str(w)+'s'+str(s)+'.pickle')
+#         with open(base_acts_path, 'rb') as f:
+#             base_acts = pickle.load(f)
+        base_acts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        
+        # Loop through horizontal increments (comparer)
+        for j in range(num_networks):
+            # Decode 'i' using the 'primary' setting
+            outer1 = j // 10
+            inner1 = j % 10
+
+            w1 = outer1 if primary == 'weight' else inner1
+            s1 = outer1 if primary == 'shuffle' else inner1
+            
+#             compare_acts_path = os.path.join(save_path, 'w'+str(w1)+'s'+str(s1)+'.pickle')
+#             with open(compare_acts_path, 'rb') as f:
+#                 compare_acts = pickle.load(f)
+            compare_acts = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+            
+            # At this point we have a 9x9 layer-wise
+            # i is in 100, j is in 100
+            
+            for base_layer in range(len(base_acts)):
+                
+                placement_row = base_layer * num_networks + i
+                base_act = base_acts[base_layer]
+                
+                for compare_layer in range(len(compare_acts)):
+                    
+                    placement_col = compare_layer * num_networks + j
+                    compare_act = compare_acts[compare_layer]
+                    
+                    # TODO: Just testing to see if all places are hit
+                    if placement_row <= placement_col:
+                        correlations[placement_row, placement_col] += 1# = corr_func(base_act, compare_act)
+
+    # Fill in other side of graph with reflection
+    correlations += correlations.T
+    for i in range(correlations.shape[0]):
+        correlations[i, i] /= 2
+
+    print('Done!')
+    return correlations
+
 
 def get_funcs(method):
     assert method in ['RSA', 'SVCCA', 'PWCCA'], 'Invalid correlation method'
