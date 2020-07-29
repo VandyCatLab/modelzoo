@@ -109,8 +109,8 @@ class Early_Abort_Callback(Callback):
 # THIS ONE IS CURRENTLY SET UP FOR WEIGHTS 1, 8, SHUFFLE 10+
 # KEEP GOING UNTIL YOU GET 2 FOR SHUFFLE
 completed_count = 0
-s = 10
-while completed_count < 2:
+s = 14
+while completed_count < 1:
     completed = False
     models = []
     for w in [1, 8]:
