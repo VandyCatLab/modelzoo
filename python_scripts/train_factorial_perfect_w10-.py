@@ -109,7 +109,7 @@ class Early_Abort_Callback(Callback):
 # THIS ONE IS CURRENTLY SET UP FOR WEIGHTS 1, 8, SHUFFLE 10+
 # KEEP GOING UNTIL YOU GET 2 FOR SHUFFLE
 completed_count = 0
-w = sys.argv[1]
+w = int(sys.argv[1])
 while completed_count < 4:
     completed = False
     models = []
@@ -156,16 +156,16 @@ while completed_count < 4:
             models.append(model)
         
     if len(models) == 10:
-        models[0].save('../outputs/models/factorial_perfect/w+'str(w)+'s0.h5')
-        models[1].save('../outputs/models/factorial_perfect/w+'str(w)+'s1.h5')
-        models[2].save('../outputs/models/factorial_perfect/w+'str(w)+'s2.h5')
-        models[3].save('../outputs/models/factorial_perfect/w+'str(w)+'s3.h5')
-        models[4].save('../outputs/models/factorial_perfect/w+'str(w)+'s5.h5')
-        models[5].save('../outputs/models/factorial_perfect/w+'str(w)+'s6.h5')
-        models[6].save('../outputs/models/factorial_perfect/w+'str(w)+'s8.h5')
-        models[7].save('../outputs/models/factorial_perfect/w+'str(w)+'s11.h5')
-        models[8].save('../outputs/models/factorial_perfect/w+'str(w)+'s13.h5')
-        models[9].save('../outputs/models/factorial_perfect/w+'str(w)+'s15.h5')
+        models[0].save('../outputs/models/factorial_perfect/w'+str(w)+'s0.h5')
+        models[1].save('../outputs/models/factorial_perfect/w'+str(w)+'s1.h5')
+        models[2].save('../outputs/models/factorial_perfect/w'+str(w)+'s2.h5')
+        models[3].save('../outputs/models/factorial_perfect/w'+str(w)+'s3.h5')
+        models[4].save('../outputs/models/factorial_perfect/w'+str(w)+'s5.h5')
+        models[5].save('../outputs/models/factorial_perfect/w'+str(w)+'s6.h5')
+        models[6].save('../outputs/models/factorial_perfect/w'+str(w)+'s8.h5')
+        models[7].save('../outputs/models/factorial_perfect/w'+str(w)+'s11.h5')
+        models[8].save('../outputs/models/factorial_perfect/w'+str(w)+'s13.h5')
+        models[9].save('../outputs/models/factorial_perfect/w'+str(w)+'s15.h5')
         completed_count += 1
         
     w += 1
