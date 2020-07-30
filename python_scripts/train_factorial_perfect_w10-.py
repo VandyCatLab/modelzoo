@@ -109,14 +109,17 @@ class Early_Abort_Callback(Callback):
 # THIS ONE IS CURRENTLY SET UP FOR WEIGHTS 1, 8, SHUFFLE 10+
 # KEEP GOING UNTIL YOU GET 2 FOR SHUFFLE
 completed_count = 0
-s = 14
-while completed_count < 1:
+w = sys.argv[1]
+while completed_count < 4:
     completed = False
     models = []
-    for w in [1, 8]:
+    for s in [0, 1, 2, 3, 5, 6, 8, 11, 13, 15]:
         print('** Shuffle Seed:', s)
         K.clear_session()
         # Set seed values
+        # Setting seed_value to w should only affect the generation of new_weight_seed
+        # There should not be any notable correlation between it and the shuffle seed,
+        # as the shuffle seed overrides any system seeds
         seed_value = w
         os.environ['PYTHONHASHSEED']=str(seed_value)
         random.seed(seed_value)
@@ -152,11 +155,19 @@ while completed_count < 1:
         else:
             models.append(model)
         
-    if len(models) == 2:
-        models[0].save('../outputs/models/factorial_perfect/w1s'+str(s)+'.h5')
-        models[1].save('../outputs/models/factorial_perfect/w8s'+str(s)+'.h5')
+    if len(models) == 10:
+        models[0].save('../outputs/models/factorial_perfect/w+'str(w)+'s0.h5')
+        models[1].save('../outputs/models/factorial_perfect/w+'str(w)+'s1.h5')
+        models[2].save('../outputs/models/factorial_perfect/w+'str(w)+'s2.h5')
+        models[3].save('../outputs/models/factorial_perfect/w+'str(w)+'s3.h5')
+        models[4].save('../outputs/models/factorial_perfect/w+'str(w)+'s5.h5')
+        models[5].save('../outputs/models/factorial_perfect/w+'str(w)+'s6.h5')
+        models[6].save('../outputs/models/factorial_perfect/w+'str(w)+'s8.h5')
+        models[7].save('../outputs/models/factorial_perfect/w+'str(w)+'s11.h5')
+        models[8].save('../outputs/models/factorial_perfect/w+'str(w)+'s13.h5')
+        models[9].save('../outputs/models/factorial_perfect/w+'str(w)+'s15.h5')
         completed_count += 1
         
-    s += 1
+    w += 1
 
 
