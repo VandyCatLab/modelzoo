@@ -58,6 +58,35 @@ def make_train_data(shuffle_seed=None, set_seed=False):
     print('Done!')
     return trainData, testData
 
+def preprocess(imgset):
+    '''
+    Intended for use with baseline only: take a regular image set and apply ZCA whitening and GCN
+    Note that a lot of code is copied over from make_train_data because we need info from x_train
+    to do consistent preprocessing on the transformed images
+    '''
+    print('Making train data...')
+    # Load CIFAR10
+    (x_train, y_train), _ = cifar10.load_data()
+
+    # Get mean, SD of training set
+    mean = np.mean(x_train)
+    sd = np.std(x_train)
+    print('GCN...')
+    # Apply global contrast normalization
+    x_train = (x_train-mean)/sd
+    imgset = (imgset-mean)/sd
+    print('ZCA...')
+    # Do ZCA whitening
+    x_flat = x_train.reshape(x_train.shape[0], -1)
+
+    vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
+    prinComps = np.dot(vec, np.dot(np.diag(1.0/np.sqrt(val+0.00001)), vec.T))
+
+    testFlat = imgset.reshape(imgset.shape[0], -1)
+    imgset = np.dot(testFlat, prinComps).reshape(imgset.shape)
+    
+    return imgset
+
 def make_predict_data(dataset):
     '''
     Curate prediction set with 1000 images, 100 images for

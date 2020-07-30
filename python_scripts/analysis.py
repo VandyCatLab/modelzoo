@@ -1,7 +1,3 @@
-'''
-CORRELATE TRAJECTORY UNTESTED
-'''
-
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
 from tensorflow.keras.models import Model, load_model
@@ -169,7 +165,7 @@ def get_funcs(method):
 '''
 Preprocessing functions
 '''
-def preprocess_rsa(acts, consistency):
+def preprocess_rsa(acts, consistency='exemplar'):
     # Note: Hardcoded on 10 categories
     categories = 10
     if len(acts.shape) > 2:
@@ -222,7 +218,7 @@ def do_rsa(rdm1, rdm2):
     '''
     Pre: RDMs must be same shape
     '''
-    assert rdm1.shape == rdm2.shape
+    assert rdm1.shape == rdm2.shape, ('rdm1: '+str(rdm1.shape)+' rdm2: '+str(rdm2.shape))
     num_imgs = rdm1.shape[0]
     # Only use upper-triangular values
     rdm1_flat = rdm1[np.triu_indices(n=num_imgs, k=1)]
