@@ -63,10 +63,10 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
 
     elif transform == 'shift':
         versions = dim
-        up_imgset = np.zeros((num_imgs, dim, dim, 3), dtype=np.uint8)
-        down_imgset = np.zeros((num_imgs, dim, dim, 3), dtype=np.uint8)
-        left_imgset = np.zeros((num_imgs, dim, dim, 3), dtype=np.uint8)
-        right_imgset = np.zeros((num_imgs, dim, dim, 3), dtype=np.uint8)
+        up_imgset = np.zeros((num_imgs, dim, dim, 3))
+        down_imgset = np.zeros((num_imgs, dim, dim, 3))
+        left_imgset = np.zeros((num_imgs, dim, dim, 3))
+        right_imgset = np.zeros((num_imgs, dim, dim, 3))
         # create the gray values we use to fill in space
         empty = np.zeros((dim, dim, 3))
         print('Generating dataset')
@@ -113,12 +113,11 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
         _, (x_test, y_test) = cifar10.load_data()
         testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
         imgset, _ = datasets.make_predict_data(testData)
-        imgset = imgset.astype(np.uint8)
                                                
         for v in range(versions):
             # Generate transformed imageset
             print(' - Working on version', v, 'of', versions)
-            transformed_imgset = np.empty((num_imgs, dim, dim, 3), dtype=np.uint8)
+            transformed_imgset = np.empty((num_imgs, dim, dim, 3))
             alpha = alphas[v]
             for i in range(num_imgs):
                 img = imgset[i, :, :, :]
@@ -143,18 +142,17 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
         _, (x_test, y_test) = cifar10.load_data()
         testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
         imgset, _ = datasets.make_predict_data(testData)
-        imgset = imgset.astype(np.uint8)
         print('imgset shape:', imgset.shape)
         
         for v in range(versions):
             # Generate transformed imageset
             print(' - Working on version', v, 'of', versions)
-            transformed_imgset = np.zeros((num_imgs, dim, dim, 3), dtype=np.uint8)
+            transformed_imgset = np.zeros((num_imgs, dim, dim, 3))
             for i in range(num_imgs):
                 img = Image.fromarray(imgset[i, :, :, :])
                 new_img = img.crop((v, v, dim - v, dim - v))
                 new_img = new_img.resize((dim, dim), resample=Image.BICUBIC)
-                new_img = img_to_array(new_img).astype(np.uint8)
+                new_img = img_to_array(new_img)
                 transformed_imgset[i, :, :, :] = new_img
             
             transformed_imgset = datasets.preprocess(transformed_imgset)
@@ -185,7 +183,7 @@ def visualize_transform(transform, depth, img_arr):
         values, vectors = np.linalg.eig(cov)
         change = np.dot(vectors, (values * [alpha, alpha, alpha]).T)
         new_img = np.round(img_arr + change)
-        transformed = np.clip(new_img, a_min=0, a_max=255, out=None).astype('uint8')
+        transformed = np.clip(new_img, a_min=0, a_max=255, out=None)
         plt.imshow(transformed)
             
     elif transform == 'zoom':
@@ -194,13 +192,13 @@ def visualize_transform(transform, depth, img_arr):
         img = Image.fromarray(img_arr)
         new_img = img.crop((v, v, dim - v, dim - v))
         new_img = new_img.resize((dim, dim), resample=Image.BICUBIC)
-        transformed = img_to_array(new_img).astype(np.uint8)
+        transformed = img_to_array(new_img)
         plt.imshow(transformed)
          
     elif transform == 'shift':
         dim = img_arr.shape[0]
         v = depth
-        empty = np.zeros((dim, dim, 3)).astype(np.uint8)
+        empty = np.zeros((dim, dim, 3))
         up_transformed    = np.concatenate([img_arr[v:dim, :, :], empty[0:v, :, :]])
         down_transformed  = np.concatenate([empty[0:v, :, :], img_arr[0:dim - v, :, :]])
         left_transformed  = np.concatenate([img_arr[:, v:dim, :], empty[:, 0:v, :]], axis=1)
