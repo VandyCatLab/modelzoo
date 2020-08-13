@@ -1,7 +1,3 @@
-'''
-CORRELATE TRAJECTORY UNTESTED
-'''
-
 import numpy as np
 from scipy.stats import pearsonr, spearmanr
 from tensorflow.keras.models import Model, load_model
@@ -11,7 +7,11 @@ import sys, os
 sys.path.append('../imported_code/svcca')
 import cca_core, pwcca
 
-def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=False):
+'''
+For centroid RSA: 1st-level RDMs should be 10x10, not 1000x1000 (average before RSA-ing).
+CCAs should be averaged category-wise before reshaping.
+'''
+def correlate(method: str, path_to_instances: str, x_predict, consistency='exemplar', cocktail_blank=False):
     '''
     Pre: ***HARDCODED*** 10 instances at specified path with 9 layers each, 1000 images
     Post: returns 90x90 correlation matrix using RSA, SVCCA or PWCCA
@@ -23,7 +23,10 @@ def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=Fal
     print('**** Load and Preprocess Acts ****')
     # Load up all acts into layer * instance grid
     all_acts = [[], [], [], [], [], [], [], [], []]
+    # TODO: remove the limiter when u do full experiment, right now limit to 10 for testing
+    limiter_idx = 0 # Remove
     for instance in instances:
+        if limiter_idx == 10: break # Remove
         # Skip any non-model files that may have snuck in
         if '.h5' not in instance:
             continue
@@ -35,9 +38,10 @@ def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=Fal
         layer_num = 0
         for acts in acts_list:
             print('* Preprocessing...')
-            acts = preprocess_func(acts)
+            acts = preprocess_func(acts, consistency)
             all_acts[layer_num].append(acts)
             layer_num += 1
+        limiter_idx += 1 # Remove
     
         
     # Now do correlations
@@ -69,7 +73,7 @@ def correlate(method: str, path_to_instances: str, x_predict, cocktail_blank=Fal
     return correlations
 
 def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str, 
-                         category: str, x_predict, cocktail_black=False):
+                         category: str, x_predict, consistency='exemplar', cocktail_black=False):
     '''
     Pre:  Arbitrary number of instances and corresponding acts at specified paths
     Post: returns (num_epochs*num_instances) ^ 2 correlation matrix using RSA, SVCCA or PWCCA
@@ -114,7 +118,7 @@ def correlate_trajectory(epochs_scheme: str, method: str, path_to_instances: str
             else:
                 acts = np.load(path_to_acts+i+'e'+str(e)+'.npy')[0]
             print('* Preprocessing...')
-            acts = preprocess_func(acts)
+            acts = preprocess_func(acts, consistency)
             all_acts[epoch_index].append(acts)
             epoch_index += 1
     
@@ -161,11 +165,19 @@ def get_funcs(method):
 '''
 Preprocessing functions
 '''
-def preprocess_rsa(acts):
+def preprocess_rsa(acts, consistency='exemplar'):
+    # Note: Hardcoded on 10 categories
+    categories = 10
     if len(acts.shape) > 2:
         imgs, h, w, channels = acts.shape
         acts = np.reshape(acts, newshape=(imgs, h*w*channels))
-        
+    if consistency == 'centroid':
+        centroid_acts = np.empty((categories, acts.shape[1]))
+        # imgs/categories should be a clean divide
+        imgs_per_cat = int(imgs/categories)
+        for i in range(0, imgs, imgs_per_cat):
+            centroid_acts[int(i/imgs_per_cat)] = np.mean(acts[i:i+imgs_per_cat], axis=0)
+        acts = centroid_acts
     rdm = get_rdm(acts)
     return rdm
 
@@ -206,7 +218,7 @@ def do_rsa(rdm1, rdm2):
     '''
     Pre: RDMs must be same shape
     '''
-    assert rdm1.shape == rdm2.shape
+    assert rdm1.shape == rdm2.shape, ('rdm1: '+str(rdm1.shape)+' rdm2: '+str(rdm2.shape))
     num_imgs = rdm1.shape[0]
     # Only use upper-triangular values
     rdm1_flat = rdm1[np.triu_indices(n=num_imgs, k=1)]
