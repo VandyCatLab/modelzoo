@@ -34,8 +34,11 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
     print('Generating dataset')
     _, testData  = datasets.make_train_data(shuffle_seed=0)
     imgset, _ = datasets.make_predict_data(testData)
-    num_imgs = imgset.shape[0]
-    dim = imgset.shape[1]
+    print('orig imgset:', imgset)
+    
+    #hardcoded for now
+    num_imgs = 1000
+    dim = 32
     correlations = []
 
     # Set model to output reps at layer 7
@@ -137,11 +140,12 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
             
     elif transform == 'zoom':
         versions = dim // 2
-        
+        plt.imshow(imgset[0])
+        plt.show()
         print("Getting non-ZCA/GCN'd data...")
         _, (x_test, y_test) = cifar10.load_data()
         testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-        imgset, _ = datasets.make_predict_data(testData)
+        imgset, _ = datasets.make_predict_data(testData, dtype='uint8')
         print('imgset shape:', imgset.shape)
         
         for v in range(versions):
@@ -156,6 +160,9 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
                 transformed_imgset[i, :, :, :] = new_img
             
             transformed_imgset = datasets.preprocess(transformed_imgset)
+            plt.imshow(transformed_imgset[0])
+            plt.show()
+            print('transformed_imgset:', transformed_imgset)
             print(' - Now correlating...')
             rep = model.predict(transformed_imgset, verbose=0)
             rep = preprocess_func(rep)

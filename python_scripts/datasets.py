@@ -1,14 +1,11 @@
-'''
-SAFE
-'''
-
 import numpy as np
 import os
 import random
 import tensorflow as tf
+import tensorflow_addons as tfa
 from tensorflow.keras.datasets import cifar10
 
-def make_train_data(shuffle_seed=None, set_seed=False):
+def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
     '''
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
     '''
@@ -50,13 +47,39 @@ def make_train_data(shuffle_seed=None, set_seed=False):
 
     trainData = tf.data.Dataset.from_tensor_slices((x_train, y_train))
     testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-
-    trainData = trainData.prefetch(tf.data.experimental.AUTOTUNE)\
-        .shuffle(x_train.shape[0], seed=shuffle_seed)\
-        .batch(128)
+    # TODO: once we know that augmenting works, do the 10x10
+    if augment:
+        trainData = trainData.prefetch(tf.data.experimental.AUTOTUNE)\
+                    .shuffle(x_train.shape[0], seed=shuffle_seed)\
+                    .map(augmentData)\
+                    .batch(128)
+    else:
+        trainData = trainData.prefetch(tf.data.experimental.AUTOTUNE)\
+                    .shuffle(x_train.shape[0], seed=shuffle_seed)\
+                    .batch(128)
     
     print('Done!')
     return trainData, testData
+
+def augmentData(image, label):
+    if tf.random.uniform(()) > 0.5:
+        image = tf.image.flip_left_right(image)
+    x = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
+    y = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
+    # print('IMAGE!!!!', image) 
+    ''' 
+    image = tfa.image.translate_xy(
+            image=image,
+            translate_to=[x, y],
+            replace=[0, 0, 0]
+    )'''
+    image = tfa.image.translate(
+            images = image,
+            translations = [x, y]
+    )
+
+
+    return image, label
 
 def preprocess(imgset):
     '''
@@ -87,7 +110,7 @@ def preprocess(imgset):
     
     return imgset
 
-def make_predict_data(dataset):
+def make_predict_data(dataset, dtype=None):
     '''
     Curate prediction set with 1000 images, 100 images for
     all 10 categories of CIFAR10
@@ -95,6 +118,8 @@ def make_predict_data(dataset):
     print('Making test data...')
     counts = [0] * 10
     x_predict = np.empty((1000, 32, 32, 3))
+    if dtype is not None:
+        x_predict = x_predict.astype(dtype)
     y_predict = np.empty((1000, 10))
     for data in dataset:
         index = np.argmax(data[1])
