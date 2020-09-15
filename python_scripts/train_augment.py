@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 import os
 import random
+import argparse
 import tensorflow as tf
 from tensorflow.keras.models import Sequential, save_model
 from tensorflow.keras.layers import (Conv2D, Dropout, GlobalAveragePooling2D,
@@ -106,10 +107,13 @@ class Early_Abort_Callback(Callback):
             print('Acc:', logs.get('accuracy'))
             self.model.stop_training = True
 s = 0
-w = 100
+ap = argparse.ArgumentParser()
+ap.add_argument('-w', '--starting_weight', required=True)
+args = vars(ap.parse_args())
+w = int(args['starting_weight']) 
 count = 0
 while count < 5:
-    print('** Wdight seed:', w)
+    print('** Weight seed:', w)
     K.clear_session()
     # Set seed values
     # Setting seed_value to w should only affect the generation of new_weight_seed
