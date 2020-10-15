@@ -28,7 +28,7 @@ def correlate(method: str, path_to_instances: str, x_predict, consistency='exemp
     for instance in instances:
         if limiter_idx == 10: break # Remove
         # Skip any non-model files that may have snuck in
-        if '.h5' not in instance:
+        if '.h5' not in instance and '.pb' not in instance:
             continue
         print('*** Working on', instance, '***')
         K.clear_session()

@@ -66,18 +66,10 @@ def augmentData(image, label):
         image = tf.image.flip_left_right(image)
     x = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
     y = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
-    # print('IMAGE!!!!', image) 
-    ''' 
-    image = tfa.image.translate_xy(
-            image=image,
-            translate_to=[x, y],
-            replace=[0, 0, 0]
-    )'''
     image = tfa.image.translate(
             images = image,
             translations = [x, y]
     )
-
 
     return image, label
 
