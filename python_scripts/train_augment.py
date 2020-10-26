@@ -24,50 +24,34 @@ os.environ['PYTHONHASHSEED']=str(0)
 def init_all_cnn_c(seed: int):
     
     model = Sequential()
-    # model.add(Dropout(0.2, input_shape=x_train.shape[1:])) #input shape from keras cifar10 example
-    model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same',
-                        kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
-                        bias_initializer='zeros', activation='relu'))
-    model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
-                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    model.add(Conv2D(96, (3, 3), strides=2, padding='same', 
-                        kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
-    # model.add(Dropout(0.5))
-    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
-                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5),
-                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5),
-                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    # model.add(Dropout(0.5))
-    model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5),
-                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
-                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    model.add(Conv2D(10, (1, 1), padding='valid', kernel_regularizer=l2(1e-5),
-                        kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Dropout(0.2, input_shape=(32, 32, 3), seed=0)) #input shape from keras cifar10 example
+    model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same', bias_regularizer=l2(1e-5),
+                     kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
+                     bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(96, (3, 3), strides=2, padding='same', bias_regularizer=l2(1e-5),
+                     kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
+    model.add(Dropout(0.5, seed=0))
+    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Dropout(0.5, seed=0))
+    model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(10, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(GlobalAveragePooling2D())
     model.add(Activation('softmax'))
-    
+
     model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9, clipnorm=500),
-                    loss='categorical_crossentropy',
-                    metrics=['accuracy'])
-
-    return model
-
-# Make a dummy function
-def init_dummy(seed: int):
-
-    model = Sequential()
-    model.add(Conv2D(10, (3, 3), input_shape=(32, 32, 3), padding='same',
-                        kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
-                        bias_initializer='zeros', activation='relu'))
-    model.add(GlobalAveragePooling2D())
-    model.add(Activation('softmax'))
-    
-    model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9, clipnorm=500),
-                    loss='categorical_crossentropy',
-                    metrics=['accuracy'])
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
 
     return model
 
