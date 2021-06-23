@@ -10,6 +10,7 @@ outputs/
 **/__pycache__/
 *.ipynb_checkpoints
 .idea/
+.vscode
 
 # Not your code
 imported_code/
