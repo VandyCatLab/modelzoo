@@ -9,6 +9,8 @@ outputs/
 # Unnecessary
 **/__pycache__/
 *.ipynb_checkpoints
+.idea/
 
 # Not your code
 imported_code/
+venv/
