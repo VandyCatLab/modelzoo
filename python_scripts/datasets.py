@@ -5,6 +5,11 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from tensorflow.keras.datasets import cifar10
 
+# Get training information
+(x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
+mean = np.mean(x_trainRaw)
+sd = np.std(x_trainRaw)
+
 def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
     '''
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
@@ -20,16 +25,10 @@ def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
         tf.random.set_seed(seed_value)
     
     print('Making train data...')
-    # Load CIFAR10
-    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
-
-    # Get mean, SD of training set
-    mean = np.mean(x_train)
-    sd = np.std(x_train)
     print('GCN...')
     # Apply global contrast normalization
-    x_train = (x_train-mean)/sd
-    x_test = (x_test-mean)/sd
+    x_train = (x_trainRaw-mean)/sd
+    x_test = (x_testRaw-mean)/sd
     print('ZCA...')
     # Do ZCA whitening
     x_flat = x_train.reshape(x_train.shape[0], -1)
@@ -42,8 +41,8 @@ def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
     x_test = np.dot(testFlat, prinComps).reshape(x_test.shape)
 
     # Convert to one hot vector
-    y_train = tf.keras.utils.to_categorical(y_train, 10)
-    y_test = tf.keras.utils.to_categorical(y_test, 10)
+    y_train = tf.keras.utils.to_categorical(y_trainRaw, 10)
+    y_test = tf.keras.utils.to_categorical(y_testRaw, 10)
 
     trainData = tf.data.Dataset.from_tensor_slices((x_train, y_train))
     testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
@@ -80,15 +79,10 @@ def preprocess(imgset):
     to do consistent preprocessing on the transformed images
     '''
     print('Making train data...')
-    # Load CIFAR10
-    (x_train, y_train), _ = cifar10.load_data()
 
-    # Get mean, SD of training set
-    mean = np.mean(x_train)
-    sd = np.std(x_train)
     print('GCN...')
     # Apply global contrast normalization
-    x_train = (x_train-mean)/sd
+    x_train = (x_trainRaw-mean)/sd
     imgset = (imgset-mean)/sd
     print('ZCA...')
     # Do ZCA whitening

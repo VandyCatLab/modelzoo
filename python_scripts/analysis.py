@@ -223,8 +223,8 @@ def do_rsa(rdm1, rdm2):
     # Only use upper-triangular values
     rdm1_flat = rdm1[np.triu_indices(n=num_imgs, k=1)]
     rdm2_flat = rdm2[np.triu_indices(n=num_imgs, k=1)]
-    # Return squared pearson coefficient
-    return pearsonr(rdm1_flat, rdm2_flat)[0] ** 2    
+    # Return squared spearman coefficient
+    return spearmanr(rdm1_flat, rdm2_flat)[0] ** 2    
 
 def do_svcca(acts1, acts2):
     '''
@@ -296,5 +296,5 @@ def get_rdm(acts):
     print('shape:', acts.shape)
     num_imgs = acts.shape[0]
     print('num_images =', num_imgs)
-    return spearmanr(acts.T, acts.T)[0][0:num_imgs, 0:num_imgs]
+    return np.corrcoef(acts, acts)[0:1000, 0:1000]
 

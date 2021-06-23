@@ -34,11 +34,11 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
     print('Generating dataset')
     _, testData  = datasets.make_train_data(shuffle_seed=0)
     imgset, _ = datasets.make_predict_data(testData)
-    print('orig imgset:', imgset)
-    
-    #hardcoded for now
-    num_imgs = 1000
-    dim = 32
+    # print('orig imgset:', imgset)
+
+    # Dataset information
+    num_imgs = imgset.shape[0]
+    dim = imgset.shape[1]
     correlations = []
 
     # Set model to output reps at layer 7
@@ -47,8 +47,8 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
     out = layer.output
     # Flatten if necessary and using RSA
     if len(out.shape) != 2 and correlate_func == analysis.do_rsa:
-        out = Flatten()(out) 
-    
+        out = Flatten()(out)
+
     model = Model(inputs=inp, outputs=out)
 
     # Get reps for originals
@@ -72,97 +72,112 @@ def transform_baseline(transform, full_model, layer_num, correlate_func, preproc
         right_imgset = np.zeros((num_imgs, dim, dim, 3))
         # create the gray values we use to fill in space
         empty = np.zeros((dim, dim, 3))
-        print('Generating dataset')
-        _, testData  = datasets.make_train_data(shuffle_seed=0)
-        imgset, _ = datasets.make_predict_data(testData)
+
         for v in range(versions):
             # Generate transformed imageset
-            print(' - Working on version', v, 'of', versions)
+            # print(' - Working on version', v, 'of', versions)
             for i in range(num_imgs):
                 img = imgset[i, :, :, :]
                 up_imgset[i]    = np.concatenate([img[v:dim, :, :], empty[0:v, :, :]])
                 down_imgset[i]  = np.concatenate([empty[0:v, :, :], img[0:dim - v, :, :]])
                 left_imgset[i]  = np.concatenate([img[:, v:dim, :], empty[:, 0:v, :]], axis=1)
                 right_imgset[i] = np.concatenate([empty[:, 0:v, :], img[:, 0:dim - v, :]], axis=1)
-             
-            plt.imshow(up_imgset[i])
-            plt.show()
-            plt.imshow(imgset[i])
-            plt.show()
+
+            # plt.imshow(up_imgset[i])
+            # plt.show()
+            # plt.imshow(imgset[i])
+            # plt.show()
 
             # Get average of all 4 directions
-            print(' - Now correlating...')
-            corr_sum = 0.
+            # print(' - Now correlating...')
+            tmpCor = []
             rep = preprocess_func(model.predict(up_imgset, verbose=0))
-            corr_sum += correlate_func(rep_orig, rep)
-            print('corr_sum:', corr_sum)
+            tmpCor += [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+            # print('corr_sum:', corr_sum)
             rep = preprocess_func(model.predict(down_imgset, verbose=0))
-            corr_sum += correlate_func(rep_orig, rep)
-            print('corr_sum:', corr_sum)
+            tmpCor += [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+            # print('corr_sum:', corr_sum)
             rep = preprocess_func(model.predict(left_imgset, verbose=0))
-            corr_sum += correlate_func(rep_orig, rep)
-            print('corr_sum:', corr_sum)
+            tmpCor += [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+            # print('corr_sum:', corr_sum)
             rep = preprocess_func(model.predict(right_imgset, verbose=0))
-            corr_sum += correlate_func(rep_orig, rep)
-            print('corr_sum:', corr_sum)
-            correlations.append(corr_sum / 4)
-    
+            tmpCor += [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+            # print('corr_sum:', corr_sum)
+            correlations.append(tmpCor)
+
     # Color and zoom will need new datasets every version because of ZCA
     elif transform == 'color':
         versions = 51
-        alphas = np.linspace(-0.1, 0.1, versions)
-        
-        print("Getting non-ZCA/GCN'd data...")
-        _, (x_test, y_test) = cifar10.load_data()
+        alphas = np.linspace(-10, 10, versions)
+
+        print("Do PCA on raw training set to get eigenvalues and -vectors")
+        # x_train = datasets.x_trainRaw.reshape(-1, 3)
+        x_train = datasets.x_trainRaw / 255.
+        x_train = x_train.reshape(-1, 3)
+        x_trainCentre = x_train - np.mean(x_train, axis=0)
+        cov = np.cov(x_trainCentre.T)
+        values, vectors = np.linalg.eigh(cov)
+
+        # Get new test set
+        x_test = datasets.preprocess(datasets.x_testRaw)
+        y_test = tf.keras.utils.to_categorical(datasets.y_testRaw, 10)
         testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
         imgset, _ = datasets.make_predict_data(testData)
-                                               
+
+        # Get reps for originals
+        rep_orig = model.predict(imgset)
+        rep_orig = preprocess_func(rep_orig)
+
         for v in range(versions):
             # Generate transformed imageset
             print(' - Working on version', v, 'of', versions)
-            transformed_imgset = np.empty((num_imgs, dim, dim, 3))
+
+            # Start with a raw test set again
+            transImg = datasets.x_testRaw / 255.
+
+            # Add multiple of shift
             alpha = alphas[v]
-            for i in range(num_imgs):
-                img = imgset[i, :, :, :]
-                img_reshaped = img.reshape(-1, 3)
-                cov = np.cov(img_reshaped.T)
-                values, vectors = np.linalg.eig(cov)
+            change = np.dot(vectors, values*alpha)
+            transImg[:, :, :, 0] += change[0]
+            transImg[:, :, :, 1] += change[1]
+            transImg[:, :, :, 2] += change[2]
+            transImg = np.clip(transImg, a_min = 0, a_max = 1)
 
-                change = np.dot(vectors, (values * [alpha, alpha, alpha]).T)
-                transformed_imgset[i, :, :, :] = np.clip(img + change, a_min=0, a_max=255, out=None)
+            # Unscale
+            transImg *= 255
 
-            transformed_imgset = datasets.preprocess(transformed_imgset)
+            transImg = datasets.preprocess(transImg)
+            transData = tf.data.Dataset.from_tensor_slices((transImg, y_test))
+            transImgset, _ = datasets.make_predict_data(transData)
+
             print(' - Now correlating...')
-            rep = model.predict(transformed_imgset, verbose=0)
+            rep = model.predict(transImgset, verbose=0)
             rep = preprocess_func(rep)
             correlations.append(correlate_func(rep_orig, rep))
             print('correlation:', correlations[v])
-            
+
     elif transform == 'zoom':
         versions = dim // 2
-        plt.imshow(imgset[0])
-        plt.show()
-        print("Getting non-ZCA/GCN'd data...")
-        _, (x_test, y_test) = cifar10.load_data()
+        # Create dataset
+        x_test = datasets.preprocess(datasets.x_testRaw)
+        y_test = tf.keras.utils.to_categorical(datasets.y_testRaw, 10)
         testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-        imgset, _ = datasets.make_predict_data(testData, dtype='uint8')
-        print('imgset shape:', imgset.shape)
+        imgset, _ = datasets.make_predict_data(testData)
+
+        # Get reps for originals
+        rep_orig = model.predict(imgset)
+        rep_orig = preprocess_func(rep_orig)
         
         for v in range(versions):
             # Generate transformed imageset
             print(' - Working on version', v, 'of', versions)
-            transformed_imgset = np.zeros((num_imgs, dim, dim, 3))
-            for i in range(num_imgs):
-                img = Image.fromarray(imgset[i, :, :, :])
-                new_img = img.crop((v, v, dim - v, dim - v))
-                new_img = new_img.resize((dim, dim), resample=Image.BICUBIC)
-                new_img = img_to_array(new_img)
-                transformed_imgset[i, :, :, :] = new_img
-            
-            transformed_imgset = datasets.preprocess(transformed_imgset)
-            plt.imshow(transformed_imgset[0])
-            plt.show()
-            print('transformed_imgset:', transformed_imgset)
+            transformed_imgset = imgset[:, v:dim-v, v:dim-v, :]
+            transformed_imgset = tf.image.resize(transformed_imgset, (dim, dim))
+
+            # print(transformed_imgset)
+            # plt.imshow(transformed_imgset[0, :, :, :].astype(int))
+            # plt.show()
+            # print('transformed_imgset:', transformed_imgset)
             print(' - Now correlating...')
             rep = model.predict(transformed_imgset, verbose=0)
             rep = preprocess_func(rep)
@@ -181,7 +196,7 @@ def visualize_transform(transform, depth, img_arr):
         # Depth doesn't matter
         transformed = np.flip(img_arr, axis=1)
         plt.imshow(transformed)
-        
+
     elif transform == 'color':
         # Depth = alpha value * 1000 (ints -100 : 100)
         alpha = depth / 1000
@@ -192,7 +207,7 @@ def visualize_transform(transform, depth, img_arr):
         new_img = np.round(img_arr + change)
         transformed = np.clip(new_img, a_min=0, a_max=255, out=None)
         plt.imshow(transformed)
-            
+
     elif transform == 'zoom':
         dim = img_arr.shape[0]
         v = depth
@@ -201,7 +216,7 @@ def visualize_transform(transform, depth, img_arr):
         new_img = new_img.resize((dim, dim), resample=Image.BICUBIC)
         transformed = img_to_array(new_img)
         plt.imshow(transformed)
-         
+
     elif transform == 'shift':
         dim = img_arr.shape[0]
         v = depth
@@ -210,13 +225,13 @@ def visualize_transform(transform, depth, img_arr):
         down_transformed  = np.concatenate([empty[0:v, :, :], img_arr[0:dim - v, :, :]])
         left_transformed  = np.concatenate([img_arr[:, v:dim, :], empty[:, 0:v, :]], axis=1)
         right_transformed = np.concatenate([empty[:, 0:v, :], img_arr[:, 0:dim - v, :]], axis=1)
-        
+
         _, axarr = plt.subplots(2,2)
         axarr[0,0].imshow(up_transformed)
         axarr[0,1].imshow(down_transformed)
         axarr[1,0].imshow(left_transformed)
         axarr[1,1].imshow(right_transformed)
-        
+
 
 
 
