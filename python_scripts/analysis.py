@@ -202,6 +202,12 @@ def preprocess_pwcca(acts, interpolate=False):
     
     return acts
 
+def preprocess_cka(acts):
+    '''
+    Doesn't do anything!
+    '''
+    return acts
+
 
 '''
 Correlation analysis functions
@@ -241,6 +247,24 @@ def do_pwcca(acts1, acts2):
     if acts1.shape <= acts2.shape:
         return np.mean(pwcca.compute_pwcca(acts1.T, acts2.T, epsilon=1e-10)[0])
     return np.mean(pwcca.compute_pwcca(acts2.T, acts1.T, epsilon=1e-10)[0])
+
+def do_linearCKA(acts1, acts2):
+    '''
+    Pre: acts must be shape (datapoints, neurons)
+    '''
+    def _linearKernel(acts):
+        return np.dot(acts, acts.T)
+
+    def _centerMatrix(n):
+        return np.eye(n) - (np.ones((n, n))/n)
+
+    def _hsic(x, y):
+        n = x.shape[0]
+        centeredX = np.dot(_linearKernel(x), _centerMatrix(n))
+        centeredY = np.dot(_linearKernel(y), _centerMatrix(n))
+        return np.trace(np.dot(centeredX, centeredY)) / ((n - 1) ** 2)
+
+    return _hsic(acts1, acts2) / ((_hsic(acts1, acts1) * _hsic(acts2, acts2)) ** (1/2))
 
 '''
 Helper functions
