@@ -91,46 +91,47 @@ class Early_Abort_Callback(Callback):
             print('Acc:', logs.get('accuracy'))
             self.model.stop_training = True
 
-# ap = argparse.ArgumentParser()
-# ap.add_argument('-w', '--starting_weight', required=True)
-# args = vars(ap.parse_args())
-# w0 = int(args['starting_weight'])
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser()
+    ap.add_argument('-w', '--starting_weight', required=True)
+    args = vars(ap.parse_args())
+    w0 = int(args['starting_weight'])
 
-# for w in range(w0, w0+5):
-#     print('** Weight seed:', w)
-#     K.clear_session()
-#     for s in range(10):
-#         np.random.seed(0)
-#         tf.random.set_seed(0)
-#         random.seed(0)
-#         for r in range(100*w):
-#             random.randint(-10000, 10000)
-#         new_weight_seed = random.randint(-10000, 10000)
-#         print('new_weight_seed=', new_weight_seed)
-    
-#         random.seed(0)
-#         for r in range(100*s):
-#             random.randint(-10000, 10000)
-#         new_shuffle_seed = random.randint(-10000, 10000)
-#         print('new_shuffle_seed=', new_shuffle_seed)
+    for w in range(w0, w0+5):
+        print('** Weight seed:', w)
+        K.clear_session()
+        for s in range(10):
+            np.random.seed(0)
+            tf.random.set_seed(0)
+            random.seed(0)
+            for r in range(100*w):
+                random.randint(-10000, 10000)
+            new_weight_seed = random.randint(-10000, 10000)
+            print('new_weight_seed=', new_weight_seed)
         
-#         trainData, testData = datasets.make_train_data(shuffle_seed=new_shuffle_seed, augment=True)
-#         x_predict, y_predict = datasets.make_predict_data(testData)
-    
-#         model = init_all_cnn_c(seed=new_weight_seed)
+            random.seed(0)
+            for r in range(100*s):
+                random.randint(-10000, 10000)
+            new_shuffle_seed = random.randint(-10000, 10000)
+            print('new_shuffle_seed=', new_shuffle_seed)
+            
+            trainData, testData = datasets.make_train_data(shuffle_seed=new_shuffle_seed, augment=True)
+            x_predict, y_predict = datasets.make_predict_data(testData)
+        
+            model = init_all_cnn_c(seed=new_weight_seed)
 
-#         # Set flag to true if converges to local min
-#         abort = False
-#         history = model.fit(
-#             trainData,
-#             epochs=350,
-#             validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
-#                          .batch(128),
-#             callbacks=[LR_Callback, Early_Abort_Callback()])
-#         # Move onto the next shuffle candidate
-    
-#         if not abort:
-#             save_model(model, '../outputs/models/ten-by-ten2/w'+str(w)+'s'+str(s)+'.pb')
-#         else:
-#             raise ValueException('yo this hit local min')
+            # Set flag to true if converges to local min
+            abort = False
+            history = model.fit(
+                trainData,
+                epochs=350,
+                validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
+                            .batch(128),
+                callbacks=[LR_Callback, Early_Abort_Callback()])
+            # Move onto the next shuffle candidate
+        
+            if not abort:
+                save_model(model, '../outputs/models/ten-by-ten2/w'+str(w)+'s'+str(s)+'.pb')
+            else:
+                raise ValueException('yo this hit local min')
 
