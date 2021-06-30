@@ -55,6 +55,36 @@ def init_all_cnn_c(seed: int):
 
     return model
 
+def krieg_all_cnn_c(seed: int):
+    """Implement the Kriegeskorte version of All_CNN_C"""
+
+    model = Sequential()
+    # model.add(Dropout(0.2, input_shape=(32, 32, 3), seed=0)) # No initial dropout
+    model.add(Conv2D(96, (3, 3), input_shape=(32, 32, 3), padding='same', bias_regularizer=l2(1e-5),
+                     kernel_regularizer=l2(1e-5), kernel_initializer=he_normal(seed), 
+                     bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(96, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(96, (3, 3), strides=2, padding='same', bias_regularizer=l2(1e-5),
+                     kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
+    # model.add(Dropout(0.5, seed=0)) # No dropout, it seems
+    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    # model.add(Dropout(0.5, seed=0)) # No dropout
+    model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(Conv2D(10, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
+                     kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
+    model.add(GlobalAveragePooling2D())
+    model.add(Activation('softmax'))
+
+
 # Scheduler callback
 def scheduler(epoch, lr):
     if (epoch == 200 or epoch == 250 or epoch == 300):
@@ -92,46 +122,53 @@ class Early_Abort_Callback(Callback):
             self.model.stop_training = True
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser()
-    ap.add_argument('-w', '--starting_weight', required=True)
-    args = vars(ap.parse_args())
-    w0 = int(args['starting_weight'])
+    # Make GPU training deterministic
+    os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+    os.environ['TF_DETERMINISTIC_OPS'] = '1'
+    os.environ['PYTHONHASHSEED'] = str(0)
+    
+    # Set seeds
+    np.random.seed(0)
+    tf.random.set_seed(0)
+    random.seed(0)
+    
+    # Initial seed for weight
+    w0 = 2021
+
+    # Fixed seed for shuffle
+    s = 100
 
     for w in range(w0, w0+5):
         print('** Weight seed:', w)
         K.clear_session()
-        for s in range(10):
-            np.random.seed(0)
-            tf.random.set_seed(0)
-            random.seed(0)
-            for r in range(100*w):
-                random.randint(-10000, 10000)
-            new_weight_seed = random.randint(-10000, 10000)
-            print('new_weight_seed=', new_weight_seed)
-        
-            random.seed(0)
-            for r in range(100*s):
-                random.randint(-10000, 10000)
-            new_shuffle_seed = random.randint(-10000, 10000)
-            print('new_shuffle_seed=', new_shuffle_seed)
-            
-            trainData, testData = datasets.make_train_data(shuffle_seed=new_shuffle_seed, augment=True)
-            x_predict, y_predict = datasets.make_predict_data(testData)
-        
-            model = init_all_cnn_c(seed=new_weight_seed)
 
-            # Set flag to true if converges to local min
-            abort = False
-            history = model.fit(
-                trainData,
-                epochs=350,
-                validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
-                            .batch(128),
-                callbacks=[LR_Callback, Early_Abort_Callback()])
-            # Move onto the next shuffle candidate
+        for r in range(100*w):
+            random.randint(-10000, 10000)
+        new_weight_seed = random.randint(-10000, 10000)
+        print('new_weight_seed=', new_weight_seed)
+    
+        for r in range(100*s):
+            random.randint(-10000, 10000)
+        new_shuffle_seed = random.randint(-10000, 10000)
+        print('new_shuffle_seed=', new_shuffle_seed)
         
-            if not abort:
-                save_model(model, '../outputs/models/ten-by-ten2/w'+str(w)+'s'+str(s)+'.pb')
-            else:
-                raise ValueException('yo this hit local min')
+        trainData, testData = datasets.make_train_data(shuffle_seed=new_shuffle_seed, augment=True)
+        x_predict, y_predict = datasets.make_predict_data(testData)
+    
+        model = krieg_all_cnn_c(seed=new_weight_seed)
+
+        # Set flag to true if converges to local min
+        abort = False
+        history = model.fit(
+            trainData,
+            epochs=350,
+            validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
+                        .batch(128),
+            callbacks=[LR_Callback, Early_Abort_Callback()])
+        # Move onto the next shuffle candidate
+    
+        if not abort:
+            save_model(model, '../outputs/masterOutput/models/w'+str(w)+'s'+str(s)+'.pb')
+        else:
+            raise ValueException('yo this hit local min')
 
