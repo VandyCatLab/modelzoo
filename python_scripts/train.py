@@ -122,6 +122,13 @@ class Early_Abort_Callback(Callback):
             self.model.stop_training = True
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Trains a single CNN, hopefully to completion.')
+    parser.add_argument('--shuffle_seed', '-s', type=int, required=True,
+        help='seed that dictates the randomization of the dataset order')
+    parser.add_argument('--weight_seed', '-w', type=int, required=True,
+        help='seed that dictates the random initialization of weights')
+    args = parser.parse_args()
+
     # Make GPU training deterministic
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['TF_DETERMINISTIC_OPS'] = '1'
@@ -133,42 +140,29 @@ if __name__ == '__main__':
     random.seed(0)
     
     # Initial seed for weight
-    w0 = 2021
+    weightSeed = args.weight_seed
 
     # Fixed seed for shuffle
-    s = 100
+    shuffleSeed = args.shuffle_seed
 
-    for w in range(w0, w0+5):
-        print('** Weight seed:', w)
-        K.clear_session()
+    # Prepare data
+    trainData, testData = datasets.make_train_data(shuffle_seed=shuffleSeed, augment=True)
+    x_predict, y_predict = datasets.make_predict_data(testData)
 
-        for r in range(100*w):
-            random.randint(-10000, 10000)
-        new_weight_seed = random.randint(-10000, 10000)
-        print('new_weight_seed=', new_weight_seed)
-    
-        for r in range(100*s):
-            random.randint(-10000, 10000)
-        new_shuffle_seed = random.randint(-10000, 10000)
-        print('new_shuffle_seed=', new_shuffle_seed)
-        
-        trainData, testData = datasets.make_train_data(shuffle_seed=new_shuffle_seed, augment=True)
-        x_predict, y_predict = datasets.make_predict_data(testData)
-    
-        model = krieg_all_cnn_c(seed=new_weight_seed)
+    # Create model
+    model = krieg_all_cnn_c(seed=weightSeed)
 
-        # Set flag to true if converges to local min
-        abort = False
-        history = model.fit(
-            trainData,
-            epochs=350,
-            validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
-                        .batch(128),
-            callbacks=[LR_Callback, Early_Abort_Callback()])
-        # Move onto the next shuffle candidate
-    
-        if not abort:
-            save_model(model, '../outputs/masterOutput/models/w'+str(w)+'s'+str(s)+'.pb')
-        else:
-            raise ValueException('yo this hit local min')
+    # Set flag to true if converges to local min
+    abort = False
+    history = model.fit(
+        trainData,
+        epochs=350,
+        validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
+                    .batch(128),
+        callbacks=[LR_Callback, Early_Abort_Callback()])
+
+    if not abort:
+        save_model(model, '../outputs/masterOutput/models/w'+str(weightSeed)+'s'+str(shuffleSeed)+'.pb')
+    else:
+        raise ValueException('yo this hit local min')
 
