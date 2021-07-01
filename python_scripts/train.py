@@ -84,6 +84,12 @@ def krieg_all_cnn_c(seed: int):
     model.add(GlobalAveragePooling2D())
     model.add(Activation('softmax'))
 
+    model.compile(optimizer=SGD(learning_rate=0.01, momentum=0.9, clipnorm=500),
+                loss='categorical_crossentropy',
+                metrics=['accuracy'])
+
+    return model
+
 
 # Scheduler callback
 def scheduler(epoch, lr):
