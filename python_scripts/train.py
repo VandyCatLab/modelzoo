@@ -67,14 +67,14 @@ def krieg_all_cnn_c(seed: int):
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(96, (3, 3), strides=2, padding='same', bias_regularizer=l2(1e-5),
                      kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
-    # model.add(Dropout(0.5, seed=0)) # No dropout, it seems
+    model.add(Dropout(0.5, seed=0)) # No dropout described but code has it
     model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    # model.add(Dropout(0.5, seed=0)) # No dropout
+    model.add(Dropout(0.5, seed=0)) # No dropout described but code has it
     model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
