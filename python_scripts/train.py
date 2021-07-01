@@ -67,14 +67,14 @@ def krieg_all_cnn_c(seed: int):
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(96, (3, 3), strides=2, padding='same', bias_regularizer=l2(1e-5),
                      kernel_regularizer=l2(1e-5), bias_initializer='zeros', activation='relu'))
-    model.add(Dropout(0.5, seed=0)) # No dropout described but code has it
+    model.add(Dropout(0.5)) # No dropout described but code has it
     model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(192, (3, 3), padding='same', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(192, (3, 3), strides=2, padding='same',kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
-    model.add(Dropout(0.5, seed=0)) # No dropout described but code has it
+    model.add(Dropout(0.5)) # No dropout described but code has it
     model.add(Conv2D(192, (3, 3), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5),
                      kernel_initializer=he_normal(seed), bias_initializer='zeros', activation='relu'))
     model.add(Conv2D(192, (1, 1), padding='valid', kernel_regularizer=l2(1e-5), bias_regularizer=l2(1e-5), 
@@ -129,11 +129,34 @@ class Early_Abort_Callback(Callback):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Trains a single CNN, hopefully to completion.')
-    parser.add_argument('--shuffle_seed', '-s', type=int, required=True,
+    parser.add_argument('--shuffle_seed', '-s', type=int,
         help='seed that dictates the randomization of the dataset order')
-    parser.add_argument('--weight_seed', '-w', type=int, required=True,
+    parser.add_argument('--weight_seed', '-w', type=int,
         help='seed that dictates the random initialization of weights')
+    parser.add_argument('--model_index', '-i', type=int, choices=range(100),
+        help='model parameter index given a 10x10 table of shuffle and weight seeds between 0 and 9')
     args = parser.parse_args()
+
+    argKeys = list(vars(args).keys())
+    if 'model_index' in argKeys:
+        print(f'Using model index: {args.model_index}')
+        # Create list
+        nums = np.arange(0, 10)
+        weights, shuffles = np.meshgrid(nums, nums)
+
+        weights = np.expand_dims(weights.flatten(), 1)
+        shuffles = np.expand_dims(shuffles.flatten(), 1)
+
+        modelSeeds = np.concatenate((weights, shuffles), 1)
+
+        weightSeed, shuffleSeed = modelSeeds[args.model_index, :]
+    elif 'shuffle_seed' in argKeys and 'weight_seed' in argKeys:
+        print(f'Using shuffle seed: {args.shuffle_seed} and weight seed: {args.weight_seed}')
+        weightSeed = args.weight_seed
+        shuffleSeed = args.shuffle_seed
+    
+    else:
+        raise ValueException('Missing either both shuffle and weight seed or a model index.')
 
     # Make GPU training deterministic
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -144,12 +167,6 @@ if __name__ == '__main__':
     np.random.seed(0)
     tf.random.set_seed(0)
     random.seed(0)
-    
-    # Initial seed for weight
-    weightSeed = args.weight_seed
-
-    # Fixed seed for shuffle
-    shuffleSeed = args.shuffle_seed
 
     # Prepare data
     trainData, testData = datasets.make_train_data(shuffle_seed=shuffleSeed, augment=True)
@@ -163,12 +180,14 @@ if __name__ == '__main__':
     history = model.fit(
         trainData,
         epochs=350,
+        verbose=2,
         validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE)\
                     .batch(128),
         callbacks=[LR_Callback, Early_Abort_Callback()])
 
     if not abort:
+        print(f'Saving, final validation acc: {history.history["val_accuracy"][-1]}')
         save_model(model, '../outputs/masterOutput/models/w'+str(weightSeed)+'s'+str(shuffleSeed)+'.pb')
     else:
-        raise ValueException('yo this hit local min')
+        raise ValueException(f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}')
 
