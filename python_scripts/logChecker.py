@@ -52,9 +52,9 @@ def log_checker(directory, file_str, param_list):
 
         # Remember it
         if 'Saving' in lines[-1]:
-            success += log
+            success += [log]
         else:
-            failiure += log
+            failiure += [log]
 
     
     return success, failiure, missing
