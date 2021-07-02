@@ -311,7 +311,25 @@ class Trajectory_Callback(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         layer_arr = [11]
-        if epoch in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 49, 99, 149, 199, 249, 299, 349]:
+        if epoch in [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            49,
+            99,
+            149,
+            199,
+            249,
+            299,
+            349,
+        ]:
             print(
                 "\n\nSnapshot weight",
                 str(weightSeed),
@@ -425,12 +443,16 @@ if __name__ == "__main__":
         trainData,
         epochs=350,
         verbose=2,
-        validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128),
+        validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE).batch(
+            128
+        ),
         callbacks=[LR_Callback, Early_Abort_Callback(), Trajectory_Callback()],
     )
 
     if not abort:
-        print(f'Saving, final validation acc: {history.history["val_accuracy"][-1]}')
+        print(
+            f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
+        )
         save_model(
             model,
             "../outputs/masterOutput/models/w"
