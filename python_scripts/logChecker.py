@@ -54,7 +54,7 @@ def log_checker(directory, file_str, param_list):
         if 'Saving' in lines[-1]:
             success += params
         else:
-            failure += params
+            failiure += params
 
     
     return success, failiure, missing
