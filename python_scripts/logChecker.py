@@ -99,16 +99,15 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    argKeys = list(vars(args).keys())
 
-    if "shuffle_seeds" in argKeys and "weight_seeds" in argKeys:
+    if args.shuffle_seeds in not None and args.weight_seeds is not None:
         shuffleList = [seed for seed in args.shuffle_seeds.split()]
         weightList = [seed for seed in args.weight_seeds.split()]
     elif (
-        "weight_min" in argKeys
-        and "weight_max" in argKeys
-        and "shuffle_min" in argKeys
-        and "shuffle_max" in argKeys
+        args.weight_min is not None
+        and args.weight_max is not None
+        and args.shuffle_min is not None
+        and args.shuffle_max is not None
     ):
         shuffleList = range(args.shuffle_min, args.shuffle_max)
         weightList = range(args.weight_min, args.weight_max)
