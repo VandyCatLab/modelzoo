@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.shuffle_seeds in not None and args.weight_seeds is not None:
+    if not args.shuffle_seeds in None and not args.weight_seeds is None:
         shuffleList = [seed for seed in args.shuffle_seeds.split()]
         weightList = [seed for seed in args.weight_seeds.split()]
     elif (
