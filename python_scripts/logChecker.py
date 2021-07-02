@@ -38,7 +38,7 @@ def log_checker(directory, file_str, param_list):
 
         # Go next if not finished.
         if not 'final validation acc' in lines[-1]:
-            next
+            continue
 
         # Find seeds
         snapshotLine = [line for line in lines if 'Snapshot' in line][0]
