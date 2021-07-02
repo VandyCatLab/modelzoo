@@ -317,9 +317,9 @@ def get_rdm(acts):
     '''
     Pre: acts must be flattened
     '''
-    print('shape:', acts.shape)
+    # print('shape:', acts.shape)
     num_imgs = acts.shape[0]
-    print('num_images =', num_imgs)
+    # print('num_images =', num_imgs)
     return np.corrcoef(acts, acts)[0:1000, 0:1000]
 
 '''
