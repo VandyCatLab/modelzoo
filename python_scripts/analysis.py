@@ -322,3 +322,28 @@ def get_rdm(acts):
     print('num_images =', num_imgs)
     return np.corrcoef(acts, acts)[0:1000, 0:1000]
 
+'''
+Permutation Analysis
+'''
+def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
+    """
+    Perform similarity analysis between rep1 and rep2 once for each method as
+    indicated by first applying a preproc_fun then the sim_fun. preproc_fun 
+    should be a list of functions to run on the representations before applying
+    the similarity function at the same index in the list sim_fun. Elements of
+    preproc_fun can be None wherein the representations are not preprocessed 
+    before being passed to the paired similarity function.
+    """
+    assert len(preproc_fun) == len(sim_fun)
+
+    # Loop through each pair
+    simDict = {}
+    for preproc, sim in zip(preproc_fun, sim_fun):
+        # Preprocess each set of representations
+        rep1Preproc = preproc(rep1)
+        rep2Preproc = preproc(rep2)
+
+        # Get similarity between reps
+        simDict[sim.__name__] = sim(rep1Preproc, rep2Preproc)
+
+    return simDict
