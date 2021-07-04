@@ -74,14 +74,14 @@ if __name__ == "__main__":
         "-d",
         type=str,
         help="directory where the logs are",
-        required=True,
+        default="../logs/master",
     )
     parser.add_argument(
         "--file_str",
         "-f",
         type=str,
         help="string to match log files with",
-        required=True,
+        default="train_slurm_*.out",
     )
     parser.add_argument(
         "--shuffle_seeds", help="list of seeds for shuffle, e.g., 2,4,6"
@@ -112,7 +112,9 @@ if __name__ == "__main__":
         shuffleList = range(args.shuffle_min, args.shuffle_max)
         weightList = range(args.weight_min, args.weight_max)
     else:
-        raise ValueError("incomplete seed arguments")
+        print("Using default seeds, 0-9")
+        shuffleList = range(10)
+        weightList = range(10)
 
     param_list = param_maker(weightList, shuffleList)
     success, failiure, missing = log_checker(
