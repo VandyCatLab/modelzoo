@@ -445,7 +445,7 @@ if __name__ == "__main__":
         validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE).batch(
             128
         ),
-        callbacks=[LR_Callback, Early_Abort_Callback(), Trajectory_Callback()],
+        callbacks=[LR_Callback, Trajectory_Callback()],
     )
 
     if not abort:
