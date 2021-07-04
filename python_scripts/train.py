@@ -393,8 +393,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    argKeys = list(vars(args).keys())
-    if "model_index" in argKeys:
+    if args.model_index is not None:
         print(f"Using model index: {args.model_index}")
         # Create list
         nums = np.arange(0, 10)
@@ -406,7 +405,7 @@ if __name__ == "__main__":
         modelSeeds = np.concatenate((weights, shuffles), 1)
 
         weightSeed, shuffleSeed = modelSeeds[args.model_index, :]
-    elif "shuffle_seed" in argKeys and "weight_seed" in argKeys:
+    elif args.shuffle_seed is not None and args.weight_seed is not None:
         print(
             f"Using shuffle seed: {args.shuffle_seed} and weight seed: {args.weight_seed}"
         )
