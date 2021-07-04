@@ -414,7 +414,7 @@ if __name__ == "__main__":
         shuffleSeed = args.shuffle_seed
 
     else:
-        raise ValueException(
+        raise ValueError(
             "Missing either both shuffle and weight seed or a model index."
         )
 
@@ -462,7 +462,8 @@ if __name__ == "__main__":
             + ".pb",
         )
     else:
-        raise ValueException(
+        print(
             f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
         )
+        exit(1)
 
