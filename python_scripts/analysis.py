@@ -581,4 +581,4 @@ if __name__ == "__main__":
             results = correspondence_test(
                 model, tmpModel, dataset, preprocFuns, simFuns
             )
-            print("--- %s seconds ---" % (time.time() - start_time))
+            print("--- %s seconds ---" % (time.time() - startTime))
