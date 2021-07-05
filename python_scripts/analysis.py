@@ -238,10 +238,10 @@ def preprocess_pwcca(acts, interpolate=False):
 
 def preprocess_cka(acts):
     """
-    Changes to sample by neuron shape as needed.
+    Changes to sample by neuron shape as needed. Uses global average pooling.
     """
     if len(acts.shape) > 2:
-        acts = np.reshape(acts, np.prod(act.shape[1:]))
+        acts = np.squeeze(np.apply_over_axes(np.mean, acts, [1, 2]))
 
     return acts
 
@@ -341,7 +341,7 @@ def correspondence_test(
     results = {fun.__name__: [] for fun in sim_fun}
 
     # Loop through layers of model1
-    for rep in mainReps:
+    for i, rep in enumerate(mainReps):
         winners = {fun.__name__: [-1, 0] for fun in sim_fun}
         for layer, altRep in enumerate(altReps):
             output = multi_analysis(rep, altRep, preproc_fun, sim_fun)
@@ -349,11 +349,13 @@ def correspondence_test(
             for fun, sim in output.items():
                 if sim > winners[fun][1]:
                     # New winner
-                    winners[fun] = (layer, sim)
+                    winners[fun] = [layer, sim]
 
         # Save winners for this layer
         for fun, layerIdx in results.items():
             results[fun] += [winners[fun][0]]
+
+        print(f"Layer {i} winners {winners}")
 
     # Just return list if there's only one
     if len(results.keys()) == 1:
@@ -561,6 +563,8 @@ if __name__ == "__main__":
     print(f"Model loaded: {modelName}")
     model.summary()
 
+    import time
+
     # Now do analysis
     if args.analysis == "correspondence":
         print("Performing correspondence analysis.")
@@ -569,16 +573,12 @@ if __name__ == "__main__":
 
         # Loop through all models and check for correspondence
         allModels = os.listdir(args.models_dir)
-        # for mdlDir in allModels:
-        #     tmpModel = load_model(os.path.join(args.models_dir, mdlDir))
+        for mdlDir in allModels:
+            print(f"Working on model: {mdlDir}")
+            startTime = time.time()
+            tmpModel = load_model(os.path.join(args.models_dir, mdlDir))
 
-        #     results = correspondence_test(
-        #         model, tmpModel, dataset, preprocFuns, simFuns
-        #     )
-
-        tmpModel = load_model(os.path.join(args.models_dir, allModels[0]))
-
-        results = correspondence_test(
-            model, tmpModel, dataset, preprocFuns, simFuns
-        )
-
+            results = correspondence_test(
+                model, tmpModel, dataset, preprocFuns, simFuns
+            )
+            print("--- %s seconds ---" % (time.time() - start_time))
