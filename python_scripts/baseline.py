@@ -79,7 +79,9 @@ def transform_baseline(
             # print(' - Working on version', v, 'of', versions)
             for i in range(num_imgs):
                 img = imgset[i, :, :, :]
-                up_imgset[i] = np.concatenate([img[v:dim, :, :], empty[0:v, :, :]])
+                up_imgset[i] = np.concatenate(
+                    [img[v:dim, :, :], empty[0:v, :, :]]
+                )
                 down_imgset[i] = np.concatenate(
                     [empty[0:v, :, :], img[0 : dim - v, :, :]]
                 )
@@ -100,22 +102,30 @@ def transform_baseline(
             tmpCor = []
             rep = preprocess_func(model.predict(up_imgset, verbose=0))
             tmpCor += (
-                [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+                [correlate_func(rep_orig, rep)]
+                if not np.ptp(rep) == 0
+                else [np.nan]
             )
             # print('corr_sum:', corr_sum)
             rep = preprocess_func(model.predict(down_imgset, verbose=0))
             tmpCor += (
-                [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+                [correlate_func(rep_orig, rep)]
+                if not np.ptp(rep) == 0
+                else [np.nan]
             )
             # print('corr_sum:', corr_sum)
             rep = preprocess_func(model.predict(left_imgset, verbose=0))
             tmpCor += (
-                [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+                [correlate_func(rep_orig, rep)]
+                if not np.ptp(rep) == 0
+                else [np.nan]
             )
             # print('corr_sum:', corr_sum)
             rep = preprocess_func(model.predict(right_imgset, verbose=0))
             tmpCor += (
-                [correlate_func(rep_orig, rep)] if not np.ptp(rep) == 0 else [np.nan]
+                [correlate_func(rep_orig, rep)]
+                if not np.ptp(rep) == 0
+                else [np.nan]
             )
             # print('corr_sum:', corr_sum)
             correlations.append(tmpCor)
@@ -187,7 +197,9 @@ def transform_baseline(
             # Generate transformed imageset
             print(" - Working on version", v, "of", versions)
             transformed_imgset = imgset[:, v : dim - v, v : dim - v, :]
-            transformed_imgset = tf.image.resize(transformed_imgset, (dim, dim))
+            transformed_imgset = tf.image.resize(
+                transformed_imgset, (dim, dim)
+            )
 
             # print(transformed_imgset)
             # plt.imshow(transformed_imgset[0, :, :, :].astype(int))
@@ -238,7 +250,9 @@ def visualize_transform(transform, depth, img_arr):
         dim = img_arr.shape[0]
         v = depth
         empty = np.zeros((dim, dim, 3))
-        up_transformed = np.concatenate([img_arr[v:dim, :, :], empty[0:v, :, :]])
+        up_transformed = np.concatenate(
+            [img_arr[v:dim, :, :], empty[0:v, :, :]]
+        )
         down_transformed = np.concatenate(
             [empty[0:v, :, :], img_arr[0 : dim - v, :, :]]
         )
