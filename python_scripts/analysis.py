@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Flatten
 import tensorflow.keras.backend as K
 import sys, os
 
+
 sys.path.append("../imported_code/svcca")
 import cca_core, pwcca
 
@@ -313,6 +314,51 @@ def do_linearCKA(acts1, acts2):
     )
 
 
+def correspondence_test(
+    model1: Model,
+    model2: Model,
+    dataset: np.ndarray,
+    preproc_fun: list,
+    sim_fun: list,
+):
+    """
+    Return a list of indices for each model1 layer's most similar layer in 
+    model2 for each similarity function given the dataset. If multiple 
+    similarity functions are given, return a dictionary.
+    """
+    # Get a model that outputs at every layer and get representations
+    outModel = make_allout_model(model1)
+    mainReps = outModel.predict(dataset)
+
+    # Do the same for model 2
+    outModel = make_allout_model(model2)
+    altReps = outModel.predict(dataset)
+
+    # Create dict for results
+    results = {fun.__name__: [] for fun in simFuns}
+
+    # Loop through layers of model1
+    for rep in mainReps:
+        winners = {fun.__name__: [-1, 0] for fun in simFuns}
+        for layer, altRep in enumerate(altReps):
+            output = multi_analysis(rep, altRep, preproc_fun, sim_fun)
+
+            for fun, sim in output.items():
+                if sim > winners[fun][1]:
+                    # New winner
+                    winners[fun] = (layer, sim)
+
+        # Save winners for this layer
+        for fun, layerIdx in results.items():
+            results[fun] += [winners[fun][1]]
+
+    # Just return list if there's only one
+    if len(results.keys()) == 1:
+        results = results[sim_fun[0].__name__]
+
+    return results
+
+
 """
 Helper functions
 """
@@ -381,11 +427,24 @@ def get_rdm(acts):
     # print('shape:', acts.shape)
     num_imgs = acts.shape[0]
     # print('num_images =', num_imgs)
-    return np.corrcoef(acts, acts)[0:1000, 0:1000]
+    return np.corrcoef(acts, acts)[0:num_imgs, 0:num_imgs]
+
+
+def make_allout_model(model):
+    """
+    Creates a model with outputs at every layer that is not dropout.
+    """
+    inp = model.input
+
+    modelOuts = [
+        layer.output for layer in model.layers if "dropout" not in layer.name
+    ]
+
+    return Model(inputs=inp, outputs=modelOuts)
 
 
 """
-Permutation Analysis
+Large scale analysis functions
 """
 
 
@@ -415,3 +474,107 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
             print(f"sim.__name__ produced an error, saving nan.")
 
     return simDict
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Perform some type of analysis, intended to be used in HPC"
+    )
+    parser.add_argument(
+        "--analysis",
+        "-a",
+        type=str,
+        help="type of analysis to run",
+        choices=["correspondence"],
+    )
+    parser.add_argument(
+        "--model_index",
+        "-i",
+        type=int,
+        help="model index to select weight and shuffle seeds",
+    )
+    parser.add_argument(
+        "--shuffle_seed", type=int, help="shuffle seed of the main model"
+    )
+    parser.add_argument(
+        "--weight_seed", type=int, help="weight seed of the main model"
+    )
+    parser.add_argument(
+        "--model_seeds",
+        type=str,
+        default="../outputs/masterOutput/modelSeeds.csv",
+        help="file location for csv file with model seeds",
+    )
+    parser.add_argument(
+        "--dataset_file",
+        type=str,
+        default="../outputs/masterOutput/dataset.npy",
+        help="npy file path for the image dataset to use for analysis",
+    )
+    parser.add_argument(
+        "--models_dir",
+        type=str,
+        default="../outputs/masterOutput/models",
+        help="directory for all of the models",
+    )
+    args = parser.parse_args()
+
+    # Load dataset
+    print("Loading dataset")
+    dataset = np.load(args.dataset_file)
+    print(f"dataset shape: {dataset.shape}")
+
+    # Get model
+    if args.model_index is not None:
+        import pandas as pd
+
+        modelIdx = args.model_index
+
+        # Load csv and get model parameters
+        modelSeeds = pd.read_csv(args.model_seeds)
+        weightSeed = modelSeeds.loc[
+            modelSeeds["index"] == modelIdx, "weight"
+        ].item()
+        shuffleSeed = modelSeeds.loc[
+            modelSeeds["index"] == modelIdx, "shuffle"
+        ].item()
+
+        # Load main model
+        modelName = f"w{weightSeed}s{shuffleSeed}.pb"
+        modelPath = os.path.join(args.models_dir, modelName)
+        model = load_model(modelPath)
+    elif args.shuffle_seed is not None and args.weight_seed is not None:
+        weightSeed = args.weight_seed
+        shuffleSeed = args.shuffle_seed
+
+    # Load main model
+    modelName = f"w{weightSeed}s{shuffleSeed}.pb"
+    modelPath = os.path.join(args.models_dir, modelName)
+    model = load_model(modelPath)
+    layerN = len(model.layers)
+    print(f"Model loaded: {modelName}")
+    model.summary()
+
+    # Now do analysis
+    if args.analysis == "correspondence":
+        print("Performing correspondence analysis.")
+        preprocFuns = [preprocess_rsa, preprocess_pwcca, preprocess_cka]
+        simFuns = [do_rsa, do_pwcca, do_linearCKA]
+
+        # Loop through all models and check for correspondence
+        allModels = os.listdir(args.models_dir)
+        # for mdlDir in allModels:
+        #     tmpModel = load_model(os.path.join(args.models_dir, mdlDir))
+
+        #     results = correspondence_test(
+        #         model, tmpModel, dataset, preprocFuns, simFuns
+        #     )
+
+        tmpModel = load_model(os.path.join(args.models_dir, allModels[0]))
+
+        results = correspondence_test(
+            model, tmpModel, dataset, preprocFuns, simFuns
+        )
+
