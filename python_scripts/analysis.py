@@ -238,8 +238,11 @@ def preprocess_pwcca(acts, interpolate=False):
 
 def preprocess_cka(acts):
     """
-    Doesn't do anything!
+    Changes to sample by neuron shape as needed.
     """
+    if len(acts.shape) > 2:
+        acts = np.reshape(acts, np.prod(act.shape[1:]))
+
     return acts
 
 
@@ -335,11 +338,11 @@ def correspondence_test(
     altReps = outModel.predict(dataset)
 
     # Create dict for results
-    results = {fun.__name__: [] for fun in simFuns}
+    results = {fun.__name__: [] for fun in sim_fun}
 
     # Loop through layers of model1
     for rep in mainReps:
-        winners = {fun.__name__: [-1, 0] for fun in simFuns}
+        winners = {fun.__name__: [-1, 0] for fun in sim_fun}
         for layer, altRep in enumerate(altReps):
             output = multi_analysis(rep, altRep, preproc_fun, sim_fun)
 
@@ -350,7 +353,7 @@ def correspondence_test(
 
         # Save winners for this layer
         for fun, layerIdx in results.items():
-            results[fun] += [winners[fun][1]]
+            results[fun] += [winners[fun][0]]
 
     # Just return list if there's only one
     if len(results.keys()) == 1:
@@ -469,9 +472,10 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
         # Get similarity between reps
         try:
             simDict[sim.__name__] = sim(rep1Preproc, rep2Preproc)
-        except:
+        except Exception as e:
             simDict[sim.__name__] = np.nan
-            print(f"sim.__name__ produced an error, saving nan.")
+            print(f"{sim.__name__} produced an error, saving nan.")
+            print(e)
 
     return simDict
 
