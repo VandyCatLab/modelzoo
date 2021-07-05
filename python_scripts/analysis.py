@@ -355,7 +355,7 @@ def correspondence_test(
         for fun, layerIdx in results.items():
             results[fun] += [winners[fun][0]]
 
-        print(f"Layer {i} winners {winners}")
+        print(f"Layer {i} winners {winners}", flush=True)
 
     # Just return list if there's only one
     if len(results.keys()) == 1:
@@ -528,9 +528,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Load dataset
-    print("Loading dataset")
+    print("Loading dataset", flush=True)
     dataset = np.load(args.dataset_file)
-    print(f"dataset shape: {dataset.shape}")
+    print(f"dataset shape: {dataset.shape}", flush=True)
 
     # Get model
     if args.model_index is not None:
@@ -560,25 +560,25 @@ if __name__ == "__main__":
     modelPath = os.path.join(args.models_dir, modelName)
     model = load_model(modelPath)
     layerN = len(model.layers)
-    print(f"Model loaded: {modelName}")
+    print(f"Model loaded: {modelName}", flush=True)
     model.summary()
 
     import time
 
     # Now do analysis
     if args.analysis == "correspondence":
-        print("Performing correspondence analysis.")
+        print("Performing correspondence analysis.", flush=True)
         preprocFuns = [preprocess_rsa, preprocess_pwcca, preprocess_cka]
         simFuns = [do_rsa, do_pwcca, do_linearCKA]
 
         # Loop through all models and check for correspondence
         allModels = os.listdir(args.models_dir)
         for mdlDir in allModels:
-            print(f"Working on model: {mdlDir}")
+            print(f"Working on model: {mdlDir}", flush=True)
             startTime = time.time()
             tmpModel = load_model(os.path.join(args.models_dir, mdlDir))
 
             results = correspondence_test(
                 model, tmpModel, dataset, preprocFuns, simFuns
             )
-            print("--- %s seconds ---" % (time.time() - startTime))
+            print("--- %s seconds ---" % (time.time() - startTime), flush=True)
