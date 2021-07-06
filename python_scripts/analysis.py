@@ -4,6 +4,8 @@ from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.layers import Flatten
 import tensorflow.keras.backend as K
 import sys, os
+import glob
+import pandas as pd
 
 
 sys.path.append("../imported_code/svcca")
@@ -446,6 +448,69 @@ def make_allout_model(model):
     ]
 
     return Model(inputs=inp, outputs=modelOuts)
+
+
+def get_trajectories(directory, file_str="*", file_name=None):
+    """
+    Return a dataframe of the validation performance for each epoch for each
+    model log in the directory, matches for a file_str if given. Saves to file
+    if file_name is not None.
+    """
+    # Create dataframe
+    colNames = ["weightSeed", "shuffleSeed", "epoch", "valAcc", "log"]
+    out = pd.DataFrame(columns=colNames)
+
+    logList = glob.glob(os.path.join(directory, file_str))
+
+    for log in logList:
+        logName = log.split("/")[-1]
+        with open(log, "r") as f:
+            lines = f.readlines()
+
+        lines = [line.strip() for line in lines]
+
+        # Go next if not finished.
+        if not "final validation acc" in lines[-1]:
+            continue
+
+        # Find seeds
+        snapshotLine = [line for line in lines if "Snapshot" in line][0]
+        snapshotLine = snapshotLine.split()
+        weightIndex = snapshotLine.index("weight") + 1
+        shuffleIndex = snapshotLine.index("shuffle") + 1
+        weightSeed = snapshotLine[weightIndex]
+        shuffleSeed = snapshotLine[shuffleIndex]
+
+        # Check for duplication
+        seedCombos = out.groupby(["weightSeed", "shuffleSeed"]).groups.keys()
+        if (str(weightSeed), str(shuffleSeed)) in seedCombos:
+            print(f"Duplicate model parameter found from {logName}")
+
+        # Get validation accuracy
+        valAccs = [
+            float(line.split("-")[-1].split(":")[-1].strip())
+            for line in lines
+            if "val_accuracy" in line
+        ]
+        nRows = len(valAccs)
+
+        # Add to dataframe
+        tmp = pd.DataFrame(
+            data=[
+                [weightSeed] * nRows,
+                [shuffleSeed] * nRows,
+                range(nRows),
+                valAccs,
+                [logName] * nRows,
+            ],
+            index=colNames,
+        ).T
+        out = out.append(tmp, ignore_index=True)
+
+    if file_name is not None:
+        out.to_csv(file_name, index=False)
+
+    return out
 
 
 """
