@@ -291,10 +291,22 @@ def do_pwcca(acts1, acts2):
     """
     Pre: acts must be shape (neurons, datapoints)
     """
-    # acts1.shape cannot be bigger than acts2.shape for pwcca
-    if acts1.shape <= acts2.shape:
-        return np.mean(pwcca.compute_pwcca(acts1.T, acts2.T, epsilon=1e-10)[0])
-    return np.mean(pwcca.compute_pwcca(acts2.T, acts1.T, epsilon=1e-10)[0])
+    try:
+        # acts1.shape cannot be bigger than acts2.shape for pwcca
+        if acts1.shape <= acts2.shape:
+            result = np.mean(
+                pwcca.compute_pwcca(acts1.T, acts2.T, epsilon=1e-10)[0]
+            )
+        else:
+            result = np.mean(
+                pwcca.compute_pwcca(acts2.T, acts1.T, epsilon=1e-10)[0]
+            )
+    except Exception as e:
+        result = np.nan
+        print(f"pwcca produced an error, saving nan.")
+        print(e)
+
+    return result
 
 
 def do_linearCKA(acts1, acts2):
@@ -431,10 +443,7 @@ def get_rdm(acts):
     """
     Pre: acts must be flattened
     """
-    # print('shape:', acts.shape)
-    num_imgs = acts.shape[0]
-    # print('num_images =', num_imgs)
-    return np.corrcoef(acts, acts)[0:num_imgs, 0:num_imgs]
+    return np.corrcoef(acts, acts)
 
 
 def make_allout_model(model):
