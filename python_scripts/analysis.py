@@ -301,9 +301,9 @@ def do_pwcca(acts1, acts2):
             result = np.mean(
                 pwcca.compute_pwcca(acts2.T, acts1.T, epsilon=1e-10)[0]
             )
-    except Exception as e:
+    except np.linalg.LinAlgError as e:
         result = np.nan
-        print(f"pwcca produced an error, saving nan.")
+        print(f"svd in pwcca failed, saving nan.")
         print(e)
 
     return result
