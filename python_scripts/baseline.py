@@ -7,6 +7,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import tensorflow_addons as tfa
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
@@ -42,7 +43,7 @@ def transform_baseline(
     dim = imgset.shape[1]
     correlations = []
 
-    # Set model to output reps at layer 7
+    # Set model to output reps at selected layer
     inp = full_model.input
     layer = full_model.layers[layer_num]
     out = layer.output
@@ -67,30 +68,20 @@ def transform_baseline(
 
     elif transform == "shift":
         versions = dim
-        up_imgset = np.zeros((num_imgs, dim, dim, 3))
-        down_imgset = np.zeros((num_imgs, dim, dim, 3))
-        left_imgset = np.zeros((num_imgs, dim, dim, 3))
-        right_imgset = np.zeros((num_imgs, dim, dim, 3))
-        # create the gray values we use to fill in space
-        empty = np.zeros((dim, dim, 3))
 
         for v in range(versions):
             # Generate transformed imageset
             # print(' - Working on version', v, 'of', versions)
-            for i in range(num_imgs):
-                img = imgset[i, :, :, :]
-                up_imgset[i] = np.concatenate(
-                    [img[v:dim, :, :], empty[0:v, :, :]]
-                )
-                down_imgset[i] = np.concatenate(
-                    [empty[0:v, :, :], img[0 : dim - v, :, :]]
-                )
-                left_imgset[i] = np.concatenate(
-                    [img[:, v:dim, :], empty[:, 0:v, :]], axis=1
-                )
-                right_imgset[i] = np.concatenate(
-                    [empty[:, 0:v, :], img[:, 0 : dim - v, :]], axis=1
-                )
+            transImg = tfa.image.translate(imgset, [v, 0])  # Right
+            transImg = tf.concat(
+                (transImg, tfa.image.translate(imgset, [-v, 0])), axis=0
+            )  # Left
+            transImg = tf.concat(
+                (transImg, tfa.image.translate(imgset, [0, v])), axis=0
+            )  # Down
+            transImg = tf.concat(
+                (transImg, tfa.image.translate(imgset, [0, -v])), axis=0
+            )  # Up
 
             # plt.imshow(up_imgset[i])
             # plt.show()
@@ -99,34 +90,18 @@ def transform_baseline(
 
             # Get average of all 4 directions
             # print(' - Now correlating...')
-            tmpCor = []
-            rep = preprocess_func(model.predict(up_imgset, verbose=0))
-            tmpCor += (
-                [correlate_func(rep_orig, rep)]
+            reps = model.predict(transImg, verbose=0)
+            # Split back out
+            reps = tf.split(reps, 4)
+            reps = [preprocess_func(np.array(rep)) for rep in reps]
+
+            cors = [
+                correlate_func(rep_orig, rep)
                 if not np.ptp(rep) == 0
-                else [np.nan]
-            )
-            # print('corr_sum:', corr_sum)
-            rep = preprocess_func(model.predict(down_imgset, verbose=0))
-            tmpCor += (
-                [correlate_func(rep_orig, rep)]
-                if not np.ptp(rep) == 0
-                else [np.nan]
-            )
-            # print('corr_sum:', corr_sum)
-            rep = preprocess_func(model.predict(left_imgset, verbose=0))
-            tmpCor += (
-                [correlate_func(rep_orig, rep)]
-                if not np.ptp(rep) == 0
-                else [np.nan]
-            )
-            # print('corr_sum:', corr_sum)
-            rep = preprocess_func(model.predict(right_imgset, verbose=0))
-            tmpCor += (
-                [correlate_func(rep_orig, rep)]
-                if not np.ptp(rep) == 0
-                else [np.nan]
-            )
+                else np.nan
+                for rep in reps
+            ]
+
             # print('corr_sum:', corr_sum)
             correlations.append(tmpCor)
 
