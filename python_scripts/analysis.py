@@ -6,6 +6,7 @@ import tensorflow.keras.backend as K
 import sys, os
 import glob
 import pandas as pd
+import numba as nb
 
 
 sys.path.append("../imported_code/svcca")
@@ -196,23 +197,77 @@ Preprocessing functions
 """
 
 
-def preprocess_rsa(acts, consistency="exemplar"):
-    # Note: Hardcoded on 10 categories
-    categories = 10
-    if len(acts.shape) > 2:
-        imgs, h, w, channels = acts.shape
-        acts = np.reshape(acts, newshape=(imgs, h * w * channels))
-    if consistency == "centroid":
-        centroid_acts = np.empty((categories, acts.shape[1]))
-        # imgs/categories should be a clean divide
-        imgs_per_cat = int(imgs / categories)
-        for i in range(0, imgs, imgs_per_cat):
-            centroid_acts[int(i / imgs_per_cat)] = np.mean(
-                acts[i : i + imgs_per_cat], axis=0
-            )
-        acts = centroid_acts
-    rdm = get_rdm(acts)
-    return rdm
+def preprocess_rsa(acts):
+    assert acts.ndim in (2, 4)
+
+    if acts.ndim == 4:
+        imgs, x, y, chans = acts.shape
+        newShape = x * y * chans
+        newActs = acts.reshape((imgs, newShape))
+        result = np.corrcoef(newActs, newActs)[0:imgs, imgs : imgs * 2]
+    else:
+        imgs = acts.shape[0]
+        result = np.corrcoef(acts, acts)[0:imgs, imgs : imgs * 2]
+
+    return result
+
+
+@nb.jit(nopython=True)
+def preprocess_rsaNumba(acts):
+    assert acts.ndim in (2, 4)
+
+    if acts.ndim == 4:
+        imgs, x, y, chans = acts.shape
+        newShape = x * y * chans
+        newActs = acts.reshape((imgs, newShape))
+        result = nb_cor(newActs, newActs)[0:imgs, imgs : imgs * 2]
+    else:
+        imgs = acts.shape[0]
+        result = nb_cor(acts, acts)[0:imgs, imgs : imgs * 2]
+
+    return result
+
+
+@nb.jit(nopython=True, parallel=True)
+def nb_cov(x, y):
+    # Concatenate x and y
+    x = np.concatenate((x, y), axis=0)
+
+    # Subtract feature mean from each feature
+    for i in nb.prange(x.shape[0]):
+        x[i, :] -= x[i, :].mean()
+
+    # Dot product
+    result = np.dot(x, x.T)
+
+    # Normalization
+    factor = x.shape[1] - 1
+    result *= np.true_divide(1, factor)
+
+    return result
+
+
+@nb.jit(nopython=True, parallel=True)
+def nb_cor(x, y):
+    # Get covariance matrix
+    c = nb_cov(x, y)
+
+    # Get diagonal to normalize into correlation matrix
+    d = np.sqrt(np.diag(c))
+
+    # Divide by rows
+    for i in nb.prange(d.shape[0]):
+        c[i, :] /= d
+
+    # Tranpose and divide it again
+    c = c.T
+    for i in nb.prange(d.shape[0]):
+        c[i, :] /= d
+
+    # Transpose back
+    c = c.T
+
+    return c
 
 
 # TODO: merge with interpolate
@@ -266,15 +321,34 @@ def do_rsa(rdm1, rdm2):
     """
     Pre: RDMs must be same shape
     """
-    assert rdm1.shape == rdm2.shape, (
-        "rdm1: " + str(rdm1.shape) + " rdm2: " + str(rdm2.shape)
-    )
     num_imgs = rdm1.shape[0]
     # Only use upper-triangular values
     rdm1_flat = rdm1[np.triu_indices(n=num_imgs, k=1)]
     rdm2_flat = rdm2[np.triu_indices(n=num_imgs, k=1)]
     # Return squared spearman coefficient
-    return spearmanr(rdm1_flat, rdm2_flat)[0] ** 2
+    return np.corrcoef(rdm1_flat, rdm2_flat) ** 2
+
+
+@nb.jit(nopython=True, parallel=True)
+def do_rsaNumba(rdm1, rdm2):
+    """
+    Pre: RDMs must be same shape
+    """
+    imgs = rdm1.shape[0]
+
+    # Only use upper-triangular values
+    upperTri = np.triu_indices(n=imgs, k=1)
+
+    rdm1_flat = np.empty((1, upperTri[0].shape[0]), dtype="float32")
+    rdm2_flat = np.empty((1, upperTri[0].shape[0]), dtype="float32")
+    for n in nb.prange(upperTri[0].shape[0]):
+        i = upperTri[0][n]
+        j = upperTri[1][n]
+        rdm1_flat[0, n] = rdm1[i, j]
+        rdm2_flat[0, n] = rdm2[i, j]
+
+    # Return squared pearson coefficient
+    return nb_cor(rdm1_flat, rdm2_flat)[0, 1] ** 2
 
 
 def do_svcca(acts1, acts2):
@@ -329,6 +403,28 @@ def do_linearCKA(acts1, acts2):
     return _hsic(acts1, acts2) / (
         (_hsic(acts1, acts1) * _hsic(acts2, acts2)) ** (1 / 2)
     )
+
+
+@nb.jit(nopython=True)
+def do_linearCKANumba(acts1, acts2):
+    """
+    Pre: acts must be shape (datapoints, neurons)
+    """
+    n = acts1.shape[0]
+    centerMatrix = np.eye(n) - (np.ones((n, n)) / n)
+    centerMatrix = centerMatrix.astype(nb.float32)
+
+    # Top part
+    centeredX = np.dot(np.dot(acts1, acts1.T), centerMatrix)
+    centeredY = np.dot(np.dot(acts2, acts2.T), centerMatrix)
+    top = np.trace(np.dot(centeredX, centeredY)) / ((n - 1) ** 2)
+
+    # Bottom part
+    botLeft = np.trace(np.dot(centeredX, centeredX)) / ((n - 1) ** 2)
+    botRight = np.trace(np.dot(centeredY, centeredY)) / ((n - 1) ** 2)
+    bot = (botLeft * botRight) ** (1 / 2)
+
+    return top / bot
 
 
 def correspondence_test(
@@ -426,15 +522,15 @@ def get_threshold(acts):
             ans = mid
             end = mid - 1
 
-    print(
-        "Found",
-        ans,
-        "/",
-        acts.shape[0],
-        "neurons accounts for",
-        np.sum(s[:ans]) / np.sum(s),
-        "of variance",
-    )
+    # print(
+    #     "Found",
+    #     ans,
+    #     "/",
+    #     acts.shape[0],
+    #     "neurons accounts for",
+    #     np.sum(s[:ans]) / np.sum(s),
+    #     "of variance",
+    # )
 
     return ans
 
