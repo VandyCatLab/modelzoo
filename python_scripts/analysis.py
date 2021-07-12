@@ -687,13 +687,13 @@ def get_reps_from_all(modelDir, dataset):
         reps = outModel.predict(dataset)
 
         # Check if representation folder exists, make if not
-        repDir = f"../outputs/masterOutput/representations/{modelName[0:-3]}"
+        repDir = f"../outputs/masterOutput/representations/{model[0:-3]}"
         if not os.path.exists(repDir):
             os.mkdir(repDir)
 
         # Save each rep with respective layer names
         for i, rep in enumerate(reps):
-            np.save(f"{repDir}/{modelName[0:-3]}l{i}.npy", rep)
+            np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
 
 
 if __name__ == "__main__":
