@@ -7,6 +7,7 @@ import sys, os
 import glob
 import pandas as pd
 import numba as nb
+from tensorflow.python.framework.ops import get_all_collection_keys
 
 
 sys.path.append("../imported_code/svcca")
@@ -665,6 +666,34 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
             print(e)
 
     return simDict
+
+
+def get_reps_from_all(modelDir, dataset):
+    """
+    Save representations for each model at every layer in modelDir by passing
+    dataset through it.
+    """
+    # Get list of models
+    models = os.listdir(modelDir)
+
+    # Loop through models
+    for model in models:
+        print(f"Working on model: {model}")
+        # Create allout model
+        modelPath = os.path.join(modelDir, model)
+        outModel = make_allout_model(load_model(modelPath))
+
+        # Get reps
+        reps = outModel.predict(dataset)
+
+        # Check if representation folder exists, make if not
+        repDir = f"../outputs/masterOutput/representations/{modelName[0:-3]}"
+        if not os.path.exists(repDir):
+            os.mkdir(repDir)
+
+        # Save each rep with respective layer names
+        for i, rep in enumerate(reps):
+            np.save(f"{repDir}/{modelName[0:-3]}l{i}.npy", rep)
 
 
 if __name__ == "__main__":
