@@ -684,7 +684,7 @@ def get_reps_from_all(modelDir, dataset):
         outModel = make_allout_model(load_model(modelPath))
 
         # Get reps
-        reps = outModel.predict(dataset)
+        reps = outModel.predict(dataset, batch_size=128)
 
         # Check if representation folder exists, make if not
         repDir = f"../outputs/masterOutput/representations/{model[0:-3]}"
@@ -802,16 +802,5 @@ if __name__ == "__main__":
             print("--- %s seconds ---" % (time.time() - startTime), flush=True)
     elif args.analysis == "getReps":
         print("Getting representations each non-dropout layer", flush=True)
-
-        # Make allout model and get reps
-        model = make_allout_model(model)
-        reps = model.predict(dataset)
-
-        # Check if representation folder exists, make if not
-        repDir = f"../outputs/masterOutput/representations/{modelName[0:-3]}"
-        if not os.path.exists(repDir):
-            os.mkdir(repDir)
-
-        # Save each rep with respective layer names
-        for i, rep in enumerate(reps):
-            np.save(f"{repDir}/{modelName[0:-3]}l{i}.npy", rep)
+        # Run it!
+        get_reps_from_all(args.models_dir, dataset)
