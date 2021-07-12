@@ -303,6 +303,21 @@ def preprocess_cka(acts):
     return acts
 
 
+@nb.jit(nopython=True, parallel=True)
+def preprocess_ckaNumba(acts):
+    if acts.ndim == 4:
+        nImg = acts.shape[0]
+        nChannel = acts.shape[3]
+        result = np.empty(shape=(nImg, nChannel))
+        for i in nb.prange(nImg):
+            for j in nb.prange(nChannel):
+                result[i, j] = np.mean(acts[i, :, :, j])
+
+        return result
+    else:
+        return acts
+
+
 """
 Correlation analysis functions
 """
@@ -663,7 +678,7 @@ if __name__ == "__main__":
         "-a",
         type=str,
         help="type of analysis to run",
-        choices=["correspondence"],
+        choices=["correspondence", "getReps"],
     )
     parser.add_argument(
         "--model_index",
@@ -738,8 +753,12 @@ if __name__ == "__main__":
     # Now do analysis
     if args.analysis == "correspondence":
         print("Performing correspondence analysis.", flush=True)
-        preprocFuns = [preprocess_rsa, preprocess_pwcca, preprocess_cka]
-        simFuns = [do_rsa, do_pwcca, do_linearCKA]
+        preprocFuns = [
+            preprocess_rsaNumba,
+            preprocess_svcca,
+            preprocess_ckaNumba,
+        ]
+        simFuns = [do_rsaNumba, do_svcca, do_linearCKANumba]
 
         # Loop through all models and check for correspondence
         allModels = os.listdir(args.models_dir)
@@ -752,3 +771,18 @@ if __name__ == "__main__":
                 model, tmpModel, dataset, preprocFuns, simFuns
             )
             print("--- %s seconds ---" % (time.time() - startTime), flush=True)
+    elif args.analysis == "getReps":
+        print("Getting representations each non-dropout layer", flush=True)
+
+        # Make allout model and get reps
+        model = make_allout_model(model)
+        reps = model.predict(dataset)
+
+        # Check if representation folder exists, make if not
+        repDir = f"../outputs/masterOutput/representations/{modelName[0:-3]}"
+        if not os.path.exists(repDir):
+            os.mkdir(repDir)
+
+        # Save each rep with respective layer names
+        for i, rep in enumerate(reps):
+            np.save(f"{repDir}/{modelName[0:-3]}l{i}.npy", rep)
