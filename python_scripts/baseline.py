@@ -103,7 +103,7 @@ def transform_baseline(
             ]
 
             # print('corr_sum:', corr_sum)
-            correlations.append(tmpCor)
+            correlations.append(cors)
 
     # Color and zoom will need new datasets every version because of ZCA
     elif transform == "color":
