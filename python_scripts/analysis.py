@@ -750,27 +750,33 @@ def get_reps_from_all(modelDir, dataset):
                 np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
 
 
-def get_model_sims(repDir, layer, preprocFun, simFun):
+def get_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
     """
     Return similarity matrix across all models in repDir and from a specific 
     layer index using preprocFun and simFun. Representations should be in their
     own directory and use the following format within: w0s0l0.npy. The value 
     after l is the layer index.
     """
+    # Load csv and get model parameters
+    import pandas as pd
+
+    modelSeeds = pd.read_csv(modelSeeds)
     # Get all models and generate zeros matrix
-    models = os.listdir(repDir)
-    nModels = len(models)
+    nModels = len(modelSeeds)
     modelSims = np.zeros(shape=(nModels, nModels))
 
     # Loop through, taking care to only do a triangle (assuming symmetry)
-    for i, model1 in enumerate(models):
+    for i, iRow in modelSeeds.iterrows():
+        model1 = f"w{iRow.weight}s{iRow.shuffle}"
         print(f"==Working on index {i} model: {model1}==")
         # Load representations of i and preprocess
         rep1 = np.load(os.path.join(repDir, model1, f"{model1}l{layer}.npy"))
         rep1 = preprocFun(rep1)
-        for j, model2 in enumerate(models):
+        for j, jRow in modelSeeds.iterrows():
             if i > j:  # Only do triangle
                 continue
+
+            model2 = f"w{jRow.weight}s{jRow.shuffle}"
             print(f"-Calculating similarity against index {j} model: {model2}")
 
             # Load representations of j and preprocess
@@ -893,7 +899,9 @@ if __name__ == "__main__":
 
         for layer in args.layer_index:
             print(f"Working on layer {layer} with {simFun.__name__}")
-            simMat = get_model_sims(args.reps_dir, layer, preprocFun, simFun)
+            simMat = get_model_sims(
+                args.model_seeds, args.reps_dir, layer, preprocFun, simFun
+            )
 
             np.save(
                 f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun.__name__}.npy",
