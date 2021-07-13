@@ -320,7 +320,7 @@ def preprocess_ckaNumba(acts):
     if acts.ndim == 4:
         nImg = acts.shape[0]
         nChannel = acts.shape[3]
-        result = np.empty(shape=(nImg, nChannel))
+        result = np.empty(shape=(nImg, nChannel), dtype="float32")
         for i in nb.prange(nImg):
             for j in nb.prange(nChannel):
                 result[i, j] = np.mean(acts[i, :, :, j])
