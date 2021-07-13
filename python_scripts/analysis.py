@@ -735,7 +735,7 @@ def get_reps_from_all(modelDir, dataset):
             os.mkdir(repDir)
 
         # Check if already done
-        layerRepFiles = glob.glob(os.path.join(repDir, modelName[0:-3] + "l*"))
+        layerRepFiles = glob.glob(os.path.join(repDir, model[0:-3] + "l*"))
         if len(layerRepFiles) == len(outModel.outputs):
             print(
                 "Layer representation files already exists, skipping.",
