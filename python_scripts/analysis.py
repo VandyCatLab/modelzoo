@@ -691,7 +691,10 @@ def get_reps_from_all(modelDir, dataset):
         # Check if already done
         layerRepFiles = glob.glob(os.path.join(repDir, modelName[0:-3] + "l*"))
         if len(layerRepFiles) == len(outModel.outputs):
-            print("Layer representation files already exists, skipping.")
+            print(
+                "Layer representation files already exists, skipping.",
+                flush=True,
+            )
         else:
             # Get reps
             reps = outModel.predict(dataset, batch_size=128)
