@@ -777,7 +777,6 @@ if __name__ == "__main__":
     print(f"Model loaded: {modelName}", flush=True)
     model.summary()
 
-    import time
 
     # Now do analysis
     if args.analysis == "correspondence":
@@ -793,13 +792,11 @@ if __name__ == "__main__":
         allModels = os.listdir(args.models_dir)
         for mdlDir in allModels:
             print(f"Working on model: {mdlDir}", flush=True)
-            startTime = time.time()
             tmpModel = load_model(os.path.join(args.models_dir, mdlDir))
 
             results = correspondence_test(
                 model, tmpModel, dataset, preprocFuns, simFuns
             )
-            print("--- %s seconds ---" % (time.time() - startTime), flush=True)
     elif args.analysis == "getReps":
         print("Getting representations each non-dropout layer", flush=True)
         # Run it!
