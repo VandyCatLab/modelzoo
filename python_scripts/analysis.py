@@ -184,13 +184,24 @@ def correlate_trajectory(
 
 
 def get_funcs(method):
-    assert method in ["RSA", "SVCCA", "PWCCA"], "Invalid correlation method"
+    assert method in [
+        "RSA",
+        "SVCCA",
+        "PWCCA",
+        "CKA",
+    ], "Invalid correlation method"
     if method == "RSA":
-        return preprocess_rsa, do_rsa
+        return preprocess_rsaNumba, do_rsaNumba
     elif method == "SVCCA":
         return preprocess_svcca, do_svcca
     elif method == "PWCCA":
         return preprocess_pwcca, do_pwcca
+    elif method == "CKA":
+        return preprocess_ckaNumba, do_linearCKANumba
+
+
+def _split_comma_str(string):
+    return [bit.strip() for bit in string.split(",")]
 
 
 """
@@ -634,6 +645,41 @@ def get_trajectories(directory, file_str="*", file_name=None):
     return out
 
 
+def get_model_from_args(args):
+    # Get model
+    if args.model_index is not None:
+        import pandas as pd
+
+        modelIdx = args.model_index
+
+        # Load csv and get model parameters
+        modelSeeds = pd.read_csv(args.model_seeds)
+        weightSeed = modelSeeds.loc[
+            modelSeeds["index"] == modelIdx, "weight"
+        ].item()
+        shuffleSeed = modelSeeds.loc[
+            modelSeeds["index"] == modelIdx, "shuffle"
+        ].item()
+
+        # Load main model
+        modelName = f"w{weightSeed}s{shuffleSeed}.pb"
+        modelPath = os.path.join(args.models_dir, modelName)
+        model = load_model(modelPath)
+    elif args.shuffle_seed is not None and args.weight_seed is not None:
+        weightSeed = args.weight_seed
+        shuffleSeed = args.shuffle_seed
+
+    # Load main model
+    modelName = f"w{weightSeed}s{shuffleSeed}.pb"
+    modelPath = os.path.join(args.models_dir, modelName)
+    model = load_model(modelPath)
+    layerN = len(model.layers)
+    print(f"Model loaded: {modelName}", flush=True)
+    model.summary()
+
+    return model, modelName, modelPath
+
+
 """
 Large scale analysis functions
 """
@@ -671,7 +717,7 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
 def get_reps_from_all(modelDir, dataset):
     """
     Save representations for each model at every layer in modelDir by passing
-    dataset through it.
+    dataset through it. 
     """
     # Get list of models
     models = os.listdir(modelDir)
@@ -704,6 +750,43 @@ def get_reps_from_all(modelDir, dataset):
                 np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
 
 
+def get_model_sims(repDir, layer, preprocFun, simFun):
+    """
+    Return similarity matrix across all models in repDir and from a specific 
+    layer index using preprocFun and simFun. Representations should be in their
+    own directory and use the following format within: w0s0l0.npy. The value 
+    after l is the layer index.
+    """
+    # Get all models and generate zeros matrix
+    models = os.listdir(repDir)
+    nModels = len(models)
+    modelSims = np.zeros(shape=(nModels, nModels))
+
+    # Loop through, taking care to only do a triangle (assuming symmetry)
+    for i, model1 in enumerate(models):
+        print(f"==Working on index {i} model: {model1}==")
+        # Load representations of i and preprocess
+        rep1 = np.load(os.path.join(repDir, model1, f"{model1}l{layer}.npy"))
+        rep1 = preprocFun(rep1)
+        for j, model2 in enumerate(models):
+            if i > j:  # Only do triangle
+                continue
+            print(f"-Calculating similarity against index {j} model: {model2}")
+
+            # Load representations of j and preprocess
+            rep2 = np.load(
+                os.path.join(repDir, model2, f"{model2}l{layer}.npy")
+            )
+            rep2 = preprocFun(rep2)
+
+            # Do similarity calculation
+            tmpSim = simFun(rep1, rep2)
+            modelSims[i, j] = tmpSim
+            modelSims[j, i] = tmpSim
+
+    return modelSims
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -715,7 +798,7 @@ if __name__ == "__main__":
         "-a",
         type=str,
         help="type of analysis to run",
-        choices=["correspondence", "getReps"],
+        choices=["correspondence", "getReps", "modelSimMat"],
     )
     parser.add_argument(
         "--model_index",
@@ -747,47 +830,37 @@ if __name__ == "__main__":
         default="../outputs/masterOutput/models",
         help="directory for all of the models",
     )
+    parser.add_argument(
+        "--reps_dir",
+        type=str,
+        default="../outputs/masterOutput/representations",
+        help="directory for representations",
+    )
+    parser.add_argument(
+        "--sim_fun",
+        type=str,
+        help="function to calculate representation similarity",
+        choices=["RSA", "SVCCA", "PWCCA", "CKA"],
+    )
+    parser.add_argument(
+        "--layer_index",
+        "-l",
+        type=_split_comma_str,
+        default="layer indices, split by a comma",
+    )
     args = parser.parse_args()
-
-    # Load dataset
-    print("Loading dataset", flush=True)
-    dataset = np.load(args.dataset_file)
-    print(f"dataset shape: {dataset.shape}", flush=True)
-
-    # Get model
-    if args.model_index is not None:
-        import pandas as pd
-
-        modelIdx = args.model_index
-
-        # Load csv and get model parameters
-        modelSeeds = pd.read_csv(args.model_seeds)
-        weightSeed = modelSeeds.loc[
-            modelSeeds["index"] == modelIdx, "weight"
-        ].item()
-        shuffleSeed = modelSeeds.loc[
-            modelSeeds["index"] == modelIdx, "shuffle"
-        ].item()
-
-        # Load main model
-        modelName = f"w{weightSeed}s{shuffleSeed}.pb"
-        modelPath = os.path.join(args.models_dir, modelName)
-        model = load_model(modelPath)
-    elif args.shuffle_seed is not None and args.weight_seed is not None:
-        weightSeed = args.weight_seed
-        shuffleSeed = args.shuffle_seed
-
-    # Load main model
-    modelName = f"w{weightSeed}s{shuffleSeed}.pb"
-    modelPath = os.path.join(args.models_dir, modelName)
-    model = load_model(modelPath)
-    layerN = len(model.layers)
-    print(f"Model loaded: {modelName}", flush=True)
-    model.summary()
 
     # Now do analysis
     if args.analysis == "correspondence":
         print("Performing correspondence analysis.", flush=True)
+
+        model, _, _ = get_model_from_args(args)
+
+        # Load dataset
+        print("Loading dataset", flush=True)
+        dataset = np.load(args.dataset_file)
+        print(f"dataset shape: {dataset.shape}", flush=True)
+
         preprocFuns = [
             preprocess_rsaNumba,
             preprocess_svcca,
@@ -806,5 +879,24 @@ if __name__ == "__main__":
             )
     elif args.analysis == "getReps":
         print("Getting representations each non-dropout layer", flush=True)
+
+        # Load dataset
+        print("Loading dataset", flush=True)
+        dataset = np.load(args.dataset_file)
+        print(f"dataset shape: {dataset.shape}", flush=True)
+
         # Run it!
         get_reps_from_all(args.models_dir, dataset)
+    elif args.analysis == "modelSimMat":
+        print("Creating model similarity matrix.", flush=True)
+        preprocFun, simFun = get_funcs(args.sim_fun)
+
+        for layer in args.layer_index:
+            print(f"Working on layer {layer} with {simFun.__name__}")
+            simMat = get_model_sims(args.reps_dir, layer, preprocFun, simFun)
+
+            np.save(
+                f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun.__name__}.npy",
+                simMat,
+            )
+
