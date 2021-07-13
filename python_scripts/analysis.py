@@ -683,17 +683,22 @@ def get_reps_from_all(modelDir, dataset):
         modelPath = os.path.join(modelDir, model)
         outModel = make_allout_model(load_model(modelPath))
 
-        # Get reps
-        reps = outModel.predict(dataset, batch_size=128)
-
         # Check if representation folder exists, make if not
         repDir = f"../outputs/masterOutput/representations/{model[0:-3]}"
         if not os.path.exists(repDir):
             os.mkdir(repDir)
 
-        # Save each rep with respective layer names
-        for i, rep in enumerate(reps):
-            np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
+        # Check if already done
+        layerRepFiles = glob.glob(os.path.join(repDir, modelName[0:-3] + "l*"))
+        if len(layerRepFiles) == len(outModel.outputs):
+            print("Layer representation files already exists, skipping.")
+        else:
+            # Get reps
+            reps = outModel.predict(dataset, batch_size=128)
+
+            # Save each rep with respective layer names
+            for i, rep in enumerate(reps):
+                np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
 
 
 if __name__ == "__main__":
@@ -776,7 +781,6 @@ if __name__ == "__main__":
     layerN = len(model.layers)
     print(f"Model loaded: {modelName}", flush=True)
     model.summary()
-
 
     # Now do analysis
     if args.analysis == "correspondence":
