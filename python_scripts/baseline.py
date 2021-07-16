@@ -1,7 +1,3 @@
-"""
-SAFE
-"""
-
 import sys
 import numpy as np
 from PIL import Image
@@ -13,127 +9,82 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from tensorflow.keras.datasets import cifar10
 import analysis, datasets
+import pandas as pd
+import os
 
 
-def transform_baseline(
-    transform, full_model, layer_num, correlate_func, preprocess_func
-):
+def yield_transforms(transform, model, layer_idx, dataset):
     """
-    Given a transform type, a model and a correlation type, return
-    a list of correlations of RDM_x with RDM_0, x being some transform depth and
-    0 being the RDM for the untransformed imageset
-
-    imageset (must be square): np array shape (num_imgs, dim, dim, channels)
+    Yield transformed representations successfully from the dataset after 
+    passing through the model to a certain layer_idx. Transforms control what 
+    is yielded.
 
     Transform information:
-        - reflect: flip across y axis
-        - color: generate 200 recolored (not including original) versions of varying severity
-        - zoom: zoom in towards center by clipping off 1 pixel from each side
-        - shift: pixel-by-pixel translation, fill with gray, each "depth" is mean of up-down-left-right shifting
+        - 'reflect' yields only one representations
+        - 'translate' yields a number a list of four representations equal to 
+        the smaller dimension, translating the image in all four directions.
+        - 'color' yields 51 representations after modifying the color channels
+        with multiples of the PCA.
+        - 'zoom' yields a number of representations equal to half the smaller
+        dimension, zooming into the image.
     """
-
-    print("### Transform:", transform, "with", correlate_func.__name__)
-    print("Generating dataset")
-    _, testData = datasets.make_train_data(shuffle_seed=0)
-    imgset, _ = datasets.make_predict_data(testData)
-    # print('orig imgset:', imgset)
-
-    # Dataset information
-    num_imgs = imgset.shape[0]
-    dim = imgset.shape[1]
-    correlations = []
-
     # Set model to output reps at selected layer
-    inp = full_model.input
-    layer = full_model.layers[layer_num]
+    inp = model.input
+    layer = model.layers[layer_idx]
     out = layer.output
-    # Flatten if necessary and using RSA
-    if len(out.shape) != 2 and correlate_func == analysis.do_rsa:
-        out = Flatten()(out)
-
     model = Model(inputs=inp, outputs=out)
 
     # Get reps for originals
-    rep_orig = model.predict(imgset)
-    rep_orig = preprocess_func(rep_orig)
+    rep1 = model.predict(dataset, verbose=0)
 
     # Reflect and shift don't require remaking the dataset
     if transform == "reflect":
-        print(" - Working on version 1 of 1")
-        transformed_imgset = np.flip(imgset, axis=2)
-        rep = model.predict(transformed_imgset, verbose=0)
-        rep = preprocess_func(rep)
-        print(" - Now correlating...")
-        correlations.append(correlate_func(rep_orig, rep))
+        print(" - Yielding 1 version.")
+        transDataset = np.flip(dataset, axis=2)
+        rep2 = model.predict(transDataset, verbose=0)
+        yield 0, rep1, rep2
 
-    elif transform == "shift":
-        versions = dim
+    elif transform == "translate":
+        versions = (
+            dataset.shape[1]
+            if dataset.shape[1] <= dataset.shape[2]
+            else dataset.shape[2]
+        )
 
+        print(f" - Yielding {versions} versions.")
         for v in range(versions):
             # Generate transformed imageset
-            # print(' - Working on version', v, 'of', versions)
-            transImg = tfa.image.translate(imgset, [v, 0])  # Right
+            transImg = tfa.image.translate(dataset, [v, 0])  # Right
             transImg = tf.concat(
-                (transImg, tfa.image.translate(imgset, [-v, 0])), axis=0
+                (transImg, tfa.image.translate(dataset, [-v, 0])), axis=0
             )  # Left
             transImg = tf.concat(
-                (transImg, tfa.image.translate(imgset, [0, v])), axis=0
+                (transImg, tfa.image.translate(dataset, [0, v])), axis=0
             )  # Down
             transImg = tf.concat(
-                (transImg, tfa.image.translate(imgset, [0, -v])), axis=0
+                (transImg, tfa.image.translate(dataset, [0, -v])), axis=0
             )  # Up
 
-            # plt.imshow(up_imgset[i])
-            # plt.show()
-            # plt.imshow(imgset[i])
-            # plt.show()
-
             # Get average of all 4 directions
-            # print(' - Now correlating...')
-            reps = model.predict(transImg, verbose=0)
+            rep2 = model.predict(transImg, verbose=0)
             # Split back out
-            reps = tf.split(reps, 4)
-            reps = [preprocess_func(np.array(rep)) for rep in reps]
+            rep2 = tf.split(rep2, 4)
 
-            cors = [
-                correlate_func(rep_orig, rep)
-                if not np.ptp(rep) == 0
-                else np.nan
-                for rep in reps
-            ]
+            yield v, rep1, rep2
 
-            # print('corr_sum:', corr_sum)
-            correlations.append(cors)
-
-    # Color and zoom will need new datasets every version because of ZCA
     elif transform == "color":
         versions = 51
         alphas = np.linspace(-10, 10, versions)
 
         print("Do PCA on raw training set to get eigenvalues and -vectors")
-        # x_train = datasets.x_trainRaw.reshape(-1, 3)
-        x_train = datasets.x_trainRaw / 255.0
-        x_train = x_train.reshape(-1, 3)
-        x_trainCentre = x_train - np.mean(x_train, axis=0)
-        cov = np.cov(x_trainCentre.T)
+        x_train = datasets.preprocess(datasets.x_trainRaw)
+        x_train = x_train.reshape(x_train.shape[0], -1)
+        cov = np.cov(x_train.T)
         values, vectors = np.linalg.eigh(cov)
 
-        # Get new test set
-        x_test = datasets.preprocess(datasets.x_testRaw)
-        y_test = tf.keras.utils.to_categorical(datasets.y_testRaw, 10)
-        testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-        imgset, _ = datasets.make_predict_data(testData)
-
-        # Get reps for originals
-        rep_orig = model.predict(imgset)
-        rep_orig = preprocess_func(rep_orig)
-
+        print(f" - Yielding {versions} versions.")
         for v in range(versions):
-            # Generate transformed imageset
-            print(" - Working on version", v, "of", versions)
-
-            # Start with a raw test set again
-            transImg = datasets.x_testRaw / 255.0
+            transImg = dataset
 
             # Add multiple of shift
             alpha = alphas[v]
@@ -141,53 +92,40 @@ def transform_baseline(
             transImg[:, :, :, 0] += change[0]
             transImg[:, :, :, 1] += change[1]
             transImg[:, :, :, 2] += change[2]
-            transImg = np.clip(transImg, a_min=0, a_max=1)
 
-            # Unscale
-            transImg *= 255
+            rep2 = model.predict(transImg, verbose=0)
 
-            transImg = datasets.preprocess(transImg)
-            transData = tf.data.Dataset.from_tensor_slices((transImg, y_test))
-            transImgset, _ = datasets.make_predict_data(transData)
-
-            print(" - Now correlating...")
-            rep = model.predict(transImgset, verbose=0)
-            rep = preprocess_func(rep)
-            correlations.append(correlate_func(rep_orig, rep))
-            print("correlation:", correlations[v])
+            yield v, rep1, rep2
 
     elif transform == "zoom":
-        versions = dim // 2
-        # Create dataset
-        x_test = datasets.preprocess(datasets.x_testRaw)
-        y_test = tf.keras.utils.to_categorical(datasets.y_testRaw, 10)
-        testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-        imgset, _ = datasets.make_predict_data(testData)
+        smallDim = (
+            dataset.shape[1]
+            if dataset.shape[1] <= dataset.shape[2]
+            else dataset.shape[2]
+        )
+        versions = smallDim // 2
 
-        # Get reps for originals
-        rep_orig = model.predict(imgset)
-        rep_orig = preprocess_func(rep_orig)
-
+        print(f" - Yielding {versions} versions.")
         for v in range(versions):
             # Generate transformed imageset
-            print(" - Working on version", v, "of", versions)
-            transformed_imgset = imgset[:, v : dim - v, v : dim - v, :]
-            transformed_imgset = tf.image.resize(
-                transformed_imgset, (dim, dim)
+            transformed_dataset = dataset[
+                :, v : smallDim - v, v : smallDim - v, :
+            ]
+            transformed_dataset = tf.image.resize(
+                transformed_dataset, (smallDim, smallDim)
             )
 
-            # print(transformed_imgset)
-            # plt.imshow(transformed_imgset[0, :, :, :].astype(int))
-            # plt.show()
-            # print('transformed_imgset:', transformed_imgset)
             print(" - Now correlating...")
-            rep = model.predict(transformed_imgset, verbose=0)
-            rep = preprocess_func(rep)
-            correlations.append(correlate_func(rep_orig, rep))
-            print("correlation:", correlations[v])
+            rep2 = model.predict(transformed_dataset, verbose=0)
 
-    print("Done!\n")
-    return correlations
+            yield v, rep1, rep2
+
+
+def dropoutBaseline():
+    """
+    Another baseline analysis but the same image with different dropouts.
+    """
+    raise NotImplementedError
 
 
 """
@@ -243,4 +181,106 @@ def visualize_transform(transform, depth, img_arr):
         axarr[0, 1].imshow(down_transformed)
         axarr[1, 0].imshow(left_transformed)
         axarr[1, 1].imshow(right_transformed)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Perform baseline analysis, intended to be used in HPC"
+    )
+    parser.add_argument(
+        "--analysis",
+        "-a",
+        type=str,
+        help="type of analysis to run",
+        choices=["translate", "zoom", "reflect", "color", "dropout"],
+    )
+    parser.add_argument(
+        "--model_index",
+        "-i",
+        type=int,
+        help="model index to select weight and shuffle seeds",
+    )
+    parser.add_argument(
+        "--shuffle_seed", type=int, help="shuffle seed of the main model"
+    )
+    parser.add_argument(
+        "--weight_seed", type=int, help="weight seed of the main model"
+    )
+    parser.add_argument(
+        "--model_seeds",
+        type=str,
+        default="../outputs/masterOutput/modelSeeds.csv",
+        help="file location for csv file with model seeds",
+    )
+    parser.add_argument(
+        "--dataset_file",
+        type=str,
+        default="../outputs/masterOutput/dataset.npy",
+        help="npy file path for the image dataset to use for analysis",
+    )
+    parser.add_argument(
+        "--models_dir",
+        type=str,
+        default="../outputs/masterOutput/models",
+        help="directory for all of the models",
+    )
+    parser.add_argument(
+        "--layer_index",
+        "-l",
+        type=analysis._split_comma_str,
+        default="layer indices, split by a comma",
+    )
+    args = parser.parse_args()
+
+    # Load model
+    model, modelName, _ = analysis.get_model_from_args(args)
+
+    # Load dataset
+    print("Loading dataset", flush=True)
+    dataset = np.load(args.dataset_file)
+    print(f"dataset shape: {dataset.shape}", flush=True)
+
+    # Prep analysis functions
+    preprocFuns = [
+        analysis.preprocess_rsaNumba,
+        analysis.preprocess_svcca,
+        analysis.preprocess_ckaNumba,
+    ]
+    simFuns = [
+        analysis.do_rsaNumba,
+        analysis.do_svcca,
+        analysis.do_linearCKANumba,
+    ]
+
+    basePath = "../outputs/masterOutput/baseline/"
+
+    if args.analysis in ["translate", "zoom", "reflect", "color"]:
+        for layer in args.layer_index:
+            # Get transforms generators
+            transforms = yield_transforms(
+                args.analysis, model, int(layer), dataset
+            )
+
+            # Get similarity measure per transform
+            simDf = pd.DataFrame(
+                columns=["version"] + [fun.__name__ for fun in simFuns]
+            )
+            for v, rep1, rep2 in transforms:
+                sims = analysis.multi_analysis(
+                    rep1, rep2, preprocFuns, simFuns
+                )
+                simDf.loc[len(simDf.index)] = [v] + [
+                    sims[fun] for fun in sims.keys()
+                ]
+
+            # Save
+            outPath = os.path.join(
+                basePath, f"{modelName[0:-3]}l{layer}-{args.analysis}.csv"
+            )
+            simDf.to_csv(outPath, index=False)
+
+    elif args.analysis == "dropout":
+        raise NotImplementedError
 
