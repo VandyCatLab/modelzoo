@@ -268,23 +268,27 @@ if __name__ == "__main__":
                 args.analysis, model, int(layer), dataset
             )
 
+            # Create dataframe
+            if args.analysis == "translate":
+                directions = (
+                    ["right"] * len(simFuns)
+                    + ["left"] * len(simFuns)
+                    + ["down"] * len(simFuns)
+                    + ["up"] * len(simFuns)
+                )
+                colNames = [
+                    f"{fun}-{direct}"
+                    for direct, fun in zip(
+                        directions, [fun.__name__ for fun in simFuns] * 4
+                    )
+                ]
+                simDf = pd.DataFrame(columns=["version"] + colNames)
+            else:
+                simDf = pd.DataFrame(columns=["version"] + simFunNames)
+
             # Get similarity measure per transform
             for v, rep1, rep2 in transforms:
                 if args.analysis == "translate":
-                    directions = (
-                        ["right"] * len(simFuns)
-                        + ["left"] * len(simFuns)
-                        + ["down"] * len(simFuns)
-                        + ["up"] * len(simFuns)
-                    )
-                    colNames = [
-                        f"{fun}-{direct}"
-                        for direct, fun in zip(
-                            directions, [fun.__name__ for fun in simFuns] * 4
-                        )
-                    ]
-                    simDf = pd.DataFrame(columns=["version"] + colNames)
-
                     # Calculate similarity for each direction
                     simDirs = []
                     for rep in rep2:
@@ -302,7 +306,6 @@ if __name__ == "__main__":
 
                     simDf.loc[len(simDf.index)] = tmp
                 else:
-                    simDf = pd.DataFrame(columns=["version"] + simFunNames)
                     sims = analysis.multi_analysis(
                         rep1, rep2, preprocFuns, simFuns
                     )
