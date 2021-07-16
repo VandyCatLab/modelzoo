@@ -8,7 +8,7 @@
 #SBATCH --mem=8G
 #SBATCH --time=8:00:00
 #SBATCH --array=0-1
-#SBATCH --output=../logs/master/baseline_%a.out 
+#SBATCH --output=../logs/master/baseline/baseline_%a.out 
 #SBATCH --mail-user=jason.k.chow@vanderbilt.edu
 #SBATCH --mail-type=FAIL
 
