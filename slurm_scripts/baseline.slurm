@@ -16,9 +16,9 @@
 date
 
 # Do the stuff
-singularity exec ../pyTF.sif python ../python_scripts/baseline.py -a reflect -l 10 -i ${SLURM_ARRAY_TASK_ID}
-singularity exec ../pyTF.sif python ../python_scripts/baseline.py -a translate -l 10 -i ${SLURM_ARRAY_TASK_ID}
-singularity exec ../pyTF.sif python ../python_scripts/baseline.py -a color -l 10 -i ${SLURM_ARRAY_TASK_ID}
-singularity exec ../pyTF.sif python ../python_scripts/baseline.py -a zoom -l 10 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a reflect -l 10 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a translate -l 10 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a color -l 10 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a zoom -l 10 -i ${SLURM_ARRAY_TASK_ID}
 
 date
