@@ -261,6 +261,7 @@ if __name__ == "__main__":
     basePath = "../outputs/masterOutput/baseline/"
 
     if args.analysis in ["translate", "zoom", "reflect", "color"]:
+        simFunNames = [fun.__name__ for fun in simFuns]
         for layer in args.layer_index:
             # Get transforms generators
             transforms = yield_transforms(
@@ -268,16 +269,46 @@ if __name__ == "__main__":
             )
 
             # Get similarity measure per transform
-            simDf = pd.DataFrame(
-                columns=["version"] + [fun.__name__ for fun in simFuns]
-            )
             for v, rep1, rep2 in transforms:
-                sims = analysis.multi_analysis(
-                    rep1, rep2, preprocFuns, simFuns
-                )
-                simDf.loc[len(simDf.index)] = [v] + [
-                    sims[fun] for fun in sims.keys()
-                ]
+                if args.analysis == "translate":
+                    directions = (
+                        ["right"] * len(simFuns)
+                        + ["left"] * len(simFuns)
+                        + ["down"] * len(simFuns)
+                        + ["up"] * len(simFuns)
+                    )
+                    colNames = [
+                        f"{fun}-{direct}"
+                        for direct, fun in zip(
+                            directions, [fun.__name__ for fun in simFuns] * 4
+                        )
+                    ]
+                    simDf = pd.DataFrame(columns=["version"] + colNames)
+
+                    # Calculate similarity for each direction
+                    simDirs = []
+                    for rep in rep2:
+                        rep = np.array(rep)
+                        simDirs += [
+                            analysis.multi_analysis(
+                                rep1, rep, preprocFuns, simFuns
+                            )
+                        ]
+
+                    # Save all directions
+                    tmp = [v]
+                    for dic in simDirs:
+                        tmp += [dic[key] for key in dic.keys()]
+
+                    simDf.loc[len(simDf.index)] = tmp
+                else:
+                    simDf = pd.DataFrame(columns=["version"] + simFunNames)
+                    sims = analysis.multi_analysis(
+                        rep1, rep2, preprocFuns, simFuns
+                    )
+                    simDf.loc[len(simDf.index)] = [v] + [
+                        sims[fun] for fun in sims.keys()
+                    ]
 
             # Save
             outPath = os.path.join(
