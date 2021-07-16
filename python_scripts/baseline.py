@@ -53,6 +53,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
         print(f" - Yielding {versions} versions.")
         for v in range(versions):
+            print(f"Translating {v} pixels.")
             # Generate transformed imageset
             transImg = tfa.image.translate(dataset, [v, 0])  # Right
             transImg = tf.concat(
@@ -88,6 +89,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             # Add multiple of shift
             alpha = alphas[v]
+            print(f"Color shifting alpha: {alpha}.")
             change = np.dot(vectors, values * alpha)
             transImg[:, :, :, 0] += change[0]
             transImg[:, :, :, 1] += change[1]
@@ -107,6 +109,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
         print(f" - Yielding {versions} versions.")
         for v in range(versions):
+            print(f"Zooming {v} pixels.")
             # Generate transformed imageset
             transformed_dataset = dataset[
                 :, v : smallDim - v, v : smallDim - v, :
@@ -236,6 +239,7 @@ if __name__ == "__main__":
 
     # Load model
     model, modelName, _ = analysis.get_model_from_args(args)
+    model = analysis.make_allout_model(model)
 
     # Load dataset
     print("Loading dataset", flush=True)
