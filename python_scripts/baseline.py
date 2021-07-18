@@ -39,7 +39,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
     # Reflect and shift don't require remaking the dataset
     if transform == "reflect":
-        print(" - Yielding 1 version.")
+        print(" - Yielding 1 version.", flush=True)
         transDataset = np.flip(dataset, axis=2)
         rep2 = model.predict(transDataset, verbose=0)
         yield 0, rep1, rep2
@@ -77,19 +77,22 @@ def yield_transforms(transform, model, layer_idx, dataset):
         versions = 51
         alphas = np.linspace(-10, 10, versions)
 
-        print("Do PCA on raw training set to get eigenvalues and -vectors")
+        print(
+            "Do PCA on raw training set to get eigenvalues and -vectors",
+            flush=True,
+        )
         x_train = datasets.preprocess(datasets.x_trainRaw)
         x_train = x_train.reshape(x_train.shape[0], -1)
         cov = np.cov(x_train.T)
         values, vectors = np.linalg.eigh(cov)
 
-        print(f" - Yielding {versions} versions.")
+        print(f" - Yielding {versions} versions.", flush=True)
         for v in range(versions):
             transImg = dataset
 
             # Add multiple of shift
             alpha = alphas[v]
-            print(f"Color shifting alpha: {alpha}.")
+            print(f"Color shifting alpha: {alpha}.", flush=True)
             change = np.dot(vectors, values * alpha)
             transImg[:, :, :, 0] += change[0]
             transImg[:, :, :, 1] += change[1]
@@ -107,9 +110,9 @@ def yield_transforms(transform, model, layer_idx, dataset):
         )
         versions = smallDim // 2
 
-        print(f" - Yielding {versions} versions.")
+        print(f" - Yielding {versions} versions.", flush=True)
         for v in range(versions):
-            print(f"Zooming {v} pixels.")
+            print(f"Zooming {v} pixels.", flush=True)
             # Generate transformed imageset
             transformed_dataset = dataset[
                 :, v : smallDim - v, v : smallDim - v, :
@@ -118,7 +121,6 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 transformed_dataset, (smallDim, smallDim)
             )
 
-            print(" - Now correlating...")
             rep2 = model.predict(transformed_dataset, verbose=0)
 
             yield v, rep1, rep2
@@ -263,6 +265,7 @@ if __name__ == "__main__":
     if args.analysis in ["translate", "zoom", "reflect", "color"]:
         simFunNames = [fun.__name__ for fun in simFuns]
         for layer in args.layer_index:
+            print(f"Working on layer {layer}.", flush=True)
             # Get transforms generators
             transforms = yield_transforms(
                 args.analysis, model, int(layer), dataset
