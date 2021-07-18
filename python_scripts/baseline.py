@@ -52,8 +52,8 @@ def yield_transforms(transform, model, layer_idx, dataset):
         )
 
         print(f" - Yielding {versions} versions.")
-        for v in range(versions):
-            print(f"Translating {v} pixels.")
+        for v in tf.range(versions):
+            print(f"Translating {v} pixels.", flush=True)
             # Generate transformed imageset
             transImg = tfa.image.translate(dataset, [v, 0])  # Right
             transImg = tf.concat(
