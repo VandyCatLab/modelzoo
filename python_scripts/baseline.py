@@ -133,6 +133,30 @@ def dropoutBaseline():
     raise NotImplementedError
 
 
+def make_dropout_model(model, output_idx):
+    """
+    Return a new model with the dropout layers activated during prediction with
+    outputs at the list output_idx.
+    """
+    modelInput = model.input
+
+    outputs = []
+    inp = model.layers[0].output
+    for i, layer in enumerate(model.layers[1 : len(model.layers)]):
+        if "dropout" in layer.name:  # Dropout layer
+            # Make a new dropout that is used during prediction
+            drop = tf.keras.layers.Dropout(0.5)
+            inp = drop(inp, training=True)
+        else:
+            inp = layer(inp)
+
+        if i in output_idx:
+            outputs += [inp]
+
+    model = tf.keras.Model(inputs=modelInput, outputs=outputs)
+    return model
+
+
 """
 Sanity check/Visualization functions
 """
@@ -323,5 +347,7 @@ if __name__ == "__main__":
             simDf.to_csv(outPath, index=False)
 
     elif args.analysis == "dropout":
-        raise NotImplementedError
-
+        model = make_dropout_model(model, [12, 11, 10])
+        run1 = model.predict(dataset)
+        run2 = model.predict(dataset)
+        run1 - run2
