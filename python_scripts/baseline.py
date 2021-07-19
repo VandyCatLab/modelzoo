@@ -347,7 +347,29 @@ if __name__ == "__main__":
             simDf.to_csv(outPath, index=False)
 
     elif args.analysis == "dropout":
-        model = make_dropout_model(model, [12, 11, 10])
-        run1 = model.predict(dataset)
-        run2 = model.predict(dataset)
-        run1 - run2
+        layerIdx = [int(idx) for idx in args.layer_index]
+        layerIdx.sort()
+        model = make_dropout_model(model, layerIdx)
+        rep1 = model.predict(dataset)
+        rep2 = model.predict(dataset)
+
+        # Make sure it's a list
+        rep1 = rep1 if isinstance(rep1, list) else [rep1]
+        rep2 = rep2 if isinstance(rep1, list) else [rep2]
+
+        data = pd.DataFrame(
+            columns=["layer"] + [fun.__name__ for fun in simFuns]
+        )
+        for i in range(len(rep1)):
+            sims = analysis.multi_analysis(
+                rep1[i], rep2[i], preprocFuns, simFuns
+            )
+            data.loc[len(data.index)] = [layerIdx[i]] + [
+                sims[fun] for fun in sims.keys()
+            ]
+
+        outPath = os.path.join(
+            basePath,
+            f"{modelName[0:-3]}-dropout-{','.join([str(idx) for idx in layerIdx])}.csv",
+        )
+        data.to_csv(outPath, index=False)
