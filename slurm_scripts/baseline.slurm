@@ -5,8 +5,8 @@
 #SBATCH --partition=pascal 
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=2
-#SBATCH --mem=8G
-#SBATCH --time=1:00:00
+#SBATCH --mem=16G
+#SBATCH --time=4:00:00
 #SBATCH --array=0-99
 #SBATCH --output=../logs/master/baseline/baseline_%a.out 
 #SBATCH --mail-user=jason.k.chow@vanderbilt.edu
