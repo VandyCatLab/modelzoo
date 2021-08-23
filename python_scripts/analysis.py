@@ -8,6 +8,7 @@ import glob
 import pandas as pd
 import numba as nb
 from tensorflow.python.framework.ops import get_all_collection_keys
+import itertools
 
 
 sys.path.append("/data/idvor/imported_code/svcca")
@@ -455,8 +456,8 @@ def do_linearCKANumba(acts1, acts2):
 
 
 def correspondence_test(
-    model1,
-    model2,
+    model1: str,
+    model2: str,
     preproc_fun,
     sim_fun,
     rep_dir="../outputs/masterOutput/representations",
@@ -465,41 +466,55 @@ def correspondence_test(
     Return the results of the correspondence test given two model names using
     pregenerated representations in rep_dir with the preproc_fun and sim_funs.
     """
+    # Get similarity function names
+    funNames = [fun.__name__ for fun in sim_fun]
+
     # Make directories for representations and get representations
     model1Glob = os.path.join(rep_dir, model1, f"{model1}l*.npy")
     model2Glob = os.path.join(rep_dir, model2, f"{model2}l*.npy")
     model1Glob = glob.glob(model1Glob)
     model2Glob = glob.glob(model2Glob)
+    model1Glob.sort(key=lambda x: int(x.split("l")[-1].split(".")[0]))
+    model2Glob.sort(key=lambda x: int(x.split("l")[-1].split(".")[0]))
 
     # Load representations
     model1Reps = [np.load(rep) for rep in model1Glob]
     model2Reps = [np.load(rep) for rep in model2Glob]
 
-    # Create dict for results
-    results = {fun.__name__: [] for fun in sim_fun}
+    # Get all representation layer combos and their similarities
+    comboSims = list(
+        itertools.product(range(len(model1Reps)), range(len(model1Reps)))
+    )
+    comboSims = np.array(comboSims)
+    comboSims = np.hstack(
+        (comboSims, np.zeros((len(comboSims), len(sim_fun))))
+    )
 
-    # Loop through layers of model1
-    for i, rep1 in enumerate(model1Reps):
-        winners = {fun.__name__: [-1, 0] for fun in sim_fun}
-        for layer, rep2 in enumerate(model2Reps):
-            output = multi_analysis(rep1, rep2, preproc_fun, sim_fun)
+    print("Generating representation simliarities", flush=True)
+    for combo in comboSims:
+        print(
+            f"Finding the similarities between model 1 rep {int(combo[0])} and model 2 rep {int(combo[1])}",
+            flush=True,
+        )
+        rep1 = model1Reps[int(combo[0])]
+        rep2 = model2Reps[int(combo[1])]
 
-            for fun, sim in output.items():
-                if sim > winners[fun][1]:
-                    # New winner
-                    winners[fun] = [layer, sim]
+        # Do analysis and save it
+        output = multi_analysis(rep1, rep2, preproc_fun, sim_fun)
+        combo[2:] = [output[fun] for fun in funNames]
 
-        # Save winners for this layer
-        for fun, layerIdx in results.items():
-            results[fun] += [winners[fun][0]]
+    # Find the winner for each layer for each
+    print("Finding winners for each layer", flush=True)
+    winners = np.zeros((len(model1Reps), len(funNames)), dtype="int")
+    for layer in range(len(model1Reps)):
+        print(f"Finding the winner for layer {layer}")
+        winners[layer, :] = np.argmax(
+            comboSims[comboSims[:, 0] == layer, 2:], axis=0
+        )
 
-        print(f"Layer {i} winners {winners}", flush=True)
+    winners
 
-    # Just return list if there's only one
-    if len(results.keys()) == 1:
-        results = results[sim_fun[0].__name__]
-
-    return results
+    return winners
 
 
 """
@@ -861,17 +876,36 @@ if __name__ == "__main__":
     if args.analysis == "correspondence":
         print("Performing correspondence analysis.", flush=True)
 
-        _, modelName, _ = get_model_from_args(args)
-
         preprocFuns = [
             preprocess_rsaNumba,
             preprocess_svcca,
             preprocess_ckaNumba,
         ]
         simFuns = [do_rsaNumba, do_svcca, do_linearCKANumba]
+        funNames = [fun.__name__ for fun in simFuns]
 
-        test = correspondence_test("w0s0", "w1s0", preprocFuns, simFuns)
-        test
+        # List model representations and make combinations
+        reps = glob.glob(args.reps_dir + "/*")
+        reps = [rep.split("/")[-1] for rep in reps]
+        repCombos = list(itertools.combinations(reps, 2))
+
+        # Prepare dataframes
+        numLayers = len(
+            glob.glob(f"{args.reps_dir}/{reps[0]}/{reps[0]}l*.npy")
+        )
+        winners = pd.DataFrame(
+            sum([[combo] * numLayers for combo in repCombos], []),
+            columns=["model1", "model2"],
+        )
+        winners[funNames] = -1
+
+        # Find the winners
+        for model1, model2 in repCombos:
+            winners.loc[
+                (winners["model1"] == model1) & (winners["model2"] == model2),
+                funNames,
+            ] = correspondence_test(model1, model2, preprocFuns, simFuns)
+
     elif args.analysis == "getReps":
         print("Getting representations each non-dropout layer", flush=True)
 
