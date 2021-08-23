@@ -10,7 +10,7 @@ import numba as nb
 from tensorflow.python.framework.ops import get_all_collection_keys
 
 
-sys.path.append("../imported_code/svcca")
+sys.path.append("/data/idvor/imported_code/svcca")
 import cca_core, pwcca
 
 """
@@ -455,33 +455,34 @@ def do_linearCKANumba(acts1, acts2):
 
 
 def correspondence_test(
-    model1: Model,
-    model2: Model,
-    dataset: np.ndarray,
-    preproc_fun: list,
-    sim_fun: list,
+    model1,
+    model2,
+    preproc_fun,
+    sim_fun,
+    rep_dir="../outputs/masterOutput/representations",
 ):
     """
-    Return a list of indices for each model1 layer's most similar layer in 
-    model2 for each similarity function given the dataset. If multiple 
-    similarity functions are given, return a dictionary.
+    Return the results of the correspondence test given two model names using
+    pregenerated representations in rep_dir with the preproc_fun and sim_funs.
     """
-    # Get a model that outputs at every layer and get representations
-    outModel = make_allout_model(model1)
-    mainReps = outModel.predict(dataset)
+    # Make directories for representations and get representations
+    model1Glob = os.path.join(rep_dir, model1, f"{model1}l*.npy")
+    model2Glob = os.path.join(rep_dir, model2, f"{model2}l*.npy")
+    model1Glob = glob.glob(model1Glob)
+    model2Glob = glob.glob(model2Glob)
 
-    # Do the same for model 2
-    outModel = make_allout_model(model2)
-    altReps = outModel.predict(dataset)
+    # Load representations
+    model1Reps = [np.load(rep) for rep in model1Glob]
+    model2Reps = [np.load(rep) for rep in model2Glob]
 
     # Create dict for results
     results = {fun.__name__: [] for fun in sim_fun}
 
     # Loop through layers of model1
-    for i, rep in enumerate(mainReps):
+    for i, rep1 in enumerate(model1Reps):
         winners = {fun.__name__: [-1, 0] for fun in sim_fun}
-        for layer, altRep in enumerate(altReps):
-            output = multi_analysis(rep, altRep, preproc_fun, sim_fun)
+        for layer, rep2 in enumerate(model2Reps):
+            output = multi_analysis(rep1, rep2, preproc_fun, sim_fun)
 
             for fun, sim in output.items():
                 if sim > winners[fun][1]:
@@ -688,10 +689,10 @@ Large scale analysis functions
 def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
     """
     Perform similarity analysis between rep1 and rep2 once for each method as
-    indicated by first applying a preproc_fun then the sim_fun. preproc_fun 
+    indicated by first applying a preproc_fun then the sim_fun. preproc_fun
     should be a list of functions to run on the representations before applying
     the similarity function at the same index in the list sim_fun. Elements of
-    preproc_fun can be None wherein the representations are not preprocessed 
+    preproc_fun can be None wherein the representations are not preprocessed
     before being passed to the paired similarity function.
     """
     assert len(preproc_fun) == len(sim_fun)
@@ -717,7 +718,7 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
 def get_reps_from_all(modelDir, dataset):
     """
     Save representations for each model at every layer in modelDir by passing
-    dataset through it. 
+    dataset through it.
     """
     # Get list of models
     models = os.listdir(modelDir)
@@ -752,9 +753,9 @@ def get_reps_from_all(modelDir, dataset):
 
 def get_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
     """
-    Return similarity matrix across all models in repDir and from a specific 
+    Return similarity matrix across all models in repDir and from a specific
     layer index using preprocFun and simFun. Representations should be in their
-    own directory and use the following format within: w0s0l0.npy. The value 
+    own directory and use the following format within: w0s0l0.npy. The value
     after l is the layer index.
     """
     # Load csv and get model parameters
@@ -860,12 +861,7 @@ if __name__ == "__main__":
     if args.analysis == "correspondence":
         print("Performing correspondence analysis.", flush=True)
 
-        model, _, _ = get_model_from_args(args)
-
-        # Load dataset
-        print("Loading dataset", flush=True)
-        dataset = np.load(args.dataset_file)
-        print(f"dataset shape: {dataset.shape}", flush=True)
+        _, modelName, _ = get_model_from_args(args)
 
         preprocFuns = [
             preprocess_rsaNumba,
@@ -874,15 +870,8 @@ if __name__ == "__main__":
         ]
         simFuns = [do_rsaNumba, do_svcca, do_linearCKANumba]
 
-        # Loop through all models and check for correspondence
-        allModels = os.listdir(args.models_dir)
-        for mdlDir in allModels:
-            print(f"Working on model: {mdlDir}", flush=True)
-            tmpModel = load_model(os.path.join(args.models_dir, mdlDir))
-
-            results = correspondence_test(
-                model, tmpModel, dataset, preprocFuns, simFuns
-            )
+        test = correspondence_test("w0s0", "w1s0", preprocFuns, simFuns)
+        test
     elif args.analysis == "getReps":
         print("Getting representations each non-dropout layer", flush=True)
 
@@ -907,4 +896,3 @@ if __name__ == "__main__":
                 f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun.__name__}.npy",
                 simMat,
             )
-
