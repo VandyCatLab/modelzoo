@@ -11,7 +11,7 @@ from tensorflow.python.framework.ops import get_all_collection_keys
 import itertools
 
 
-sys.path.append("/data/idvor/imported_code/svcca")
+sys.path.append("../imported_code/svcca")
 import cca_core, pwcca
 
 """
