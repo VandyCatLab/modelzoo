@@ -913,7 +913,7 @@ if __name__ == "__main__":
             ] = correspondence_test(model1, model2, preprocFuns, simFuns)
 
         print("Saving results", flush=True)
-        winners.csv(
+        winners.to_csv(
             f"../outputs/masterOutput/correspondence/{modelName}Correspondence.csv"
         )
 
