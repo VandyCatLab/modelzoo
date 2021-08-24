@@ -15,13 +15,13 @@ import os
 
 def yield_transforms(transform, model, layer_idx, dataset):
     """
-    Yield transformed representations successfully from the dataset after 
-    passing through the model to a certain layer_idx. Transforms control what 
+    Yield transformed representations successfully from the dataset after
+    passing through the model to a certain layer_idx. Transforms control what
     is yielded.
 
     Transform information:
         - 'reflect' yields only one representations
-        - 'translate' yields a number a list of four representations equal to 
+        - 'translate' yields a number a list of four representations equal to
         the smaller dimension, translating the image in all four directions.
         - 'color' yields 51 representations after modifying the color channels
         with multiples of the PCA.
