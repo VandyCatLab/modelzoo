@@ -884,10 +884,15 @@ if __name__ == "__main__":
         simFuns = [do_rsaNumba, do_svcca, do_linearCKANumba]
         funNames = [fun.__name__ for fun in simFuns]
 
+        # Get model
+        _, modelName, _ = get_model_from_args(args)
+        modelName = modelName.split(".")[0]
+
         # List model representations and make combinations
         reps = glob.glob(args.reps_dir + "/*")
         reps = [rep.split("/")[-1] for rep in reps]
         repCombos = list(itertools.combinations(reps, 2))
+        repCombos = [x for x in repCombos if x[0] == modelName]
 
         # Prepare dataframes
         numLayers = len(
@@ -901,10 +906,16 @@ if __name__ == "__main__":
 
         # Find the winners
         for model1, model2 in repCombos:
+            print(f"Comparing {model1} and {model2}", flush=True)
             winners.loc[
                 (winners["model1"] == model1) & (winners["model2"] == model2),
                 funNames,
             ] = correspondence_test(model1, model2, preprocFuns, simFuns)
+
+        print("Saving results", flush=True)
+        winners.csv(
+            f"../outputs/masterOutput/correspondence/{modelName}Correspondence.csv"
+        )
 
     elif args.analysis == "getReps":
         print("Getting representations each non-dropout layer", flush=True)
