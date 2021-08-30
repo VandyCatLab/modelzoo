@@ -35,7 +35,9 @@ def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
     x_flat = x_train.reshape(x_train.shape[0], -1)
 
     vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
-    prinComps = np.dot(vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T))
+    prinComps = np.dot(
+        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
+    )
 
     x_train = np.dot(x_flat, prinComps).reshape(x_train.shape)
     testFlat = x_test.reshape(x_test.shape[0], -1)
@@ -47,7 +49,6 @@ def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
 
     trainData = tf.data.Dataset.from_tensor_slices((x_train, y_train))
     testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-    # TODO: once we know that augmenting works, do the 10x10
     if augment:
         trainData = (
             trainData.prefetch(tf.data.experimental.AUTOTUNE)
@@ -93,7 +94,9 @@ def preprocess(imgset):
     x_flat = x_train.reshape(x_train.shape[0], -1)
 
     vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
-    prinComps = np.dot(vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T))
+    prinComps = np.dot(
+        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
+    )
 
     testFlat = imgset.reshape(imgset.shape[0], -1)
     imgset = np.dot(testFlat, prinComps).reshape(imgset.shape)
