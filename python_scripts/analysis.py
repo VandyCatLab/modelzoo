@@ -1,13 +1,10 @@
 import numpy as np
-from scipy.stats import pearsonr, spearmanr
 from tensorflow.keras.models import Model, load_model
-from tensorflow.keras.layers import Flatten
 import tensorflow.keras.backend as K
 import sys, os
 import glob
 import pandas as pd
 import numba as nb
-from tensorflow.python.framework.ops import get_all_collection_keys
 import itertools
 
 
