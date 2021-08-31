@@ -938,3 +938,15 @@ if __name__ == "__main__":
                 f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun.__name__}.npy",
                 simMat,
             )
+    else:
+        print("No analysis argument, treating as main.")
+        repFile = "../outputs/masterOutput/representations/w0s0/w0s0l9.npy"
+        reps = np.load(repFile)
+
+        repOrig = reps.copy()
+        repConst = reps.copy() + 1
+
+        repOrig = preprocess_rsaNumba(repOrig)
+        repOrigCopy = preprocess_rsaNumba(repConst)
+
+        print(do_rsaNumba(repOrig, repOrigCopy))
