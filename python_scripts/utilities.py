@@ -67,9 +67,46 @@ def correspondence_missing_optimizer(missing):
     return modelPairs
 
 
+def compile_augment(path, augment, layer):
+    """
+    Return the data of certain type of baseline augment from path at a given
+    layer.
+    """
+    files = glob.glob(os.path.join(path, f"*l{layer}-{augment}.csv"))
+    df = pd.DataFrame()
+    for file in files:
+        tmp = pd.read_csv(file, index_col=0)
+        df = pd.concat((df, tmp))
+
+    return df
+
+
+def compile_dropout(path):
+    """
+    Return the data from the baseline dropout representations from a path.
+    """
+    files = glob.glob(os.path.join(path, "*dropout*"))
+
+    df = pd.DataFrame()
+    for file in files:
+        tmp = pd.read_csv(file, index_col=0)
+        df = pd.concat((df, tmp))
+
+    return df
+
+
 if __name__ == "__main__":
-    path = "../outputs/masterOutput/correspondence/"
-    modelsPath = "../outputs/masterOutput/models/"
-    data, missing = compile_correspondence(path, modelsPath)
-    modelPairs = correspondence_missing_optimizer(missing)
-    modelPairs
+    path = "../outputs/masterOutput/baseline/"
+    df = compile_dropout(path)
+    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout.csv")
+
+    # augments = ["color", "translate", "zoom", "reflect"]
+    # layers = range(11)
+
+    # for augment in augments:
+    #     df = pd.DataFrame()
+    #     for layer in layers:
+    #         tmp = compile_augment(path, augment, layer)
+    #         df = pd.concat((df, tmp))
+
+    #     df.to_csv(f"../outputs/masterOutput/baseline/compiled/{augment}.csv")
