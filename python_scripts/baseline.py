@@ -82,7 +82,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             flush=True,
         )
         x_train = datasets.preprocess(datasets.x_trainRaw)
-        x_train = x_train.reshape(x_train.shape[0], -1)
+        x_train = x_train.reshape(-1, 3)
         cov = np.cov(x_train.T)
         values, vectors = np.linalg.eigh(cov)
 
@@ -327,7 +327,7 @@ if __name__ == "__main__":
                         ]
 
                     # Save all directions
-                    tmp = [v]
+                    tmp = [v.numpy()]
                     for dic in simDirs:
                         tmp += [dic[key] for key in dic.keys()]
 

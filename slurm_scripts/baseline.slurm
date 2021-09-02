@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=16G
 #SBATCH --time=4:00:00
-#SBATCH --array=0-99
+#SBATCH --array=0-1
 #SBATCH --output=../logs/master/baseline/baseline_%a.out 
 #SBATCH --mail-user=jason.k.chow@vanderbilt.edu
 #SBATCH --mail-type=FAIL
@@ -16,9 +16,9 @@
 date
 
 # Do the stuff
-singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a reflect -l 10,9,8 -i ${SLURM_ARRAY_TASK_ID}
-singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a translate -l 10,9,8 -i ${SLURM_ARRAY_TASK_ID}
-singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a color -l 10,9,8 -i ${SLURM_ARRAY_TASK_ID}
-singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a zoom -l 10,9,8 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a reflect -l 3,7,11 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a translate -l 3,7,11 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a color -l 3,7,11 -i ${SLURM_ARRAY_TASK_ID}
+singularity exec --nv ../pyTF.sif python ../python_scripts/baseline.py -a zoom -l 3,7,11 -i ${SLURM_ARRAY_TASK_ID}
 
 date
