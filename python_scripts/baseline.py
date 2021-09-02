@@ -75,7 +75,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
     elif transform == "color":
         versions = 51
-        alphas = np.linspace(-10, 10, versions)
+        alphas = np.linspace(-1.5, 1.5, versions)
 
         print(
             "Do PCA on raw training set to get eigenvalues and -vectors",
@@ -88,7 +88,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
         print(f" - Yielding {versions} versions.", flush=True)
         for v in range(versions):
-            transImg = dataset
+            transImg = np.copy(dataset)
 
             # Add multiple of shift
             alpha = alphas[v]
