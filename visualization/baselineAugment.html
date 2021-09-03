@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <script>
+        d3.csv('../outputs/masterOutput/baseline/compiled/color.csv').then(d => {
+            let tmp = d.map(d => {
+                return {
+                    augment: 'color',
+                    layer: +d.layer,
+                    version: +d.version,
+                    rsa: +d.do_rsaNumba,
+                    cca: +d.do_svcca,
+                    cka: +d.do_linearCKANumba
+                }
+            });
+            data = tmp;
+            return data
+        }).then((d) => {
+            d3.csv('../outputs/masterOutput/baseline/compiled/zoom.csv').then(d => {
+                let tmp = d.map(d => {
+                    return {
+                        augment: 'zoom',
+                        layer: +d.layer,
+                        version: +d.version,
+                        rsa: +d.do_rsaNumba,
+                        cca: +d.do_svcca,
+                        cka: +d.do_linearCKANumba
+                    }
+                });
+                data = data.concat(tmp);
+                return data
+            });
+        }).then((d) => {
+            d3.csv('../outputs/masterOutput/baseline/compiled/translate.csv').then(d => {
+                let tmp = d.map(d => {
+                    return {
+                        augment: 'translate',
+                        layer: +d.layer,
+                        version: +d.version,
+                        rsa: (Number(d["do_rsaNumba-left"]) + Number(d["do_rsaNumba-right"]) + Number(d["do_rsaNumba-up"]) + Number(d["do_rsaNumba-down"])) / 4,
+                        cca: (Number(d["do_svcca-left"]) + Number(d['do_svcca-right']) + Number(d["do_svcca-up"]) + Number(d["do_svcca-down"])) / 4,
+                        cka: (Number(d["do_linearCKANumba-left"]) + Number(d["do_linearCKANumba-right"]) + Number(d["do_linearCKANumba-up"]) + Number(d["do_linearCKANumba-down"])) / 4,
+                        rsa_left: +d["do_rsaNumba-left"],
+                        rsa_right: +d["do_rsaNumba-right"],
+                        rsa_up: +d["do_rsaNumba-up"],
+                        rsa_down: +d["do_rsaNumba-down"],
+                        cca_left: +d["do_svcca-left"],
+                        cca_right: +d["do_svcca-right"],
+                        cca_up: +d['do_svcca-up'],
+                        cca_down: +d['do_svcca-down'],
+                        cka_left: +d['do_linearCKANumba-left'],
+                        cka_right: +d['do_linearCKANumba-right'],
+                        cka_up: +d['do_linearCKANumba-up'],
+                        cka_down: +d['do_linearCKANumba-down']
+                    }
+                });
+                data = data.concat(tmp);
+                data = d3.groups(data, d => d.augment, d => d.layer);
+                data = data.map(d => d[1].map(d => d[1]))
+
+                const totalWidth = 800;
+                const totalHeight = 600;
+
+                // SVG Box
+                let svg = d3.select("body")
+                    .append("svg")
+                    .attr("width", totalWidth)
+                    .attr("height", totalHeight);
+
+                // Build axes
+                augmentScale = d3.scaleBand()
+                    .domain(data.map(d => d[0][0].augment))
+                    .range([0, totalWidth])
+                    .paddingOuter(0.05)
+                    .paddingInner(0.1)
+
+                layerScale = d3.scaleBand()
+                    .domain(data[0].map(d => d[0].layer))
+                    .range([totalHeight, 0])
+                    .paddingOuter(0.05)
+                    .paddingInner(0.1)
+
+                simAxis = d3.scaleLinear()
+                    .domain([0, 1])
+                    .range([layerScale.bandwidth(), 0])
+
+                colorScale = d3.scaleLinear()
+                    .domain(d3.extent(data.map(d => d[0])[0].map(d => d.version)))
+                    .range([0, augmentScale.bandwidth()])
+
+                zoomScale = d3.scaleLinear()
+                    .domain(d3.extent(data.map(d => d[0])[1].map(d => d.version)))
+                    .range([0, augmentScale.bandwidth()])
+
+                translateScale = d3.scaleLinear()
+                    .domain(d3.extent(data.map(d => d[0])[2].map(d => d.version)))
+                    .range([0, augmentScale.bandwidth()])
+                augScales = { 'color': colorScale, 'zoom': zoomScale, 'translate': translateScale }
+
+                // Build small multiples boxes
+                augmentPlots = svg.selectAll('empty')
+                    .data(data).enter()
+                    .append('g')
+                    .selectAll('empty')
+                    .data(d => d).enter()
+                    .append('g')
+                    .attr('transform', d => 'translate(' + augmentScale(d[0].augment) + ', ' + layerScale(d[0].layer) + ')')
+
+                // Add backgrounds
+                augmentPlots.append('rect')
+                    .attr('x', 0)
+                    .attr('y', 0)
+                    .attr('width', augmentScale.bandwidth())
+                    .attr('height', layerScale.bandwidth())
+
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>
