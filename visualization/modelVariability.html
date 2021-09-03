@@ -43,13 +43,6 @@
                 trajPlot = svg.append('g')
                     .attr('transform', 'translate(' + trajPadding + ', ' + trajPadding + ')')
 
-                // Background
-                trajPlot.append('rect')
-                    .attr('width', trajWidth)
-                    .attr('height', trajHeight)
-                    .attr('fill', 'white')
-                    .attr('stroke', 'gray')
-
                 // Build plot axes
                 let xAxis = d3.scaleLinear()
                     // .domain([-5, d3.max(data.map(d => d.epoch))])
