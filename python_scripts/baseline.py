@@ -133,7 +133,7 @@ def dropoutBaseline():
     raise NotImplementedError
 
 
-def make_dropout_model(model, output_idx):
+def make_dropout_model(model, output_idx, droprate):
     """
     Return a new model with the dropout layers activated during prediction with
     outputs at the list output_idx.
@@ -145,7 +145,7 @@ def make_dropout_model(model, output_idx):
     for i, layer in enumerate(model.layers[1 : len(model.layers)]):
         if "dropout" in layer.name:  # Dropout layer
             # Make a new dropout that is used during prediction
-            drop = tf.keras.layers.Dropout(0.5)
+            drop = tf.keras.layers.Dropout(droprate)
             inp = drop(inp, training=True)
         else:
             inp = layer(inp)
@@ -349,24 +349,27 @@ if __name__ == "__main__":
     elif args.analysis == "dropout":
         layerIdx = [int(idx) for idx in args.layer_index]
         layerIdx.sort()
-        model = make_dropout_model(model, layerIdx)
-        rep1 = model.predict(dataset)
-        rep2 = model.predict(dataset)
-
-        # Make sure it's a list
-        rep1 = rep1 if isinstance(rep1, list) else [rep1]
-        rep2 = rep2 if isinstance(rep1, list) else [rep2]
+        dropRates = np.arange(0, 1, 0.05)
 
         data = pd.DataFrame(
-            columns=["layer"] + [fun.__name__ for fun in simFuns]
+            columns=[fun.__name__ for fun in simFuns] + ["layer", "dropRate"]
         )
-        for i in range(len(rep1)):
-            sims = analysis.multi_analysis(
-                rep1[i], rep2[i], preprocFuns, simFuns
-            )
-            data.loc[len(data.index)] = [layerIdx[i]] + [
-                sims[fun] for fun in sims.keys()
-            ]
+        for drop in dropRates:
+            dropModel = make_dropout_model(model, layerIdx, drop)
+            rep1 = dropModel.predict(dataset)
+            rep2 = dropModel.predict(dataset)
+
+            # Make sure it's a list
+            rep1 = rep1 if isinstance(rep1, list) else [rep1]
+            rep2 = rep2 if isinstance(rep1, list) else [rep2]
+
+            for i in range(len(rep1)):
+                sims = analysis.multi_analysis(
+                    rep1[i], rep2[i], preprocFuns, simFuns
+                )
+                sims["layer"] = layerIdx[i]
+                sims["dropRate"] = drop
+                data.loc[len(data.index)] = [sims[fun] for fun in sims.keys()]
 
         outPath = os.path.join(
             basePath,
