@@ -27,7 +27,7 @@ if __name__ == "__main__":
     permuteSims = pd.DataFrame(columns=colNames)
 
     nMax = imgset.shape[0]
-    ratiosRange = np.arange(0.01, 1, 0.01)
+    ratiosRange = np.arange(0.05, 1, 0.05)
     nPermute = 10000
 
     for ratio in ratiosRange:
