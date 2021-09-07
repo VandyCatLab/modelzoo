@@ -6,6 +6,8 @@ tests/gpu_variance/with_hash/outputs/*
 *.h5
 *.sif
 outputs/
+*.png
+
 # Unnecessary
 **/__pycache__/
 *.ipynb_checkpoints
