@@ -2,9 +2,103 @@ import analysis
 import tensorflow as tf
 import numpy as np
 import pandas as pd
+import os
 
 
-if __name__ == "__main__":
+def permuteTest():
+    modelPath = "../outputs/masterOutput/models/w0s0.pb"
+    print("Loading model")
+    model = tf.keras.models.load_model(modelPath)
+
+    # load dataset
+    imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Dataset information
+    num_imgs = imgset.shape[0]
+    dim = imgset.shape[1]
+    correlations = []
+
+    # Set model to output reps at layer
+    inp = model.input
+    layer = model.layers[12]
+    out = layer.output
+
+    tmpModel = tf.keras.Model(inputs=inp, outputs=out)
+
+    # Get reps for originals and flatten
+    rep_orig = tmpModel.predict(imgset)
+    repShape = rep_orig.shape
+    rep_flat = rep_orig.flatten()
+    repMean = np.mean(rep_flat)
+    repSD = np.std(rep_flat)
+
+    permutePath = "../outputs/masterOutput/permuteSims.csv"
+    if os.path.exists(permutePath):
+        print("Using existing permutation test results")
+        permuteData = pd.read_csv(permutePath)
+    else:
+        preprocFuns = [
+            analysis.preprocess_rsaNumba,
+            analysis.preprocess_svcca,
+            analysis.preprocess_ckaNumba,
+        ]
+        simFuns = [
+            analysis.do_rsaNumba,
+            analysis.do_svcca,
+            analysis.do_linearCKANumba,
+        ]
+        colNames = [fun.__name__ for fun in simFuns] + ["analysis"]
+        nPermutes = 10000
+
+        permuteData = pd.DataFrame(columns=colNames)
+
+        # Random permutation
+        print("Doing random simulation")
+        df = pd.DataFrame(columns=colNames, index=range(nPermutes))
+        for permute in range(nPermutes):
+            if permute % 100 == 0:
+                print(f"-- Permutation at {permute}")
+
+            rep1 = np.random.choice(rep_flat, size=repShape, replace=False)
+            rep2 = np.random.choice(rep_flat, size=repShape, replace=False)
+
+            sims = analysis.multi_analysis(rep1, rep2, preprocFuns, simFuns)
+            df.loc[permute] = list(sims.values()) + ["random"]
+        permuteData = permuteData.append(df)
+
+        # Noised permutation
+        print("Doing noise simulation")
+        df = pd.DataFrame(columns=colNames, index=range(nPermutes))
+        for permute in range(nPermutes):
+            if permute % 100 == 0:
+                print(f"-- Permutation at {permute}")
+
+            rep = np.random.choice(rep_flat, size=repShape, replace=False)
+            repNoise = rep + np.random.normal(scale=repSD, size=repShape)
+            repNoise = repNoise.astype(np.float32)
+
+            sims = analysis.multi_analysis(rep, repNoise, preprocFuns, simFuns)
+            df.loc[permute] = list(sims.values()) + ["noise"]
+        permuteData = permuteData.append(df)
+
+        # Cut a neuron
+        print("Doing ablation simulation")
+        df = pd.DataFrame(columns=colNames, index=range(nPermutes))
+        for permute in range(nPermutes):
+            if permute % 100 == 0:
+                print(f"-- Permutation at {permute}")
+
+            rep = np.random.choice(rep_flat, size=repShape, replace=False)
+            repCut = np.copy(rep)
+            repCut[:, np.random.choice(rep.shape[1])] = 0
+
+            sims = analysis.multi_analysis(rep, repCut, preprocFuns, simFuns)
+            df.loc[permute] = list(sims.values()) + ["ablate"]
+        permuteData = permuteData.append(df)
+        permuteData.to_csv(permutePath)
+
+
+def sizeRatioTest():
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
@@ -51,3 +145,7 @@ if __name__ == "__main__":
                 )
             )
     permuteSims.to_csv("../outputs/masterOutput/ratioSims.csv", index=False)
+
+
+if __name__ == "__main__":
+    permuteTest()
