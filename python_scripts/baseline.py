@@ -77,13 +77,14 @@ def yield_transforms(transform, model, layer_idx, dataset):
         versions = 51
         alphas = np.linspace(-1.5, 1.5, versions)
 
-        print(
-            "Do PCA on raw training set to get eigenvalues and -vectors",
-            flush=True,
-        )
-        x_train = datasets.preprocess(datasets.x_trainRaw)
-        x_train = x_train.reshape(-1, 3)
-        cov = np.cov(x_train.T)
+        # print(
+        #     "Do PCA on raw training set to get eigenvalues and -vectors",
+        #     flush=True,
+        # )
+        # x_train = datasets.preprocess(datasets.x_trainRaw)
+        # x_train = x_train.reshape(-1, 3)
+        # cov = np.cov(x_train.T)
+        cov = np.cov(dataset.reshape(-1, 3).T)
         values, vectors = np.linalg.eigh(cov)
 
         print(f" - Yielding {versions} versions.", flush=True)
