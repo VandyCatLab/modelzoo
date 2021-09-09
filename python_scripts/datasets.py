@@ -104,7 +104,7 @@ def preprocess(imgset):
     return imgset
 
 
-def make_predict_data(dataset, dtype=None):
+def make_predict_data(x, y, dtype=None):
     """
     Curate prediction set with 1000 images, 100 images for
     all 10 categories of CIFAR10
@@ -115,12 +115,12 @@ def make_predict_data(dataset, dtype=None):
     if dtype is not None:
         x_predict = x_predict.astype(dtype)
     y_predict = np.empty((1000, 10))
-    for data in dataset:
-        index = np.argmax(data[1])
+    for img, label in zip(x, y):
+        index = np.argmax(label)
         cur_count = counts[index]
         if cur_count != 100:
-            x_predict[100 * index + cur_count] = data[0].numpy()
-            y_predict[100 * index + cur_count] = data[1][0].numpy()
+            x_predict[100 * index + cur_count] = img
+            y_predict[100 * index + cur_count] = label.numpy()
             counts[index] += 1
         # Finish once all 10 categories are full
         if all(count == 100 for count in counts):
@@ -128,3 +128,12 @@ def make_predict_data(dataset, dtype=None):
 
     print("Done!")
     return x_predict, y_predict
+
+
+if __name__ == "__main__":
+    # Check if dataset is deterministic
+    dataset = np.load("../outputs/masterOutput/dataset.npy")
+    dataset2, labels = make_predict_data(
+        preprocess(x_testRaw), tf.one_hot(y_testRaw, 10)
+    )
+    np.save("../outputs/masterOutput/labels.npy", labels)
