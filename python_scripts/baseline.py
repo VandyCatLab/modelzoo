@@ -125,6 +125,22 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             yield v, rep1, rep2
 
+    elif transform == "noise":
+        sd = np.std(dataset)
+        versions = 20
+        alphas = np.linspace(0, 1, versions)
+
+        print(f" - Yielding {versions} versions.", flush=True)
+        for a in alphas:
+            noise = (
+                np.random.normal(loc=0, scale=sd * 3, size=dataset.shape) * a
+            )
+            transDataset = dataset[:] + noise
+
+            rep2 = model.predict(transDataset, verbose=0)
+
+            yield a, rep1, rep2
+
 
 def dropoutBaseline():
     """
@@ -223,7 +239,7 @@ if __name__ == "__main__":
         "-a",
         type=str,
         help="type of analysis to run",
-        choices=["translate", "zoom", "reflect", "color", "dropout"],
+        choices=["translate", "zoom", "reflect", "color", "dropout", "noise"],
     )
     parser.add_argument(
         "--model_index",
@@ -286,7 +302,7 @@ if __name__ == "__main__":
 
     basePath = "../outputs/masterOutput/baseline/"
 
-    if args.analysis in ["translate", "zoom", "reflect", "color"]:
+    if args.analysis in ["translate", "zoom", "reflect", "color", "noise"]:
         simFunNames = [fun.__name__ for fun in simFuns]
         for layer in args.layer_index:
             print(f"Working on layer {layer}.", flush=True)
