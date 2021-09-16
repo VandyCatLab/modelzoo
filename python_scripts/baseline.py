@@ -42,7 +42,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
         print(" - Yielding 1 version.", flush=True)
         transDataset = np.flip(dataset, axis=2)
         rep2 = model.predict(transDataset, verbose=0)
-        yield 0, rep1, rep2
+        yield 0, rep1, rep2, transDataset
 
     elif transform == "translate":
         versions = (
@@ -71,7 +71,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             # Split back out
             rep2 = tf.split(rep2, 4)
 
-            yield v, rep1, rep2
+            yield v, rep1, rep2, transImg
 
     elif transform == "color":
         versions = 51
@@ -101,7 +101,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             rep2 = model.predict(transImg, verbose=0)
 
-            yield v, rep1, rep2
+            yield v, rep1, rep2, transImg
 
     elif transform == "zoom":
         smallDim = (
@@ -124,7 +124,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             rep2 = model.predict(transformed_dataset, verbose=0)
 
-            yield v, rep1, rep2
+            yield v, rep1, rep2, transformed_dataset
 
     elif transform == "noise":
         sd = np.std(dataset)
@@ -140,14 +140,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             rep2 = model.predict(transDataset, verbose=0)
 
-            yield a, rep1, rep2
-
-
-def dropoutBaseline():
-    """
-    Another baseline analysis but the same image with different dropouts.
-    """
-    raise NotImplementedError
+            yield a, rep1, rep2, transDataset
 
 
 def make_dropout_model(model, output_idx, droprate):
@@ -155,6 +148,8 @@ def make_dropout_model(model, output_idx, droprate):
     Return a new model with the dropout layers activated during prediction with
     outputs at the list output_idx.
     """
+    if output_idx == [-1]:
+        output_idx = [len(model.layers) - 2]
     modelInput = model.input
 
     outputs = []
@@ -240,7 +235,15 @@ if __name__ == "__main__":
         "-a",
         type=str,
         help="type of analysis to run",
-        choices=["translate", "zoom", "reflect", "color", "dropout", "noise"],
+        choices=[
+            "translate",
+            "zoom",
+            "reflect",
+            "color",
+            "dropout",
+            "noise",
+            "accuracy",
+        ],
     )
     parser.add_argument(
         "--model_index",
@@ -267,6 +270,12 @@ if __name__ == "__main__":
         help="npy file path for the image dataset to use for analysis",
     )
     parser.add_argument(
+        "--labels_file",
+        type=str,
+        default="../outputs/masterOutput/labels.npy",
+        help="npy file path for the labels of the dataset to use for anlaysis.",
+    )
+    parser.add_argument(
         "--models_dir",
         type=str,
         default="../outputs/masterOutput/models",
@@ -282,7 +291,9 @@ if __name__ == "__main__":
 
     # Load model
     model, modelName, _ = analysis.get_model_from_args(args)
-    model = analysis.make_allout_model(model)
+
+    if not args.analysis == "accuracy":
+        model = analysis.make_allout_model(model)
 
     # Load dataset
     print("Loading dataset", flush=True)
@@ -331,7 +342,7 @@ if __name__ == "__main__":
                 simDf = pd.DataFrame(columns=["version"] + simFunNames)
 
             # Get similarity measure per transform
-            for v, rep1, rep2 in transforms:
+            for v, rep1, rep2, _ in transforms:
                 if args.analysis == "translate":
                     # Calculate similarity for each direction
                     simDirs = []
@@ -363,6 +374,58 @@ if __name__ == "__main__":
             )
             simDf.to_csv(outPath, index=False)
 
+    elif args.analysis == "accuracy":
+        augList = ["translate", "zoom", "reflect", "color", "noise"]
+        dataLabels = np.load(args.labels_file)
+
+        # First handle augment tests first
+        for aug in augList:
+            # Make transforms, note selecting first layer for efficiency sake
+            transforms = yield_transforms(aug, model, 1, dataset)
+
+            # Create dataframe
+            colNames = (
+                ["version", "rightAcc", "leftAcc", "downAcc", "upAcc"]
+                if aug == "translate"
+                else ["version", "acc"]
+            )
+            accDF = pd.DataFrame(columns=colNames)
+
+            # Get similarity measure per transform
+            for v, _, _, transImg in transforms:
+                if aug == "translate":
+                    # Split image to the directions
+                    transDir = tf.split(transImg, 4)
+                    accs = [0.0] * 4
+                    for i, direct in enumerate(transDir):
+                        _, accs[i] = model.evaluate(direct, dataLabels)
+
+                    accDF.loc[len(accDF.index)] = [float(v.numpy())] + accs
+                else:
+                    _, acc = model.evaluate(transImg, dataLabels)
+                    accDF.loc[len(accDF.index)] = [v] + acc
+
+            # Save
+            outPath = os.path.join(
+                basePath, f"{modelName[0:-3]}-acc-{aug}.csv"
+            )
+            accDF.to_csv(outPath, index=False)
+
+        # Now do dropout
+        dropRates = np.arange(0, 1, 0.05)
+        accDF = pd.DataFrame(columns=["version", "acc"])
+        for drop in dropRates:
+            dropModel = make_dropout_model(model, [-1], drop)
+            dropModel.compile(
+                optimizer="SGD",
+                loss="categorical_crossentropy",
+                metrics=["accuracy"],
+            )
+            _, acc = dropModel.evaluate(dataset, dataLabels)
+            accDF.loc[len(accDF.index)] = [drop] + acc
+
+        outPath = os.path.join(basePath, f"{modelName[0:-3]}-acc-drop.csv")
+        accDF.to_csv(outPath, index=False)
     elif args.analysis == "dropout":
         layerIdx = [int(idx) for idx in args.layer_index]
         layerIdx.sort()
