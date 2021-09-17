@@ -403,7 +403,7 @@ if __name__ == "__main__":
                     accDF.loc[len(accDF.index)] = [float(v.numpy())] + accs
                 else:
                     _, acc = model.evaluate(transImg, dataLabels)
-                    accDF.loc[len(accDF.index)] = [v] + acc
+                    accDF.loc[len(accDF.index)] = [v, acc]
 
             # Save
             outPath = os.path.join(
@@ -422,7 +422,7 @@ if __name__ == "__main__":
                 metrics=["accuracy"],
             )
             _, acc = dropModel.evaluate(dataset, dataLabels)
-            accDF.loc[len(accDF.index)] = [drop] + acc
+            accDF.loc[len(accDF.index)] = [drop, acc]
 
         outPath = os.path.join(basePath, f"{modelName[0:-3]}-acc-drop.csv")
         accDF.to_csv(outPath, index=False)
