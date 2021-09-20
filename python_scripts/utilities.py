@@ -209,27 +209,41 @@ def compile_dropout(path):
     return df
 
 
+def compile_augment_accuracy(path, aug):
+    """
+    Return the data from the augment accuracy from a path.
+    """
+    files = glob.glob(os.path.join(path, f"*-acc-{aug}.csv"))
+
+    df = pd.DataFrame()
+    for file in files:
+        tmp = pd.read_csv(file)
+        df = pd.concat((df, tmp))
+
+    return df
+
+
 if __name__ == "__main__":
-    path = "../outputs/masterOutput/baseline/"
-    df = compile_dropout(path)
-    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout.csv")
+    # path = "../outputs/masterOutput/baseline/"
+    # df = compile_dropout(path)
+    # df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout.csv")
 
-    path = "../outputs/masterOutput/baseline/"
-    augments = ["color", "translate", "zoom", "reflect"]
-    layers = [3, 7, 11]
+    # path = "../outputs/masterOutput/baseline/"
+    # augments = ["color", "translate", "zoom", "reflect"]
+    # layers = [3, 7, 11]
 
-    for augment in augments:
-        df = pd.DataFrame()
-        for layer in layers:
-            tmp = compile_augment(path, augment, layer)
-            df = pd.concat((df, tmp))
-        df.to_csv(f"../outputs/masterOutput/baseline/compiled/{augment}.csv")
+    # for augment in augments:
+    #     df = pd.DataFrame()
+    #     for layer in layers:
+    #         tmp = compile_augment(path, augment, layer)
+    #         df = pd.concat((df, tmp))
+    #     df.to_csv(f"../outputs/masterOutput/baseline/compiled/{augment}.csv")
 
-    path = "../outputs/masterOutput/correspondence/"
-    models_path = "../outputs/masterOutput/models/"
-    results, missing = compile_correspondence(path, models_path)
-    missing = correspondence_missing_optimizer(missing)
-    results.to_csv(f"../outputs/masterOutput/correspondence.csv")
+    # path = "../outputs/masterOutput/correspondence/"
+    # models_path = "../outputs/masterOutput/models/"
+    # results, missing = compile_correspondence(path, models_path)
+    # missing = correspondence_missing_optimizer(missing)
+    # results.to_csv(f"../outputs/masterOutput/correspondence.csv")
 
     # path = "../outputs/masterOutput/baseline/"
     # tests = ["color", "translate", "zoom", "reflect", "dropout"]
@@ -238,3 +252,10 @@ if __name__ == "__main__":
     # with open(os.path.join(path, "compiled", "baseline.json"), "w") as outfile:
     #     json.dump(data, outfile)
 
+    path = "../outputs/masterOutput/baseline/"
+    augments = ["color", "translate", "zoom", "reflect", "noise"]
+    for augment in augments:
+        df = compile_augment_accuracy(path, augment)
+        df.to_csv(
+            f"../outputs/masterOutput/baseline/compiled/{augment}Acc.csv"
+        )
