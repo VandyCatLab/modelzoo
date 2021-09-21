@@ -253,7 +253,7 @@ if __name__ == "__main__":
     #     json.dump(data, outfile)
 
     path = "../outputs/masterOutput/baseline/"
-    augments = ["color", "translate", "zoom", "reflect", "noise"]
+    augments = ["color", "translate", "zoom", "reflect", "noise", "drop"]
     for augment in augments:
         df = compile_augment_accuracy(path, augment)
         df.to_csv(
