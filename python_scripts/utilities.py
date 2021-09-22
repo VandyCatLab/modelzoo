@@ -82,6 +82,7 @@ def compile_augment(path, augment, layer):
 
     if augment == "color":
         df["version"] = (df["version"] - 25) * (3 / 50)
+
     return df
 
 
@@ -206,6 +207,8 @@ def compile_dropout(path):
         tmp = pd.read_csv(file)
         df = pd.concat((df, tmp))
 
+    df = df.rename(columns={"dropRate": "version"})
+
     return df
 
 
@@ -220,24 +223,27 @@ def compile_augment_accuracy(path, aug):
         tmp = pd.read_csv(file)
         df = pd.concat((df, tmp))
 
+    if augment == "color":
+        df["version"] = (df["version"] - 25) * (3 / 50)
+
     return df
 
 
 if __name__ == "__main__":
-    # path = "../outputs/masterOutput/baseline/"
-    # df = compile_dropout(path)
-    # df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout.csv")
+    path = "../outputs/masterOutput/baseline/"
+    df = compile_dropout(path)
+    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout.csv")
 
-    # path = "../outputs/masterOutput/baseline/"
-    # augments = ["color", "translate", "zoom", "reflect"]
-    # layers = [3, 7, 11]
+    path = "../outputs/masterOutput/baseline/"
+    augments = ["color", "translate", "zoom", "reflect", "noise"]
+    layers = [3, 7, 11]
 
-    # for augment in augments:
-    #     df = pd.DataFrame()
-    #     for layer in layers:
-    #         tmp = compile_augment(path, augment, layer)
-    #         df = pd.concat((df, tmp))
-    #     df.to_csv(f"../outputs/masterOutput/baseline/compiled/{augment}.csv")
+    for augment in augments:
+        df = pd.DataFrame()
+        for layer in layers:
+            tmp = compile_augment(path, augment, layer)
+            df = pd.concat((df, tmp))
+        df.to_csv(f"../outputs/masterOutput/baseline/compiled/{augment}.csv")
 
     # path = "../outputs/masterOutput/correspondence/"
     # models_path = "../outputs/masterOutput/models/"
