@@ -351,7 +351,7 @@ def do_rsa(rdm1, rdm2):
     rdm1_flat = rdm1[np.triu_indices(n=num_imgs, k=1)]
     rdm2_flat = rdm2[np.triu_indices(n=num_imgs, k=1)]
     # Return squared spearman coefficient
-    return np.corrcoef(rdm1_flat, rdm2_flat) ** 2
+    return np.corrcoef(rdm1_flat, rdm2_flat)[0, 1] ** 2
 
 
 @nb.jit(nopython=True, parallel=True)
