@@ -203,7 +203,9 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
         for nNeurons in range(minNeuron, maxNeuron + 1):
             rep = np.random.choice(rep_flat, size=repShape, replace=False)
             repCut = np.copy(rep)
-            repCut = repCut[:, np.random.choice(rep.shape[1], size=nNeurons)]
+            repCut = repCut[
+                :, np.random.choice(rep.shape[1], size=nNeurons, replace=False)
+            ]
 
             sims = analysis.multi_analysis(rep, repCut, preprocFuns, simFuns)
             df.loc[nNeurons] = list(sims.values()) + [nNeurons]
@@ -211,5 +213,65 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
     permuteData.to_csv(outPath)
 
 
+def sanity_check():
+    modelPath = "../outputs/masterOutput/models/w0s0.pb"
+    print("Loading model")
+    model = tf.keras.models.load_model(modelPath)
+
+    # load dataset
+    imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Dataset information
+    num_imgs = imgset.shape[0]
+    dim = imgset.shape[1]
+    correlations = []
+
+    # Set model to output reps at layer
+    inp = model.input
+    layer = model.layers[12]
+    out = layer.output
+
+    tmpModel = tf.keras.Model(inputs=inp, outputs=out)
+
+    # Get reps for originals and flatten
+    rep_orig = tmpModel.predict(imgset)
+    repShape = rep_orig.shape
+    rep_flat = rep_orig.flatten()
+    repMean = np.mean(rep_flat)
+    repSD = np.std(rep_flat)
+
+    preprocFuns = [
+        analysis.preprocess_rsaNumba,
+        analysis.preprocess_svcca,
+        analysis.preprocess_ckaNumba,
+    ]
+    simFuns = [
+        analysis.do_rsaNumba,
+        analysis.do_svcca,
+        analysis.do_linearCKANumba,
+    ]
+
+    colNames = [fun.__name__ for fun in simFuns]
+    nPermutes = 10000
+
+    permuteData = pd.DataFrame(columns=colNames, index=range(nPermutes))
+    outPath = "../outputs/masterOutput/sanityCheckSims.csv"
+    print("Performing sanity check, permuting features.")
+    for permute in range(nPermutes):
+        if permute % 100 == 0:
+            print(f"-- Permutation at {permute}")
+
+        rep = np.random.choice(rep_flat, size=repShape, replace=False)
+        repPermute = np.copy(rep)
+        repPermute = repPermute[
+            :, np.random.choice(rep.shape[1], size=repShape[1], replace=False)
+        ]
+
+        sims = analysis.multi_analysis(rep, repPermute, preprocFuns, simFuns)
+        permuteData.loc[permute] = list(sims.values())
+
+    permuteData.to_csv(outPath)
+
+
 if __name__ == "__main__":
-    parametricAblation()
+    sanity_check()
