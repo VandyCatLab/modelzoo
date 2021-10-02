@@ -4,6 +4,8 @@ import random
 import tensorflow as tf
 import tensorflow_addons as tfa
 from tensorflow.keras.datasets import cifar10
+import tensorflow_datasets as tfds
+import matplotlib.pyplot as plt
 
 # Get training information
 (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
@@ -130,10 +132,52 @@ def make_predict_data(x, y, dtype=None):
     return x_predict, y_predict
 
 
+def create_imagenet_set(preprocFun, examples=1, outshape=(224, 224)):
+    data, info = tfds.load(
+        "imagenet_v2",
+        split="test",
+        with_info=True,
+        shuffle_files=False,
+        as_supervised=True,
+    )
+    data = data.take(info.splits["test"].num_examples)
+    numClasses = info.features["label"].num_classes
+    labelCounts = {label: 0 for label in range(numClasses)}
+    imgs = np.empty((numClasses * examples, outshape[0], outshape[1], 3))
+    labels = np.empty(numClasses * examples, dtype="uint16")
+    idx = 0
+
+    for image, label in tfds.as_numpy(data):
+        # if idx == 0:
+        #     plt.imshow(image)
+        #     print(label)
+        if labelCounts[label] < examples:
+            # Save image after preprocessing
+            image = tf.keras.preprocessing.image.smart_resize(image, outshape)
+            image = preprocFun(image)
+            imgs[idx] = image
+            labels[idx] = label
+
+            labelCounts[label] += 1
+            idx += 1
+
+    labels = tf.one_hot(labels, depth=numClasses)
+    return imgs, labels
+
+
 if __name__ == "__main__":
     # Check if dataset is deterministic
-    dataset = np.load("../outputs/masterOutput/dataset.npy")
-    dataset2, labels = make_predict_data(
-        preprocess(x_testRaw), tf.one_hot(y_testRaw, 10)
-    )
-    np.save("../outputs/masterOutput/labels.npy", labels)
+    # dataset = np.load("../outputs/masterOutput/dataset.npy")
+    # dataset2, labels = make_predict_data(
+    #     preprocess(x_testRaw), tf.one_hot(y_testRaw, 10)
+    # )
+    # np.save("../outputs/masterOutput/labels.npy", labels)
+
+    preproc = tf.keras.applications.mobilenet_v3.preprocess_input
+    data, labels = create_imagenet_set(preprocFun=preproc)
+    np.save("../outputs/masterOutput/bigDataset.npy", data)
+    np.save("../outputs/masterOutput/bigLabels.npy", labels)
+    # model = tf.keras.applications.MobileNetV3Small(input_shape=(224, 224, 3))
+    # model.compile(metrics=["top_k_categorical_accuracy"])
+    # results = model.evaluate(data, labels)
+    # print(results)
