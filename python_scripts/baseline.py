@@ -67,7 +67,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             )  # Up
 
             # Get average of all 4 directions
-            rep2 = model.predict(transImg, verbose=0, batch_size=128)
+            rep2 = model.predict(transImg, verbose=0, batch_size=64)
             # Split back out
             rep2 = tf.split(rep2, 4)
 
