@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.models import Model, load_model
 import tensorflow.keras.backend as K
 import sys, os
@@ -660,7 +661,15 @@ def get_trajectories(directory, file_str="*", file_name=None):
 
 def get_model_from_args(args):
     # Get model
-    if args.model_index is not None:
+    if args.model_name == "mobilenet":
+        model = tf.keras.applications.MobileNetV3Small(
+            input_shape=(224, 224, 3)
+        )
+        model.compile(metrics=["top_k_categorical_accuracy"])
+        print(f"Model loaded: MobileNetV3Small", flush=True)
+        model.summary()
+        return model, "mobilenet", "."
+    elif args.model_index is not None:
         import pandas as pd
 
         modelIdx = args.model_index

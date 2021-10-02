@@ -245,6 +245,7 @@ if __name__ == "__main__":
             "accuracy",
         ],
     )
+    parser.add_argument("--model_name", type=str, help="name of model to load")
     parser.add_argument(
         "--model_index",
         "-i",
