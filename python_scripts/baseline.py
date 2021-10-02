@@ -35,7 +35,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
     model = Model(inputs=inp, outputs=out)
 
     # Get reps for originals
-    rep1 = model.predict(dataset, verbose=0)
+    rep1 = model.predict(dataset, verbose=0, batch_size=224)
 
     # Reflect and shift don't require remaking the dataset
     if transform == "reflect":
@@ -67,7 +67,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             )  # Up
 
             # Get average of all 4 directions
-            rep2 = model.predict(transImg, verbose=0)
+            rep2 = model.predict(transImg, verbose=0, batch_size=224)
             # Split back out
             rep2 = tf.split(rep2, 4)
 
@@ -99,7 +99,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             transImg[:, :, :, 1] += change[1]
             transImg[:, :, :, 2] += change[2]
 
-            rep2 = model.predict(transImg, verbose=0)
+            rep2 = model.predict(transImg, verbose=0, batch_size=224)
 
             yield v, rep1, rep2, transImg
 
@@ -122,7 +122,9 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 transformed_dataset, (smallDim, smallDim)
             )
 
-            rep2 = model.predict(transformed_dataset, verbose=0)
+            rep2 = model.predict(
+                transformed_dataset, verbose=0, batch_size=224
+            )
 
             yield v, rep1, rep2, transformed_dataset
 
@@ -138,7 +140,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             )
             transDataset = dataset[:] + noise
 
-            rep2 = model.predict(transDataset, verbose=0)
+            rep2 = model.predict(transDataset, verbose=0, batch_size=224)
 
             yield a, rep1, rep2, transDataset
 
@@ -399,11 +401,15 @@ if __name__ == "__main__":
                     transDir = tf.split(transImg, 4)
                     accs = [0.0] * 4
                     for i, direct in enumerate(transDir):
-                        _, accs[i] = model.evaluate(direct, dataLabels)
+                        _, accs[i] = model.evaluate(
+                            direct, dataLabels, batch_size=224
+                        )
 
                     accDF.loc[len(accDF.index)] = [float(v.numpy())] + accs
                 else:
-                    _, acc = model.evaluate(transImg, dataLabels)
+                    _, acc = model.evaluate(
+                        transImg, dataLabels, batch_size=224
+                    )
                     accDF.loc[len(accDF.index)] = [v, acc]
 
             # Save
@@ -422,7 +428,7 @@ if __name__ == "__main__":
                 loss="categorical_crossentropy",
                 metrics=["accuracy"],
             )
-            _, acc = dropModel.evaluate(dataset, dataLabels)
+            _, acc = dropModel.evaluate(dataset, dataLabels, batch_size=224)
             accDF.loc[len(accDF.index)] = [drop, acc]
 
         outPath = os.path.join(basePath, f"{modelName[0:-3]}-acc-drop.csv")
