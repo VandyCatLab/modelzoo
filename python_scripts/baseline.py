@@ -56,24 +56,15 @@ def yield_transforms(transform, model, layer_idx, dataset):
             print(f"Translating {v} pixels.", flush=True)
             # Generate transformed imageset
             transImg = tfa.image.translate(dataset, [v, 0])  # Right
-            transImg = tf.concat(
-                (transImg, tfa.image.translate(dataset, [-v, 0])), axis=0
-            )  # Left
-            tmp = model.predict(transImg, verbose=0, batch_size=64)
-            tmp = tf.split(tmp, 2)
+            rep2 = [model.predict(transImg, verbose=0, batch_size=128)]
+            transImg = tfa.image.translate(dataset, [-v, 0])  # Left
+            rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
             transImg = tfa.image.translate(dataset, [0, v])  # Down
-            transImg = tf.concat(
-                (transImg, tfa.image.translate(dataset, [0, -v])), axis=0
-            )  # Up
+            rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
+            transImg = tfa.image.translate(dataset, [0, -v])  # Up
+            rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
-            # Get average of all 4 directions
-            rep2 = model.predict(transImg, verbose=0, batch_size=64)
-            # Split back out
-            rep2 = tf.split(rep2, 2)
-
-            # Stack up reps again
-            rep2 = tmp + rep2
             yield v, rep1, rep2, None
 
     elif transform == "color":
