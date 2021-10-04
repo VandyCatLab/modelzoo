@@ -57,13 +57,19 @@ def yield_transforms(transform, model, layer_idx, dataset):
             # Generate transformed imageset
             transImg = tfa.image.translate(dataset, [v, 0])  # Right
             rep2 = [model.predict(transImg, verbose=0, batch_size=128)]
+            del transImg
+
             transImg = tfa.image.translate(dataset, [-v, 0])  # Left
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
+            del transImg
 
             transImg = tfa.image.translate(dataset, [0, v])  # Down
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
+            del transImg
+
             transImg = tfa.image.translate(dataset, [0, -v])  # Up
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
+            del transImg
 
             yield v, rep1, rep2, None
 
@@ -284,11 +290,6 @@ if __name__ == "__main__":
         type=analysis._split_comma_str,
         default="layer indices, split by a comma",
     )
-    # Trying to fix GPU memory issues
-    devices = tf.config.list_physical_devices("GPU")
-    for device in devices:
-        tf.config.experimental.set_memory_growth(devices[0], True)
-
     args = parser.parse_args()
 
     # Load model
