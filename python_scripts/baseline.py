@@ -286,7 +286,9 @@ if __name__ == "__main__":
     )
     # Trying to fix GPU memory issues
     devices = tf.config.list_physical_devices("GPU")
-    tf.config.experimental.set_memory_growth(devices[0], True)
+    for device in devices:
+        tf.config.experimental.set_memory_growth(devices[0], True)
+
     args = parser.parse_args()
 
     # Load model
