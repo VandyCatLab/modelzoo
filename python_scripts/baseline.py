@@ -60,7 +60,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             print(batch.shape)
         outs += [model.call(batch, training=False)]
 
-        return np.stack(outs)
+        return np.concatenate(outs)
 
     # Set model to output reps at selected layer
     inp = model.input
