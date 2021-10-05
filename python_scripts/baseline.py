@@ -86,7 +86,8 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             with tf.device("/cpu:0"):
                 transImg = tf.zeros(1)
-            yield v, rep1, rep2, None
+
+        yield v, rep1, rep2, None
 
     elif transform == "color":
         versions = 51
