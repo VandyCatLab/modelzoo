@@ -34,13 +34,18 @@ def yield_transforms(transform, model, layer_idx, dataset):
     out = layer.output
     model = Model(inputs=inp, outputs=out)
 
+    # Turn dataset into tensor on cpu to avoid memory problems
+    with tf.device("/cpu:0"):
+        dataset = tf.convert_to_tensor(dataset)
+
     # Get reps for originals
     rep1 = model.predict(dataset, verbose=0, batch_size=128)
 
     # Reflect and shift don't require remaking the dataset
     if transform == "reflect":
         print(" - Yielding 1 version.", flush=True)
-        transDataset = np.flip(dataset, axis=2)
+        with tf.device("/cpu:0"):
+            transDataset = tf.image.flip_left_right(dataset)
         rep2 = model.predict(transDataset, verbose=0)
         yield 0, rep1, rep2, transDataset
 
@@ -55,19 +60,19 @@ def yield_transforms(transform, model, layer_idx, dataset):
         for v in tf.range(versions):
             print(f"Translating {v} pixels.", flush=True)
             # Generate transformed imageset
-            with tf.device("/CPU:0"):
+            with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [v, 0])  # Right
             rep2 = [model.predict(transImg, verbose=0, batch_size=128)]
 
-            with tf.device("/CPU:0"):
+            with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [-v, 0])  # Left
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
-            with tf.device("/CPU:0"):
+            with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, v])  # Down
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
-            with tf.device("/CPU:0"):
+            with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, -v])  # Up
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
@@ -84,20 +89,27 @@ def yield_transforms(transform, model, layer_idx, dataset):
         # x_train = datasets.preprocess(datasets.x_trainRaw)
         # x_train = x_train.reshape(-1, 3)
         # cov = np.cov(x_train.T)
-        cov = np.cov(dataset.reshape(-1, 3).T)
+        with tf.device("/cpu:0"):
+            cov = np.cov(tf.transpose(tf.reshape(dataset, (-1, 3))))
         values, vectors = np.linalg.eigh(cov)
 
         print(f" - Yielding {versions} versions.", flush=True)
         for v in range(versions):
-            transImg = np.copy(dataset)
-
             # Add multiple of shift
             alpha = alphas[v]
             print(f"Color shifting alpha: {alpha}.", flush=True)
             change = np.dot(vectors, values * alpha)
-            transImg[:, :, :, 0] += change[0]
-            transImg[:, :, :, 1] += change[1]
-            transImg[:, :, :, 2] += change[2]
+            with tf.device("/cpu:0"):
+                changes = tf.stack(
+                    [
+                        tf.zeros(dataset.shape[0:3]) + change[0],
+                        tf.zeros(dataset.shape[0:3]) + change[1],
+                        tf.zeros(dataset.shape[0:3]) + change[2],
+                    ],
+                    axis=-1,
+                )
+                changes = tf.cast(changes, tf.float64)
+                transImg = dataset + changes
 
             rep2 = model.predict(transImg, verbose=0, batch_size=128)
 
@@ -115,12 +127,13 @@ def yield_transforms(transform, model, layer_idx, dataset):
         for v in range(versions):
             print(f"Zooming {v} pixels.", flush=True)
             # Generate transformed imageset
-            transformed_dataset = dataset[
-                :, v : smallDim - v, v : smallDim - v, :
-            ]
-            transformed_dataset = tf.image.resize(
-                transformed_dataset, (smallDim, smallDim)
-            )
+            with tf.device("/cpu:0"):
+                transformed_dataset = dataset[
+                    :, v : smallDim - v, v : smallDim - v, :
+                ]
+                transformed_dataset = tf.image.resize(
+                    transformed_dataset, (smallDim, smallDim)
+                )
 
             rep2 = model.predict(
                 transformed_dataset, verbose=0, batch_size=128
@@ -135,10 +148,11 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
         print(f" - Yielding {versions} versions.", flush=True)
         for a in alphas:
-            noise = (
-                np.random.normal(loc=0, scale=sd * 3, size=dataset.shape) * a
-            )
-            transDataset = dataset[:] + noise
+            with tf.device("/cpu:0"):
+                noise = tf.random.normal(
+                    shape=dataset.shape, stddev=sd * 3, dtype=tf.float64
+                )
+                transDataset = dataset + noise * a
 
             rep2 = model.predict(transDataset, verbose=0, batch_size=128)
 

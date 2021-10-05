@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # np.save("../outputs/masterOutput/labels.npy", labels)
 
     preproc = tf.keras.applications.mobilenet_v3.preprocess_input
-    data, labels = create_imagenet_set(preprocFun=preproc)
+    data, labels = create_imagenet_set(preprocFun=preproc, examples=10)
     np.save("../outputs/masterOutput/bigDataset.npy", data)
     np.save("../outputs/masterOutput/bigLabels.npy", labels)
     # model = tf.keras.applications.MobileNetV3Small(input_shape=(224, 224, 3))
