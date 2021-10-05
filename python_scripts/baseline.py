@@ -84,6 +84,8 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
+            with tf.device("/cpu:0"):
+                transImg = tf.zeros(1)
             yield v, rep1, rep2, None
 
     elif transform == "color":
