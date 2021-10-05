@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 import tensorflow as tf
+from tensorflow.python.ops.gen_batch_ops import batch
 import tensorflow_addons as tfa
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.models import Model
@@ -28,6 +29,35 @@ def yield_transforms(transform, model, layer_idx, dataset):
         - 'zoom' yields a number of representations equal to half the smaller
         dimension, zooming into the image.
     """
+
+    def batched_call(model, input, batch_size):
+        # Get counts
+        nImages = input.shape[0]
+        completeBatches = nImages // batch_size
+        finalBatchSize = nImages % batch_size
+
+        # Loop through batches
+        outs = []
+        for idx in range(completeBatches):
+            # Create a batch
+            batch = input[
+                (idx * batch_size) : ((idx + 1) * batch_size), :, :, :
+            ]
+            outs += [model.call(batch, training=False)]
+
+        # Final batch
+        batch = input[
+            ((idx + 1) * batch_size) : (
+                ((idx + 1) * batch_size) + finalBatchSize + 1
+            ),
+            :,
+            :,
+            :,
+        ]
+        outs += [model.call(batch, training=False)]
+
+        return np.stack(outs)
+
     # Set model to output reps at selected layer
     inp = model.input
     layer = model.layers[layer_idx]
@@ -63,19 +93,19 @@ def yield_transforms(transform, model, layer_idx, dataset):
             # Generate transformed imageset
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [v, 0])  # Right
-            rep2 = [model.call(transImg, training=False)]
+            rep2 = [batched_call(model, transImg, 256)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [-v, 0])  # Left
-            rep2 += [model.call(transImg, training=False)]
+            rep2 += [batched_call(model, transImg, 256)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, v])  # Down
-            rep2 += [model.call(transImg, training=False)]
+            rep2 += [batched_call(model, transImg, 256)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, -v])  # Up
-            rep2 += [model.call(transImg, training=False)]
+            rep2 += [batched_call(model, transImg, 256)]
 
             yield v, rep1, rep2, None
 
