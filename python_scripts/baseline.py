@@ -40,9 +40,10 @@ def yield_transforms(transform, model, layer_idx, dataset):
         outs = []
         for idx in range(completeBatches):
             # Create a batch
-            batch = input[
-                (idx * batch_size) : ((idx + 1) * batch_size), :, :, :
-            ]
+            with tf.device("/cpu:0"):
+                batch = input[
+                    (idx * batch_size) : ((idx + 1) * batch_size), :, :, :
+                ]
             outs += [model.call(batch, training=False)]
 
         # Final batch
