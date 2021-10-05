@@ -59,27 +59,27 @@ def yield_transforms(transform, model, layer_idx, dataset):
         print(f" - Yielding {versions} versions.")
         for v in tf.range(versions):
             print(f"Translating {v} pixels.", flush=True)
-            # Generate transformed imageset
+            # Clear memory
             with tf.device("/cpu:0"):
                 transImg = tf.zeros(1)
+
+            # Generate transformed imageset
+            with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [v, 0])  # Right
 
             rep2 = [model.predict(transImg, verbose=0, batch_size=128)]
 
             with tf.device("/cpu:0"):
-                transImg = tf.zeros(1)
                 transImg = tfa.image.translate(dataset, [-v, 0])  # Left
 
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
             with tf.device("/cpu:0"):
-                transImg = tf.zeros(1)
                 transImg = tfa.image.translate(dataset, [0, v])  # Down
 
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
             with tf.device("/cpu:0"):
-                transImg = tf.zeros(1)
                 transImg = tfa.image.translate(dataset, [0, -v])  # Up
 
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
