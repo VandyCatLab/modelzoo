@@ -61,19 +61,27 @@ def yield_transforms(transform, model, layer_idx, dataset):
             print(f"Translating {v} pixels.", flush=True)
             # Generate transformed imageset
             with tf.device("/cpu:0"):
+                transImg = tf.zeros(1)
                 transImg = tfa.image.translate(dataset, [v, 0])  # Right
+
             rep2 = [model.predict(transImg, verbose=0, batch_size=128)]
 
             with tf.device("/cpu:0"):
+                transImg = tf.zeros(1)
                 transImg = tfa.image.translate(dataset, [-v, 0])  # Left
+
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
             with tf.device("/cpu:0"):
+                transImg = tf.zeros(1)
                 transImg = tfa.image.translate(dataset, [0, v])  # Down
+
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
             with tf.device("/cpu:0"):
+                transImg = tf.zeros(1)
                 transImg = tfa.image.translate(dataset, [0, -v])  # Up
+
             rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
 
             yield v, rep1, rep2, None
@@ -100,6 +108,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             print(f"Color shifting alpha: {alpha}.", flush=True)
             change = np.dot(vectors, values * alpha)
             with tf.device("/cpu:0"):
+                changes = tf.zeros(1)
                 changes = tf.stack(
                     [
                         tf.zeros(dataset.shape[0:3]) + change[0],
@@ -128,6 +137,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
             print(f"Zooming {v} pixels.", flush=True)
             # Generate transformed imageset
             with tf.device("/cpu:0"):
+                transformed_dataset = tf.zeros(1)
                 transformed_dataset = dataset[
                     :, v : smallDim - v, v : smallDim - v, :
                 ]
@@ -149,6 +159,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
         print(f" - Yielding {versions} versions.", flush=True)
         for a in alphas:
             with tf.device("/cpu:0"):
+                noise = tf.zeros(1)
                 noise = tf.random.normal(
                     shape=dataset.shape, stddev=sd * 3, dtype=tf.float64
                 )
