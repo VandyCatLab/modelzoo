@@ -59,35 +59,25 @@ def yield_transforms(transform, model, layer_idx, dataset):
         print(f" - Yielding {versions} versions.")
         for v in tf.range(versions):
             print(f"Translating {v} pixels.", flush=True)
-            # Clear memory
-            with tf.device("/cpu:0"):
-                transImg = tf.zeros(1)
 
             # Generate transformed imageset
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [v, 0])  # Right
-
-            rep2 = [model.predict(transImg, verbose=0, batch_size=128)]
+            rep2 = [model.call(transImg, training=False)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [-v, 0])  # Left
-
-            rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
+            rep2 += [model.call(transImg, training=False)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, v])  # Down
-
-            rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
+            rep2 += [model.call(transImg, training=False)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, -v])  # Up
+            rep2 += [model.call(transImg, training=False)]
 
-            rep2 += [model.predict(transImg, verbose=0, batch_size=128)]
-
-            with tf.device("/cpu:0"):
-                transImg = tf.zeros(1)
-
-        yield v, rep1, rep2, None
+            yield v, rep1, rep2, None
 
     elif transform == "color":
         versions = 51
