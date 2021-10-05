@@ -44,17 +44,20 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 batch = input[
                     (idx * batch_size) : ((idx + 1) * batch_size), :, :, :
                 ]
+                print(batch.shape)
             outs += [model.call(batch, training=False)]
 
         # Final batch
-        batch = input[
-            ((idx + 1) * batch_size) : (
-                ((idx + 1) * batch_size) + finalBatchSize + 1
-            ),
-            :,
-            :,
-            :,
-        ]
+        with tf.device("/cpu:0"):
+            batch = input[
+                ((idx + 1) * batch_size) : (
+                    ((idx + 1) * batch_size) + finalBatchSize + 1
+                ),
+                :,
+                :,
+                :,
+            ]
+            print(batch.shape)
         outs += [model.call(batch, training=False)]
 
         return np.stack(outs)
