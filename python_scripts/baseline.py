@@ -150,8 +150,11 @@ def make_dropout_model(model, output_idx, droprate):
     Return a new model with the dropout layers activated during prediction with
     outputs at the list output_idx.
     """
-    if output_idx == [-1]:
-        output_idx = [len(model.layers) - 2]
+    # Fix negative indices
+    newOutIdx = []
+    for idx in output_idx:
+        newOutIdx += [idx % len(model.layers)]
+    output_idx = newOutIdx
     modelInput = model.input
 
     outputs = []
