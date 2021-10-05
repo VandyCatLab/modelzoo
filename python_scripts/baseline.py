@@ -1,3 +1,4 @@
+import re
 import sys
 import numpy as np
 from PIL import Image
@@ -44,7 +45,6 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 batch = input[
                     (idx * batch_size) : ((idx + 1) * batch_size), :, :, :
                 ]
-                print(batch.shape)
             outs += [model.call(batch, training=False)]
 
         # Final batch
@@ -57,7 +57,6 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 :,
                 :,
             ]
-            print(batch.shape)
         outs += [model.call(batch, training=False)]
 
         return np.concatenate(outs)
@@ -80,7 +79,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
         print(" - Yielding 1 version.", flush=True)
         with tf.device("/cpu:0"):
             transDataset = tf.image.flip_left_right(dataset)
-        rep2 = model.predict(transDataset, verbose=0)
+        rep2 = model.predict(transDataset, verbose=0, batch_size=512)
         yield 0, rep1, rep2, transDataset
 
     elif transform == "translate":
@@ -97,19 +96,19 @@ def yield_transforms(transform, model, layer_idx, dataset):
             # Generate transformed imageset
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [v, 0])  # Right
-            rep2 = [batched_call(model, transImg, 256)]
+            rep2 = [batched_call(model, transImg, 512)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [-v, 0])  # Left
-            rep2 += [batched_call(model, transImg, 256)]
+            rep2 += [batched_call(model, transImg, 512)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, v])  # Down
-            rep2 += [batched_call(model, transImg, 256)]
+            rep2 += [batched_call(model, transImg, 512)]
 
             with tf.device("/cpu:0"):
                 transImg = tfa.image.translate(dataset, [0, -v])  # Up
-            rep2 += [batched_call(model, transImg, 256)]
+            rep2 += [batched_call(model, transImg, 512)]
 
             yield v, rep1, rep2, None
 
@@ -147,7 +146,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 changes = tf.cast(changes, tf.float64)
                 transImg = dataset + changes
 
-            rep2 = model.predict(transImg, verbose=0, batch_size=128)
+            rep2 = batched_call(model, transImg, 512)
 
             yield v, rep1, rep2, transImg
 
@@ -172,9 +171,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
                     transformed_dataset, (smallDim, smallDim)
                 )
 
-            rep2 = model.predict(
-                transformed_dataset, verbose=0, batch_size=128
-            )
+            rep2 = batched_call(model, transformed_dataset, 512)
 
             yield v, rep1, rep2, transformed_dataset
 
@@ -192,7 +189,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 )
                 transDataset = dataset + noise * a
 
-            rep2 = model.predict(transDataset, verbose=0, batch_size=128)
+            rep2 = batched_call(model, transDataset, 512)
 
             yield a, rep1, rep2, transDataset
 
