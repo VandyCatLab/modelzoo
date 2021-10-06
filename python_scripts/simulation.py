@@ -213,6 +213,73 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
     permuteData.to_csv(outPath)
 
 
+def parametricNoise(minNoise=0.0, maxNoise=1):
+    modelPath = "../outputs/masterOutput/models/w0s0.pb"
+    print("Loading model")
+    model = tf.keras.models.load_model(modelPath)
+
+    # load dataset
+    imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Dataset information
+    num_imgs = imgset.shape[0]
+    dim = imgset.shape[1]
+    correlations = []
+
+    # Set model to output reps at layer
+    inp = model.input
+    layer = model.layers[12]
+    out = layer.output
+
+    tmpModel = tf.keras.Model(inputs=inp, outputs=out)
+
+    # Get reps for originals and flatten
+    rep_orig = tmpModel.predict(imgset)
+    repShape = rep_orig.shape
+    rep_flat = rep_orig.flatten()
+    repMean = np.mean(rep_flat)
+    repSD = np.std(rep_flat)
+
+    preprocFuns = [
+        analysis.preprocess_rsaNumba,
+        analysis.preprocess_rsa,
+        analysis.preprocess_svcca,
+        analysis.preprocess_ckaNumba,
+    ]
+    simFuns = [
+        analysis.do_rsaNumba,
+        analysis.do_rsa,
+        analysis.do_svcca,
+        analysis.do_linearCKANumba,
+    ]
+
+    colNames = [fun.__name__ for fun in simFuns] + ["Noise"]
+    nPermutes = 10000
+
+    permuteData = pd.DataFrame(columns=colNames)
+    noiseRange = np.arange(minNoise, maxNoise + 0.1, 0.1)
+    outPath = "../outputs/masterOutput/noiseSims.csv"
+    print("Doing parametric noise simulation")
+    for permute in range(nPermutes):
+        if permute % 100 == 0:
+            print(f"-- Permutation at {permute}")
+
+        rep = np.random.choice(rep_flat, size=repShape, replace=False)
+
+        df = pd.DataFrame(columns=colNames, index=noiseRange)
+        for noise in noiseRange:
+            repNoise = (
+                rep + np.random.normal(scale=repSD, size=repShape) * noise
+            )
+            repNoise = repNoise.astype(np.float32)
+
+            sims = analysis.multi_analysis(rep, repNoise, preprocFuns, simFuns)
+            df.loc[noise] = list(sims.values()) + [noise]
+        permuteData = permuteData.append(df)
+
+    permuteData.to_csv(outPath)
+
+
 def sanity_check():
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -274,4 +341,4 @@ def sanity_check():
 
 
 if __name__ == "__main__":
-    sanity_check()
+    parametricNoise()
