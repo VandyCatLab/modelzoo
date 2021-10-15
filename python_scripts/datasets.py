@@ -132,7 +132,7 @@ def make_predict_data(x, y, dtype=None):
     return x_predict, y_predict
 
 
-def create_imagenet_set(preprocFun, examples=1, outshape=(224, 224)):
+def create_imagenetv2_set(preprocFun, examples=1, outshape=(224, 224)):
     data, info = tfds.load(
         "imagenet_v2",
         split="test",
@@ -163,6 +163,25 @@ def create_imagenet_set(preprocFun, examples=1, outshape=(224, 224)):
 
     labels = tf.one_hot(labels, depth=numClasses)
     return imgs, labels
+
+
+def get_imagenet_set(preprocFun):
+    """
+    Return ImageNet dataset for testing.
+    """
+    dataset = tfds.load(
+        "imagenet2012",
+        split="validation",
+        as_supervised=True,
+        shuffle_files=False,
+    )
+
+    dataset = dataset.map(preprocFun, num_parallel_calls=tf.Data.AUTOTUNE)
+    dataset = dataset.batch(256)
+    dataset = dataset.cache()
+    dataset = dataset.prefect(tf.data.AUTOTUNE)
+
+    return dataset
 
 
 if __name__ == "__main__":
