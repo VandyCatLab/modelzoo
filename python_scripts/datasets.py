@@ -194,7 +194,6 @@ class preproc:
         shape,
         dtype,
         numCat=None,
-        labels=False,
         scale=None,
         offset=None,
         fun=None,
@@ -204,10 +203,9 @@ class preproc:
         self.fun = fun
         self.scale = scale
         self.offset = offset
-        self.labels = labels
         self.numCat = numCat
 
-    def __call__(self, img, label):
+    def __call__(self, img, label=None):
         # Rescale then cast to correct datatype
         img = tf.keras.preprocessing.image.smart_resize(img, self.shape)
         img = tf.cast(img, self.dtype)
@@ -221,7 +219,7 @@ class preproc:
             img = tf.math.multiply(img, self.scale)
             img = tf.math.add(img, self.offset)
 
-        if self.labels:
+        if label is not None:
             return img, tf.one_hot(label, self.numCat)
         else:
             return img
@@ -248,7 +246,6 @@ if __name__ == "__main__":
     preprocFun = preproc(
         shape=(224, 224),
         dtype=tf.float32,
-        labels=False,
         scale=1.0 / 255,
         offset=0,
     )
