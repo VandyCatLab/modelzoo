@@ -167,7 +167,7 @@ def create_imagenetv2_set(preprocFun, examples=1, outshape=(224, 224)):
 
 def get_imagenet_set(preprocFun):
     """
-    Return ImageNet dataset for testing.
+    Return ImageNet dataset for testing. Assumes that it all fits in memory.
     """
     dataset = tfds.load(
         "imagenet2012",
@@ -179,9 +179,34 @@ def get_imagenet_set(preprocFun):
     dataset = dataset.map(preprocFun, num_parallel_calls=tf.Data.AUTOTUNE)
     dataset = dataset.batch(256)
     dataset = dataset.cache()
-    dataset = dataset.prefect(tf.data.AUTOTUNE)
+    dataset = dataset.prefetch(tf.data.AUTOTUNE)
 
     return dataset
+
+
+class preproc:
+    def __init__(self, shape, dtype, scale=None, offset=None, fun=None):
+        self.shape = shape
+        self.dtype = dtype
+        self.fun = fun
+        self.scale = scale
+        self.offset = offset
+
+    def __call__(self, img):
+        # Rescale then cast to correct datatype
+        img = tf.keras.preprocessing.image.smart_resize(img, self.shape)
+        img = tf.cast(img, self.dtype)
+
+        # Apply override function
+        if self.fun is not None:
+            img = self.fun(img)
+
+        # Rescale
+        if self.scale is not None and self.offset is not None:
+            img = tf.math.multiply(img, self.scale)
+            img = tf.math.add(img, self.offset)
+
+        return img
 
 
 if __name__ == "__main__":
