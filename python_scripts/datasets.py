@@ -165,7 +165,7 @@ def create_imagenetv2_set(preprocFun, examples=1, outshape=(224, 224)):
     return imgs, labels
 
 
-def get_imagenet_set(preprocFun):
+def get_imagenet_set(preprocFun, batch_size):
     """
     Return ImageNet dataset for testing. Assumes that it all fits in memory.
     """
@@ -177,7 +177,7 @@ def get_imagenet_set(preprocFun):
     )
 
     dataset = dataset.map(preprocFun, num_parallel_calls=tf.data.AUTOTUNE)
-    dataset = dataset.batch(256)
+    dataset = dataset.batch(batch_size)
     dataset = dataset.cache()
     dataset = dataset.prefetch(tf.data.AUTOTUNE)
 
@@ -192,7 +192,7 @@ class preproc:
         self.scale = scale
         self.offset = offset
 
-    def __call__(self, img):
+    def __call__(self, img, label):
         # Rescale then cast to correct datatype
         img = tf.keras.preprocessing.image.smart_resize(img, self.shape)
         img = tf.cast(img, self.dtype)
@@ -206,7 +206,7 @@ class preproc:
             img = tf.math.multiply(img, self.scale)
             img = tf.math.add(img, self.offset)
 
-        return img
+        return img, label
 
 
 if __name__ == "__main__":
@@ -217,11 +217,17 @@ if __name__ == "__main__":
     # )
     # np.save("../outputs/masterOutput/labels.npy", labels)
 
-    preproc = tf.keras.applications.mobilenet_v3.preprocess_input
-    data, labels = create_imagenet_set(preprocFun=preproc, examples=10)
-    np.save("../outputs/masterOutput/bigDataset.npy", data)
-    np.save("../outputs/masterOutput/bigLabels.npy", labels)
+    # preproc = tf.keras.applications.mobilenet_v3.preprocess_input
+    # data, labels = create_imagenet_set(preprocFun=preproc, examples=10)
+    # np.save("../outputs/masterOutput/bigDataset.npy", data)
+    # np.save("../outputs/masterOutput/bigLabels.npy", labels)
     # model = tf.keras.applications.MobileNetV3Small(input_shape=(224, 224, 3))
     # model.compile(metrics=["top_k_categorical_accuracy"])
     # results = model.evaluate(data, labels)
     # print(results)
+
+    # Test imagenet
+    preprocFun = preproc(
+        shape=(224, 224), dtype=tf.float32, scale=1.0 / 255, offset=0
+    )
+    data = get_imagenet_set(preprocFun, 256)
