@@ -185,12 +185,15 @@ def get_imagenet_set(preprocFun, batch_size):
 
 
 class preproc:
-    def __init__(self, shape, dtype, scale=None, offset=None, fun=None):
+    def __init__(
+        self, shape, dtype, numCat, scale=None, offset=None, fun=None
+    ):
         self.shape = shape
         self.dtype = dtype
         self.fun = fun
         self.scale = scale
         self.offset = offset
+        self.numCat = numCat
 
     def __call__(self, img, label):
         # Rescale then cast to correct datatype
@@ -206,7 +209,7 @@ class preproc:
             img = tf.math.multiply(img, self.scale)
             img = tf.math.add(img, self.offset)
 
-        return img, label
+        return img, tf.one_hot(label, self.numCat)
 
 
 if __name__ == "__main__":
