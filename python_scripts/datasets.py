@@ -231,6 +231,10 @@ if __name__ == "__main__":
 
     # Test imagenet
     preprocFun = preproc(
-        shape=(224, 224), dtype=tf.float32, scale=1.0 / 255, offset=0
+        shape=(224, 224),
+        dtype=tf.float32,
+        numCat=1000,
+        scale=1.0 / 255,
+        offset=0,
     )
     data = get_imagenet_set(preprocFun, 256)
