@@ -208,7 +208,8 @@ class preproc:
 
     def __call__(self, img, label):
         # Rescale then cast to correct datatype
-        img = tf.keras.preprocessing.image.smart_resize(img, self.shape)
+        img = tf.keras.preprocessing.image.smart_resize(img, self.shape[:2])
+        img = tf.reshape(img, self.shape)
         img = tf.cast(img, self.dtype)
 
         # Apply override function
@@ -220,7 +221,7 @@ class preproc:
             img = tf.math.multiply(img, self.scale)
             img = tf.math.add(img, self.offset)
 
-        if self.labels is not None:
+        if self.labels:
             return img, tf.one_hot(label, self.numCat)
         else:
             return img
@@ -245,10 +246,10 @@ if __name__ == "__main__":
 
     # Test imagenet
     preprocFun = preproc(
-        shape=(224, 224),
+        shape=(224, 224, 3),
         dtype=tf.float32,
         scale=1.0 / 255,
         offset=0,
         labels=False,
     )
-    data = get_imagenet_set(preprocFun, 256, labels=False)
+    data = get_imagenet_set(preprocFun, 256)
