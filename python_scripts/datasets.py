@@ -168,7 +168,6 @@ def create_imagenetv2_set(preprocFun, examples=1, outshape=(224, 224)):
 def get_imagenet_set(
     preprocFun,
     batch_size,
-    labels=False,
 ):
     """
     Return ImageNet dataset for testing. Assumes that it all fits in memory.
@@ -176,7 +175,7 @@ def get_imagenet_set(
     dataset = tfds.load(
         "imagenet2012",
         split="validation",
-        as_supervised=labels,
+        as_supervised=True,
         shuffle_files=False,
     )
 
@@ -193,6 +192,7 @@ class preproc:
         self,
         shape,
         dtype,
+        labels=False,
         numCat=None,
         scale=None,
         offset=None,
@@ -204,8 +204,9 @@ class preproc:
         self.scale = scale
         self.offset = offset
         self.numCat = numCat
+        self.labels = labels
 
-    def __call__(self, img, label=None):
+    def __call__(self, img, label):
         # Rescale then cast to correct datatype
         img = tf.keras.preprocessing.image.smart_resize(img, self.shape)
         img = tf.cast(img, self.dtype)
@@ -219,7 +220,7 @@ class preproc:
             img = tf.math.multiply(img, self.scale)
             img = tf.math.add(img, self.offset)
 
-        if label is not None:
+        if self.labels is not None:
             return img, tf.one_hot(label, self.numCat)
         else:
             return img
@@ -248,5 +249,6 @@ if __name__ == "__main__":
         dtype=tf.float32,
         scale=1.0 / 255,
         offset=0,
+        labels=False,
     )
     data = get_imagenet_set(preprocFun, 256, labels=False)
