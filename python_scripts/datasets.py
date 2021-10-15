@@ -165,14 +165,18 @@ def create_imagenetv2_set(preprocFun, examples=1, outshape=(224, 224)):
     return imgs, labels
 
 
-def get_imagenet_set(preprocFun, batch_size):
+def get_imagenet_set(
+    preprocFun,
+    batch_size,
+    labels=False,
+):
     """
     Return ImageNet dataset for testing. Assumes that it all fits in memory.
     """
     dataset = tfds.load(
         "imagenet2012",
         split="validation",
-        as_supervised=True,
+        as_supervised=labels,
         shuffle_files=False,
     )
 
@@ -186,13 +190,21 @@ def get_imagenet_set(preprocFun, batch_size):
 
 class preproc:
     def __init__(
-        self, shape, dtype, numCat, scale=None, offset=None, fun=None
+        self,
+        shape,
+        dtype,
+        numCat=None,
+        labels=False,
+        scale=None,
+        offset=None,
+        fun=None,
     ):
         self.shape = shape
         self.dtype = dtype
         self.fun = fun
         self.scale = scale
         self.offset = offset
+        self.labels = labels
         self.numCat = numCat
 
     def __call__(self, img, label):
@@ -209,7 +221,10 @@ class preproc:
             img = tf.math.multiply(img, self.scale)
             img = tf.math.add(img, self.offset)
 
-        return img, tf.one_hot(label, self.numCat)
+        if self.labels:
+            return img, tf.one_hot(label, self.numCat)
+        else:
+            return img
 
 
 if __name__ == "__main__":
@@ -233,8 +248,8 @@ if __name__ == "__main__":
     preprocFun = preproc(
         shape=(224, 224),
         dtype=tf.float32,
-        numCat=1000,
+        labels=False,
         scale=1.0 / 255,
         offset=0,
     )
-    data = get_imagenet_set(preprocFun, 256)
+    data = get_imagenet_set(preprocFun, 256, labels=False)
