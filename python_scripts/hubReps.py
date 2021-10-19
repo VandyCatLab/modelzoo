@@ -28,7 +28,7 @@ if __name__ == "__main__":
         dataset = dataset.as_numpy_iterator()
         results = []
         for i, batch in enumerate(dataset):
-            print(f"-- Working on batch {batch}")
+            print(f"-- Working on batch {i}")
             res = model.predict(batch)
             if "outputIdx" in info.keys():
                 results += [res[info["outputIdx"]]]
