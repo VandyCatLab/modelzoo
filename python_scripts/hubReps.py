@@ -27,7 +27,8 @@ if __name__ == "__main__":
         model, dataset = setup_hub_model(info, 64)
         dataset = dataset.as_numpy_iterator()
         results = []
-        for batch in dataset:
+        for i, batch in enumerate(dataset):
+            print(f"-- Working on batch {batch}")
             res = model.predict(batch)
             if "outputIdx" in info.keys():
                 results += [res[info["outputIdx"]]]
