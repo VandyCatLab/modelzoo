@@ -23,7 +23,8 @@ if __name__ == "__main__":
 
     for name, info in hubModels.items():
         print(name)
-        model, dataset = setup_hub_model(info, 256)
+        model, dataset = setup_hub_model(info, 128)
+        res = model.predict(dataset)
         break
 
     # print(hubModels)
