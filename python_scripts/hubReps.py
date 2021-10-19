@@ -2,6 +2,7 @@ import datasets
 import tensorflow as tf
 import tensorflow_hub as hub
 import json
+import numpy as np
 
 
 def setup_hub_model(info, batch_size):
@@ -23,7 +24,7 @@ if __name__ == "__main__":
 
     for name, info in hubModels.items():
         print(name)
-        model, dataset = setup_hub_model(info, 32)
+        model, dataset = setup_hub_model(info, 64)
         dataset = dataset.as_numpy_iterator()
         results = []
         for batch in dataset:
@@ -32,7 +33,8 @@ if __name__ == "__main__":
                 results += [res[info["outputIdx"]]]
             else:
                 results += [res]
-        break
+        results = np.concatenate(results)
+        np.save(f"'../outputs/masterOutput/{name}-Reps.npy", results)
 
     # print(hubModels)
     # inputShape = (224, 224, 3)
