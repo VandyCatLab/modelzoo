@@ -22,12 +22,11 @@ if __name__ == "__main__":
         hubModels = json.loads(f.read())
 
     for name, info in hubModels.items():
-        if "outputIdx" in info.keys():
-            continue
         print(name)
-        model, dataset = setup_hub_model(info, 256)
-        res = model.predict(dataset)
-        break
+        model, dataset = setup_hub_model(info, 32)
+        for batch in dataset.as_numpy_iterator():
+            res = model.predict(batch)
+            break
 
     # print(hubModels)
     # inputShape = (224, 224, 3)
