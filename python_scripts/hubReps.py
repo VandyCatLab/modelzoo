@@ -24,9 +24,14 @@ if __name__ == "__main__":
     for name, info in hubModels.items():
         print(name)
         model, dataset = setup_hub_model(info, 32)
+        results = []
         for batch in dataset.as_numpy_iterator():
             res = model.predict(batch)
-            break
+            if "outputIdx" in info.keys():
+                results += [res[info["outputIdx"]]]
+            else:
+                results += [res]
+        break
 
     # print(hubModels)
     # inputShape = (224, 224, 3)
