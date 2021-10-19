@@ -24,8 +24,9 @@ if __name__ == "__main__":
     for name, info in hubModels.items():
         print(name)
         model, dataset = setup_hub_model(info, 32)
+        dataset = dataset.as_numpy_iterator()
         results = []
-        for batch in dataset.as_numpy_iterator():
+        for batch in dataset:
             res = model.predict(batch)
             if "outputIdx" in info.keys():
                 results += [res[info["outputIdx"]]]
