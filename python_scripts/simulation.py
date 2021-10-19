@@ -171,7 +171,7 @@ def bigSizeRatioTest():
 
     nMax = imgset.shape[0]
     ratiosRange = np.arange(0.05, 1, 0.05)
-    nPermute = 10000
+    nPermute = 100
 
     for ratio in ratiosRange:
         print(f"Analyzing img:samples ratio: {ratio}")
