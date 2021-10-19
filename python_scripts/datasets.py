@@ -181,7 +181,7 @@ def get_imagenet_set(
 
     dataset = dataset.map(preprocFun, num_parallel_calls=tf.data.AUTOTUNE)
     dataset = dataset.batch(batch_size)
-    # dataset = dataset.cache()
+    dataset = dataset.cache()
     dataset = dataset.prefetch(tf.data.AUTOTUNE)
 
     return dataset
