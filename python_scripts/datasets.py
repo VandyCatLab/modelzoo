@@ -190,13 +190,14 @@ def get_imagenet_set(
 class preproc:
     def __init__(
         self,
-        shape,
-        dtype,
+        shape=(224, 224, 3),
+        dtype="float32",
         labels=False,
         numCat=None,
         scale=None,
         offset=None,
         fun=None,
+        **kwargs
     ):
         self.shape = shape
         self.dtype = dtype
