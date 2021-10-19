@@ -7,8 +7,8 @@ import json
 def setup_hub_model(info, batch_size):
     # Create model
     shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
-    inp = tf.keras.layers.InputLayer(input_shape=shape)
-    out = hub.KerasLayer(info["url"])
+    inp = tf.keras.Input(shape=shape)
+    out = hub.KerasLayer(info["url"])(inp)
     model = tf.keras.Model(inputs=inp, outputs=out)
 
     # Create dataset
@@ -18,23 +18,24 @@ def setup_hub_model(info, batch_size):
 
 
 if __name__ == "__main__":
-    # with open("./hubModels.json", "r") as f:
-    #     hubModels = json.loads(f.read())
+    with open("./hubModels.json", "r") as f:
+        hubModels = json.loads(f.read())
 
-    # for name, info in hubModels.items():
-    #     print(name)
-    #     model, dataset = setup_hub_model(info, 256)
+    for name, info in hubModels.items():
+        print(name)
+        model, dataset = setup_hub_model(info, 256)
+        break
 
     # print(hubModels)
-    inputShape = (224, 224, 3)
-    modelURL = (
-        "https://tfhub.dev/emilutz/vgg19-block5-conv2-unpooling-encoder/1"
-    )
+    # inputShape = (224, 224, 3)
+    # modelURL = (
+    #     "https://tfhub.dev/emilutz/vgg19-block5-conv2-unpooling-encoder/1"
+    # )
 
-    preprocFun = datasets.preproc(
-        labels=False,
-    )
-    data = datasets.get_imagenet_set(preprocFun, 256)
+    # preprocFun = datasets.preproc(
+    #     labels=False,
+    # )
+    # data = datasets.get_imagenet_set(preprocFun, 256)
 
     # model = tf.keras.Sequential(
     #     [
