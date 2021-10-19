@@ -196,11 +196,12 @@ def compile_baseline_dict(path, tests, layers):
     return data
 
 
-def compile_dropout(path):
+def compile_dropout(path, layers):
     """
     Return the data from the baseline dropout representations from a path.
     """
-    files = glob.glob(os.path.join(path, "*dropout*"))
+    layerName = ",".join([str(layer) for layer in layers])
+    files = glob.glob(os.path.join(path, f"*dropout-{layerName}.csv"))
 
     df = pd.DataFrame()
     for file in files:
@@ -230,20 +231,22 @@ def compile_augment_accuracy(path, aug):
 
 
 if __name__ == "__main__":
+    layers = [2, 6, 10]
     path = "../outputs/masterOutput/baseline/"
-    df = compile_dropout(path)
-    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout.csv")
+    df = compile_dropout(path, layers)
+    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-NoPool.csv")
 
     path = "../outputs/masterOutput/baseline/"
-    augments = ["color", "translate", "zoom", "reflect", "noise"]
-    layers = [3, 7, 11]
+    augments = ["translate", "reflect", "noise"]
 
     for augment in augments:
         df = pd.DataFrame()
         for layer in layers:
             tmp = compile_augment(path, augment, layer)
             df = pd.concat((df, tmp))
-        df.to_csv(f"../outputs/masterOutput/baseline/compiled/{augment}.csv")
+        df.to_csv(
+            f"../outputs/masterOutput/baseline/compiled/{augment}-NoPool.csv"
+        )
 
     # path = "../outputs/masterOutput/correspondence/"
     # models_path = "../outputs/masterOutput/models/"
@@ -258,10 +261,10 @@ if __name__ == "__main__":
     # with open(os.path.join(path, "compiled", "baseline.json"), "w") as outfile:
     #     json.dump(data, outfile)
 
-    path = "../outputs/masterOutput/baseline/"
-    augments = ["color", "translate", "zoom", "reflect", "noise", "drop"]
-    for augment in augments:
-        df = compile_augment_accuracy(path, augment)
-        df.to_csv(
-            f"../outputs/masterOutput/baseline/compiled/{augment}Acc.csv"
-        )
+    # path = "../outputs/masterOutput/baseline/"
+    # augments = ["color", "translate", "zoom", "reflect", "noise", "drop"]
+    # for augment in augments:
+    #     df = compile_augment_accuracy(path, augment)
+    #     df.to_csv(
+    #         f"../outputs/masterOutput/baseline/compiled/{augment}Acc.csv"
+    #     )
