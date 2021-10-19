@@ -22,8 +22,10 @@ if __name__ == "__main__":
         hubModels = json.loads(f.read())
 
     for name, info in hubModels.items():
+        if "outputIdx" in info.keys():
+            continue
         print(name)
-        model, dataset = setup_hub_model(info, 128)
+        model, dataset = setup_hub_model(info, 256)
         res = model.predict(dataset)
         break
 
