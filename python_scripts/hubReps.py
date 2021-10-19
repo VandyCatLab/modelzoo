@@ -23,7 +23,7 @@ if __name__ == "__main__":
         hubModels = json.loads(f.read())
 
     for name, info in hubModels.items():
-        print(name)
+        print(f"==== Working on model: {name} ====")
         model, dataset = setup_hub_model(info, 64)
         dataset = dataset.as_numpy_iterator()
         results = []
