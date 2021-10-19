@@ -165,10 +165,7 @@ def create_imagenetv2_set(preprocFun, examples=1, outshape=(224, 224)):
     return imgs, labels
 
 
-def get_imagenet_set(
-    preprocFun,
-    batch_size,
-):
+def get_imagenet_set(preprocFun, batch_size, data_dir):
     """
     Return ImageNet dataset for testing. Assumes that it all fits in memory.
     """
@@ -177,6 +174,7 @@ def get_imagenet_set(
         split="validation",
         as_supervised=True,
         shuffle_files=False,
+        data_dir=data_dir,
     )
 
     dataset = dataset.map(preprocFun, num_parallel_calls=tf.data.AUTOTUNE)
