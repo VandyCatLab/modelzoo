@@ -18,27 +18,23 @@ def setup_hub_model(info, batch_size):
 
 
 if __name__ == "__main__":
-    with open("./hubModels.json", "r") as f:
-        hubModels = json.loads(f.read())
+    # with open("./hubModels.json", "r") as f:
+    #     hubModels = json.loads(f.read())
 
-    for name, info in hubModels.items():
-        print(name)
-        model, dataset = setup_hub_model(info, 256)
+    # for name, info in hubModels.items():
+    #     print(name)
+    #     model, dataset = setup_hub_model(info, 256)
 
-    print(hubModels)
-    # inputShape = (224, 224, 3)
-    # modelURL = (
-    #     "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4"
-    # )
+    # print(hubModels)
+    inputShape = (224, 224, 3)
+    modelURL = (
+        "https://tfhub.dev/emilutz/vgg19-block5-conv2-unpooling-encoder/1"
+    )
 
-    # preprocFun = datasets.preproc(
-    #     shape=(224, 224, 3),
-    #     dtype=tf.float32,
-    #     scale=1.0 / 255,
-    #     offset=0,
-    #     labels=False,
-    # )
-    # data = datasets.get_imagenet_set(preprocFun, 256)
+    preprocFun = datasets.preproc(
+        labels=False,
+    )
+    data = datasets.get_imagenet_set(preprocFun, 256)
 
     # model = tf.keras.Sequential(
     #     [
