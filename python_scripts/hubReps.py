@@ -73,7 +73,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--models_file",
         "-f",
-        type="str",
+        type=str,
         help=".json file with the hub model info",
         default="./hubModels.json",
     )
