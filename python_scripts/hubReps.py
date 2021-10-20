@@ -94,4 +94,6 @@ if __name__ == "__main__":
     )
 
     reps = get_reps(model, dataset, hubModels[modelName])
-    np.save(f"../outputs/masterOutput/{modelName}-Reps.npy", reps)
+    np.save(
+        f"../outputs/masterOutput/{modelName.replace('/', '-')}-Reps.npy", reps
+    )
