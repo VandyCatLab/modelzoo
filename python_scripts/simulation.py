@@ -177,7 +177,7 @@ def bigSizeRatioTest():
         print(f"Analyzing img:samples ratio: {ratio}")
         repShape = (nMax, int(nMax * ratio))
         for permute in range(nPermute):
-            if permute % 100 == 0:
+            if permute % 10 == 0:
                 print(f"Permutation at {permute}")
 
             # Sample reps
