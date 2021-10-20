@@ -23,7 +23,7 @@ def setup_hub_model(info, batch_size, data_dir):
     return model, dataset
 
 
-def get_reps(model, dataset):
+def get_reps(model, dataset, info):
     """Manual batching to avoid memory problems."""
     dataset = dataset.as_numpy_iterator()
     results = []
@@ -93,5 +93,5 @@ if __name__ == "__main__":
         hubModels[modelName], args.batch_size, args.data_dir
     )
 
-    reps = get_reps(model, dataset)
+    reps = get_reps(model, dataset, hubModels[modelName])
     np.save(f"../outputs/masterOutput/{modelName}-Reps.npy", reps)
