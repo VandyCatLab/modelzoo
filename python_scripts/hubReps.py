@@ -28,7 +28,7 @@ def get_reps(model, dataset, info):
     dataset = dataset.as_numpy_iterator()
     results = []
     for i, batch in enumerate(dataset):
-        print(f"-- Working on batch {i}")
+        print(f"-- Working on batch {i}", flush=True)
         res = model.predict(batch)
         if "outputIdx" in info.keys():
             results += [res[info["outputIdx"]]]
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     else:
         modelName = list(hubModels.keys())[args.index]
 
-    print(f"==== Working on model: {modelName} ====")
+    print(f"==== Working on model: {modelName} ====", flush=True)
     model, dataset = setup_hub_model(
         hubModels[modelName], args.batch_size, args.data_dir
     )
