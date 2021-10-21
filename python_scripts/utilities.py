@@ -230,23 +230,47 @@ def compile_augment_accuracy(path, aug):
     return df
 
 
+def hub_rep_completion(repDir, hubInfo):
+    """
+    Return a list of missing Tensorflow Hub representations in repDir given
+    hubInfo.
+    """
+    # Get list of rep files
+    repFiles = glob.glob(os.path.join(repDir, "*.npy"))
+    repFiles = [name.replace(repDir + "/", "") for name in repFiles]
+    with open(hubInfo, "r") as f:
+        hubModels = json.loads(f.read())
+
+    # Fix up model names
+    hubModels = list(hubModels.keys())
+    hubModels = [name.replace("/", "-") for name in hubModels]
+
+    missing = []
+    for name in hubModels:
+        if not name + "-Reps.npy" in repFiles:
+            print(f"Missing representations from model: {name}")
+            missing += [name]
+
+    return missing
+
+
 if __name__ == "__main__":
-    layers = [2, 6, 10]
-    path = "../outputs/masterOutput/baseline/"
-    df = compile_dropout(path, layers)
-    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-NoPool.csv")
+    # layers = [2, 6, 10]
+    # path = "../outputs/masterOutput/baseline/"
+    # df = compile_dropout(path, layers)
+    # df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-NoPool.csv")
 
-    path = "../outputs/masterOutput/baseline/"
-    augments = ["translate", "reflect", "noise"]
+    # path = "../outputs/masterOutput/baseline/"
+    # augments = ["translate", "reflect", "noise"]
 
-    for augment in augments:
-        df = pd.DataFrame()
-        for layer in layers:
-            tmp = compile_augment(path, augment, layer)
-            df = pd.concat((df, tmp))
-        df.to_csv(
-            f"../outputs/masterOutput/baseline/compiled/{augment}-NoPool.csv"
-        )
+    # for augment in augments:
+    #     df = pd.DataFrame()
+    #     for layer in layers:
+    #         tmp = compile_augment(path, augment, layer)
+    #         df = pd.concat((df, tmp))
+    #     df.to_csv(
+    #         f"../outputs/masterOutput/baseline/compiled/{augment}-NoPool.csv"
+    #     )
 
     # path = "../outputs/masterOutput/correspondence/"
     # models_path = "../outputs/masterOutput/models/"
@@ -268,3 +292,9 @@ if __name__ == "__main__":
     #     df.to_csv(
     #         f"../outputs/masterOutput/baseline/compiled/{augment}Acc.csv"
     #     )
+
+    missing = hub_rep_completion(
+        "../outputs/masterOutput/hubReps", "./hubModels.json"
+    )
+    for file in missing:
+        print(file)

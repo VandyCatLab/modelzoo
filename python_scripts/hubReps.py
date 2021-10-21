@@ -3,6 +3,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import json
 import numpy as np
+import os
 
 
 def setup_hub_model(info, batch_size, data_dir):
@@ -89,12 +90,16 @@ if __name__ == "__main__":
         modelName = list(hubModels.keys())[args.index]
 
     print(f"==== Working on model: {modelName} ====", flush=True)
-    model, dataset = setup_hub_model(
-        hubModels[modelName], args.batch_size, args.data_dir
-    )
+    fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
+    if os.path.exists(fileName):
+        print(f"Already completed, skipping.")
+    else:
+        model, dataset = setup_hub_model(
+            hubModels[modelName], args.batch_size, args.data_dir
+        )
 
-    reps = get_reps(model, dataset, hubModels[modelName])
-    np.save(
-        f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy",
-        reps,
-    )
+        reps = get_reps(model, dataset, hubModels[modelName])
+        np.save(
+            fileName,
+            reps,
+        )
