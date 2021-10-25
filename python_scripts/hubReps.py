@@ -4,6 +4,9 @@ import tensorflow_hub as hub
 import json
 import numpy as np
 import os
+import analysis
+import itertools
+import pandas as pd
 
 
 def setup_hub_model(info, batch_size, data_dir):
@@ -44,6 +47,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Get representations from Tensorflow Hub networks using the validation set of ImageNet, intended to be used in HPC"
+    )
+    parser.add_argument(
+        "--analysis",
+        "-a",
+        type=str,
+        required=True,
+        help="analysis to perform",
+        choices=["reps", "similarity"],
     )
     parser.add_argument(
         "--model",
@@ -89,17 +100,87 @@ if __name__ == "__main__":
     else:
         modelName = list(hubModels.keys())[args.index]
 
-    print(f"==== Working on model: {modelName} ====", flush=True)
-    fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
-    if os.path.exists(fileName):
-        print(f"Already completed, skipping.")
-    else:
-        model, dataset = setup_hub_model(
-            hubModels[modelName], args.batch_size, args.data_dir
+    if args.analysis == "reps":
+        print(f"==== Working on model: {modelName} ====", flush=True)
+        fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
+        if os.path.exists(fileName):
+            print(f"Already completed, skipping.")
+        else:
+            model, dataset = setup_hub_model(
+                hubModels[modelName], args.batch_size, args.data_dir
+            )
+
+            reps = get_reps(model, dataset, hubModels[modelName])
+            np.save(
+                fileName,
+                reps,
+            )
+            print(f"Saved {fileName}", flush=True)
+    elif args.analysis == "similarity":
+        print(
+            f"==== Working on similarities for model: {modelName} ====",
+            flush=True,
         )
 
-        reps = get_reps(model, dataset, hubModels[modelName])
-        np.save(
-            fileName,
-            reps,
-        )
+        # Check if similarity file already exists
+        fileName = f"../outputs/masterOutput/hubReps/hubSims/{modelName.replace('/', '-')}.csv"
+        if os.path.exists(fileName):
+            print(f"Already completed, skipping.")
+        else:
+            # Load representations
+            modelRepsName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
+            reps = np.load(modelRepsName)
+
+            # If representations is not flat, average pool it
+            if len(reps.shape) > 2:
+                reps = np.mean(reps, axis=0)
+
+            # Get hub model names
+            hubModelNames = list(hubModels.keys())
+
+            # Find combinations of models and only keep combinations with this model
+            modelCombinations = list(itertools.combinations(hubModelNames, 2))
+            modelCombinations = [
+                x for x in modelCombinations if x[0] == modelName
+            ]
+
+            # Similarity functions
+            preprocFuns = [
+                analysis.preprocess_rsaNumba,
+                analysis.preprocess_svcca,
+                analysis.preprocess_ckaNumba,
+            ]
+            simFuns = [
+                analysis.do_rsaNumba,
+                analysis.do_svcca,
+                analysis.do_linearCKANumba,
+            ]
+            funNames = [fun.__name__ for fun in simFuns]
+
+            # Create dataframe to store results
+            simDf = pd.DataFrame(columns=["model1", "model2"] + funNames)
+            # Loop through hub model
+            for _, pairModel in modelCombinations:
+                # Print progress
+                print(f"--- Comparing against {pairModel}")
+
+                # Load hub model representations
+                pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-Reps.npy"
+                pairReps = np.load(pairModelRepsName)
+
+                # If representations is not flat, average pool it
+                if len(pairReps.shape) > 2:
+                    pairReps = np.mean(pairReps, axis=0)
+
+                # Calculate similarity
+                sims = analysis.multi_analysis(
+                    reps, pairReps, preprocFuns, simFuns
+                )
+
+                # Add to dataframe
+                simDf.loc[len(simDf.index)] = [modelName, pairModel] + [
+                    sims[fun] for fun in sims.keys()
+                ]
+
+            # Save dataframe
+            simDf.to_csv(fileName)
