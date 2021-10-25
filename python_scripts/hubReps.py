@@ -162,7 +162,7 @@ if __name__ == "__main__":
             # Loop through hub model
             for _, pairModel in modelCombinations:
                 # Print progress
-                print(f"--- Comparing against {pairModel}")
+                print(f"--- Comparing against {pairModel}", flush=True)
 
                 # Load hub model representations
                 pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-Reps.npy"
@@ -183,4 +183,5 @@ if __name__ == "__main__":
                 ]
 
             # Save dataframe
+            print("Saving similarities", flush=True)
             simDf.to_csv(fileName)
