@@ -182,6 +182,9 @@ if __name__ == "__main__":
                     sims[fun] for fun in sims.keys()
                 ]
 
+                # Delete representations for memory
+                del pairReps
+
             # Save dataframe
             print("Saving similarities", flush=True)
             simDf.to_csv(fileName)
