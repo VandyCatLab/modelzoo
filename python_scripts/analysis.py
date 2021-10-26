@@ -721,12 +721,15 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
     # Loop through each pair
     simDict = {}
     for preproc, sim in zip(preproc_fun, sim_fun):
+        print(f"___Preprocessing with {preproc.__name__}")
         # Preprocess each set of representations
         rep1Preproc = preproc(rep1)
         rep2Preproc = preproc(rep2)
 
         # Get similarity between reps
         try:
+            # Print what we're doing
+            print(f"___Doing {sim.__name__}", flush=True)
             simDict[sim.__name__] = sim(rep1Preproc, rep2Preproc)
         except Exception as e:
             simDict[sim.__name__] = np.nan
