@@ -5,7 +5,9 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 from tensorflow.keras.datasets import cifar10
 import tensorflow_datasets as tfds
-import matplotlib.pyplot as plt
+import PIL
+import random
+
 
 # Get training information
 (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
@@ -226,6 +228,92 @@ class preproc:
             return img
 
 
+def create_cinic10_set(
+    dataPath="/data/CINIC10/test", examples=10, dtype="float32"
+):
+    """
+    Return a part of CINIC10 dataset for testing. Each class will have the
+    number of examples, global contrast normalized,
+    """
+    # Prepare statistics
+    cats = os.listdir("/data/CINIC10/train")
+
+    # Loop through each category
+    images = np.empty((0, 32, 32, 3))
+    for cat in cats:
+        catImgs = os.listdir("/data/CINIC10/train/" + cat)
+        # Shuffle image list
+        random.shuffle(catImgs)
+
+        # Loop through each images in category
+        for imgName in catImgs[0:100]:
+            # Load image
+            img = PIL.Image.open("/data/CINIC10/train/" + cat + "/" + imgName)
+
+            # If image is grayscale, convert to RGB
+            if len(img.getbands()) == 1:
+                img = img.convert("RGB")
+
+            # Convert to numpy array
+            img = np.array(img)
+
+            # Add batch dimension
+            img = np.expand_dims(img, axis=0)
+            # Concatenate to images
+            images = np.concatenate((images, img))
+
+    # Calculate dataset statistics
+    imgMean = np.mean(images)
+    imgStd = np.std(images)
+
+    # ZCA whitening
+    imgFlat = images.reshape(images.shape[0], -1)
+    vec, val, _ = np.linalg.svd(np.cov(imgFlat, rowvar=False))
+    prinComps = np.dot(
+        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
+    )
+
+    # Work on our dataset
+    cats = os.listdir(dataPath)
+
+    # Loop through each category
+    images = np.empty((0, 32, 32, 3))
+    labels = np.empty(0)
+    for i, cat in enumerate(cats):
+        catImgs = os.listdir(dataPath + "/" + cat)
+        # Shuffle image list
+        random.shuffle(catImgs)
+
+        # Loop through each images in category
+        for imgName in catImgs[0:examples]:
+            # Load image
+            img = PIL.Image.open(dataPath + "/" + cat + "/" + imgName)
+
+            # If image is grayscale, convert to RGB
+            if len(img.getbands()) == 1:
+                img = img.convert("RGB")
+
+            # Convert to numpy array
+            img = np.array(img)
+
+            # Add batch dimension
+            img = np.expand_dims(img, axis=0)
+            # Concatenate to images
+            images = np.concatenate((images, img))
+            labels = np.append(labels, i)
+
+    # Apply global contrast normalization
+    images = (images - imgMean) / imgStd
+    # Apply ZCA whitening
+    originalShape = images.shape
+    imagesFlat = images.reshape(images.shape[0], -1)
+    images = np.dot(imagesFlat, prinComps).reshape(originalShape)
+    # Cast to dtype
+    images = tf.cast(images, dtype)
+
+    return images, labels
+
+
 if __name__ == "__main__":
     # Check if dataset is deterministic
     # dataset = np.load("../outputs/masterOutput/dataset.npy")
@@ -244,11 +332,16 @@ if __name__ == "__main__":
     # print(results)
 
     # Test imagenet
-    preprocFun = preproc(
-        shape=(224, 224, 3),
-        dtype=tf.float32,
-        scale=1.0 / 255,
-        offset=0,
-        labels=False,
-    )
-    data = get_imagenet_set(preprocFun, 256)
+    # preprocFun = preproc(
+    #     shape=(224, 224, 3),
+    #     dtype=tf.float32,
+    #     scale=1.0 / 255,
+    #     offset=0,
+    #     labels=False,
+    # )
+    # data = get_imagenet_set(preprocFun, 256)
+
+    random.seed(2021)
+    dataset, labels = create_cinic10_set(examples=100)
+    np.save("../outputs/masterOutput/cinicData.npy", dataset)
+    np.save("../outputs/masterOutput/cinicLabels.npy", labels)

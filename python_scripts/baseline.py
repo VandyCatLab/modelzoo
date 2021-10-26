@@ -342,6 +342,9 @@ if __name__ == "__main__":
         type=analysis._split_comma_str,
         default="layer indices, split by a comma",
     )
+    parser.add_argument(
+        "--group", "-g", type=str, help="analysis group to store together"
+    )
     args = parser.parse_args()
 
     # Load model
@@ -368,6 +371,10 @@ if __name__ == "__main__":
     ]
 
     basePath = "../outputs/masterOutput/baseline/"
+
+    # Add analysis group
+    if args.group is not None:
+        basePath += args.group + "/"
 
     if args.analysis in ["translate", "zoom", "reflect", "color", "noise"]:
         simFunNames = [fun.__name__ for fun in simFuns]
