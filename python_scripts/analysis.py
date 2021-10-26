@@ -733,6 +733,10 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
             print(f"{sim.__name__} produced an error, saving nan.")
             print(e)
 
+        # Clean up memory
+        del rep1Preproc
+        del rep2Preproc
+
     return simDict
 
 
