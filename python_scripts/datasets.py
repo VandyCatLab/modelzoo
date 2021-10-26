@@ -167,13 +167,14 @@ def create_imagenetv2_set(preprocFun, examples=1, outshape=(224, 224)):
     return imgs, labels
 
 
-def get_imagenet_set(preprocFun, batch_size, data_dir):
+def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
     """
     Return ImageNet dataset for testing. Assumes that it all fits in memory.
     """
+    split = f"validation{slice}" if slice is not None else "validation"
     dataset = tfds.load(
         "imagenet2012",
-        split="validation",
+        split=split,
         as_supervised=True,
         shuffle_files=False,
         data_dir=data_dir,
@@ -197,7 +198,7 @@ class preproc:
         scale=None,
         offset=None,
         fun=None,
-        **kwargs
+        **kwargs,
     ):
         self.shape = shape
         self.dtype = dtype

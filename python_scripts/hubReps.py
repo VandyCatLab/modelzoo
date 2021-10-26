@@ -76,6 +76,12 @@ if __name__ == "__main__":
         help="batch size for the images passing through networks",
     )
     parser.add_argument(
+        "--slice",
+        "-s",
+        type=str,
+        help="slice string to use on data",
+    )
+    parser.add_argument(
         "--data_dir",
         "-d",
         type=str,
