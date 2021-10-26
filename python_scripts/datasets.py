@@ -311,6 +311,9 @@ def create_cinic10_set(
     # Cast to dtype
     images = tf.cast(images, dtype)
 
+    # Convert to numpy arrays
+    images = np.array(images)
+    labels = np.array(labels)
     return images, labels
 
 
