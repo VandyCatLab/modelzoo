@@ -15,7 +15,7 @@ import pandas as pd
 import os
 
 
-def yield_transforms(transform, model, layer_idx, dataset):
+def yield_transforms(transform, model, layer_idx, dataset, return_aug=True):
     """
     Yield transformed representations successfully from the dataset after
     passing through the model to a certain layer_idx. Transforms control what
@@ -80,7 +80,10 @@ def yield_transforms(transform, model, layer_idx, dataset):
         with tf.device("/cpu:0"):
             transDataset = tf.image.flip_left_right(dataset)
         rep2 = model.predict(transDataset, verbose=0, batch_size=512)
-        yield 0, rep1, rep2, transDataset
+        if return_aug:
+            yield 0, rep1, rep2, transDataset
+        else:
+            yield 0, rep1, rep2
 
     elif transform == "translate":
         versions = (
@@ -110,7 +113,21 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 transImg = tfa.image.translate(dataset, [0, -v])  # Up
             rep2 += [batched_call(model, transImg, 512)]
 
-            yield v, rep1, rep2, None
+            if return_aug:
+                # Regenerate translated dataset and concatenate all four directions
+                with tf.device("/cpu:0"):
+                    transImg = tf.concat(
+                        [
+                            tfa.image.translate(dataset, [v, 0]),
+                            tfa.image.translate(dataset, [-v, 0]),
+                            tfa.image.translate(dataset, [0, v]),
+                            tfa.image.translate(dataset, [0, -v]),
+                        ],
+                        axis=0,
+                    )
+                yield v, rep1, rep2, transImg
+            else:
+                yield v, rep1, rep2
 
     elif transform == "color":
         versions = 51
@@ -148,7 +165,10 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             rep2 = batched_call(model, transImg, 512)
 
-            yield v, rep1, rep2, transImg
+            if return_aug:
+                yield v, rep1, rep2, transImg
+            else:
+                yield v, rep1, rep2
 
     elif transform == "zoom":
         smallDim = (
@@ -173,7 +193,10 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             rep2 = batched_call(model, transformed_dataset, 512)
 
-            yield v, rep1, rep2, transformed_dataset
+            if return_aug:
+                yield v, rep1, rep2, transformed_dataset
+            else:
+                yield v, rep1, rep2
 
     elif transform == "noise":
         sd = np.std(dataset)
@@ -192,7 +215,10 @@ def yield_transforms(transform, model, layer_idx, dataset):
 
             rep2 = batched_call(model, transDataset, 512)
 
-            yield a, rep1, rep2, transDataset
+            if return_aug:
+                yield a, rep1, rep2, transDataset
+            else:
+                yield a, rep1, rep2
 
 
 def make_dropout_model(model, output_idx, droprate):
@@ -383,7 +409,7 @@ if __name__ == "__main__":
             print(f"Working on layer {layer}.", flush=True)
             # Get transforms generators
             transforms = yield_transforms(
-                args.analysis, model, int(layer), dataset
+                args.analysis, model, int(layer), dataset, return_aug=False
             )
 
             # Create dataframe
@@ -405,7 +431,7 @@ if __name__ == "__main__":
                 simDf = pd.DataFrame(columns=["version"] + simFunNames)
 
             # Get similarity measure per transform
-            for v, rep1, rep2, _ in transforms:
+            for v, rep1, rep2 in transforms:
                 if args.analysis == "translate":
                     # Calculate similarity for each direction
                     simDirs = []
@@ -444,7 +470,9 @@ if __name__ == "__main__":
         # First handle augment tests first
         for aug in augList:
             # Make transforms, note selecting first layer for efficiency sake
-            transforms = yield_transforms(aug, model, 1, dataset)
+            transforms = yield_transforms(
+                aug, model, 1, dataset, return_aug=True
+            )
 
             # Create dataframe
             colNames = (
