@@ -95,6 +95,13 @@ if __name__ == "__main__":
         help=".json file with the hub model info",
         default="./hubModels.json",
     )
+    parser.add_argument(
+        "--feature_limit",
+        "-l",
+        type=int,
+        help="the maximum number of features a representation can have",
+        defalut=2048,
+    )
     args = parser.parse_args()
 
     with open(args.models_file, "r") as f:
@@ -144,6 +151,13 @@ if __name__ == "__main__":
             if len(reps.shape) > 2:
                 reps = np.mean(reps, axis=0)
 
+            # Check if there's too many features
+            if reps.shape[1] >= args.feature_limit:
+                # Raise an error
+                raise ValueError(
+                    f"The number of features is too high: {reps.shape[0]}."
+                )
+
             # Get hub model names
             hubModelNames = list(hubModels.keys())
 
@@ -180,6 +194,15 @@ if __name__ == "__main__":
                 # If representations is not flat, average pool it
                 if len(pairReps.shape) > 2:
                     pairReps = np.mean(pairReps, axis=0)
+
+                # Check if there's too many features
+                if pairReps.shape[1] >= args.feature_limit:
+                    # Skip over this model
+                    print(
+                        f"Too many features from {pairModel}, skipping",
+                        flush=True,
+                    )
+                    continue
 
                 # Calculate similarity
                 sims = analysis.multi_analysis(

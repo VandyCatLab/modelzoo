@@ -279,22 +279,22 @@ def limit_hub_rep_feature_size(repDir, featureLimit):
 
 
 if __name__ == "__main__":
-    layers = [3, 7, 11]
-    path = "../outputs/masterOutput/baseline/cinic/"
-    df = compile_dropout(path, layers)
-    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-cinic.csv")
+    # layers = [3, 7, 11]
+    # path = "../outputs/masterOutput/baseline/cinic/"
+    # df = compile_dropout(path, layers)
+    # df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-cinic.csv")
 
-    path = "../outputs/masterOutput/baseline/cinic/"
-    augments = ["translate", "reflect", "noise", "color", "zoom"]
+    # path = "../outputs/masterOutput/baseline/cinic/"
+    # augments = ["translate", "reflect", "noise", "color", "zoom"]
 
-    for augment in augments:
-        df = pd.DataFrame()
-        for layer in layers:
-            tmp = compile_augment(path, augment, layer)
-            df = pd.concat((df, tmp))
-        df.to_csv(
-            f"../outputs/masterOutput/baseline/compiled/{augment}-cinic.csv"
-        )
+    # for augment in augments:
+    #     df = pd.DataFrame()
+    #     for layer in layers:
+    #         tmp = compile_augment(path, augment, layer)
+    #         df = pd.concat((df, tmp))
+    #     df.to_csv(
+    #         f"../outputs/masterOutput/baseline/compiled/{augment}-cinic.csv"
+    #     )
 
     # path = "../outputs/masterOutput/correspondence/"
     # models_path = "../outputs/masterOutput/models/"
@@ -317,10 +317,10 @@ if __name__ == "__main__":
     #         f"../outputs/masterOutput/baseline/compiled/{augment}Acc-cinic.csv"
     #     )
 
-    # missing = hub_rep_completion(
-    #     "../outputs/masterOutput/hubReps", "./hubModels.json"
-    # )
-    # for file in missing:
-    #     print(file)
+    missing = hub_rep_completion(
+        "../outputs/masterOutput/hubReps", "./hubModels.json"
+    )
+    for file in missing:
+        print(file)
 
-    # limit_hub_rep_feature_size("../outputs/masterOutput/hubReps", 1024)
+    kept = limit_hub_rep_feature_size("../outputs/masterOutput/hubReps", 2048)
