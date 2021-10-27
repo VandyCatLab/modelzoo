@@ -438,7 +438,7 @@ if __name__ == "__main__":
             simDf.to_csv(outPath, index=False)
 
     elif args.analysis == "accuracy":
-        augList = ["translate", "zoom", "reflect", "color", "noise"]
+        augList = ["zoom", "reflect", "color", "noise", "translate"]
         dataLabels = np.load(args.labels_file)
 
         # First handle augment tests first
