@@ -143,7 +143,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
                     ],
                     axis=-1,
                 )
-                changes = tf.cast(changes, tf.float32)
+                changes = tf.cast(changes, dataset.dtype)
                 transImg = dataset + changes
 
             rep2 = batched_call(model, transImg, 512)
@@ -187,7 +187,7 @@ def yield_transforms(transform, model, layer_idx, dataset):
                 noise = tf.random.normal(
                     shape=dataset.shape, stddev=sd * 3, dtype=tf.float64
                 )
-                noise = tf.cast(noise * a, tf.float32)
+                noise = tf.cast(noise, dataset.dtype)
                 transDataset = dataset + noise
 
             rep2 = batched_call(model, transDataset, 512)
