@@ -9,7 +9,7 @@ import itertools
 import pandas as pd
 
 
-def setup_hub_model(info, batch_size, data_dir):
+def setup_hub_model(info, batch_size, data_dir, slice):
     # Create model
     shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
     inp = tf.keras.Input(shape=shape)
@@ -22,7 +22,7 @@ def setup_hub_model(info, batch_size, data_dir):
         labels=False,
     )
     dataset = datasets.get_imagenet_set(
-        preprocFun, batch_size, data_dir=data_dir
+        preprocFun, batch_size, data_dir=data_dir, slice=slice
     )
     return model, dataset
 
@@ -113,7 +113,10 @@ if __name__ == "__main__":
             print(f"Already completed, skipping.")
         else:
             model, dataset = setup_hub_model(
-                hubModels[modelName], args.batch_size, args.data_dir
+                hubModels[modelName],
+                args.batch_size,
+                args.data_dir,
+                args.slice,
             )
 
             reps = get_reps(model, dataset, hubModels[modelName])
