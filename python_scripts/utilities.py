@@ -254,23 +254,47 @@ def hub_rep_completion(repDir, hubInfo):
     return missing
 
 
+def limit_hub_rep_feature_size(repDir, featureLimit):
+    """
+    Return a list of hub model representations in repDir that have less than or
+    equal to featureLimit features.
+    """
+    # Get a list of rep files
+    repFiles = glob.glob(os.path.join(repDir, "*.npy"))
+
+    # Loop through rep files
+    keptReps = []
+    for file in repFiles:
+        # Load rep
+        rep = np.load(file)
+        # Check if it has less than or equal to featureLimit features
+        if rep.shape[-1] <= featureLimit:
+            print(f"{file} has {rep.shape[-1]} features, keeping!")
+            keptReps += [file]
+        else:
+            print(f"{file} has {rep.shape[-1]} features, too many!")
+
+    print(repDir)
+    return keptReps
+
+
 if __name__ == "__main__":
-    # layers = [2, 6, 10]
-    # path = "../outputs/masterOutput/baseline/"
-    # df = compile_dropout(path, layers)
-    # df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-NoPool.csv")
+    layers = [3, 7, 11]
+    path = "../outputs/masterOutput/baseline/cinic/"
+    df = compile_dropout(path, layers)
+    df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-cinic.csv")
 
-    # path = "../outputs/masterOutput/baseline/"
-    # augments = ["translate", "reflect", "noise"]
+    path = "../outputs/masterOutput/baseline/cinic/"
+    augments = ["translate", "reflect", "noise", "color", "zoom"]
 
-    # for augment in augments:
-    #     df = pd.DataFrame()
-    #     for layer in layers:
-    #         tmp = compile_augment(path, augment, layer)
-    #         df = pd.concat((df, tmp))
-    #     df.to_csv(
-    #         f"../outputs/masterOutput/baseline/compiled/{augment}-NoPool.csv"
-    #     )
+    for augment in augments:
+        df = pd.DataFrame()
+        for layer in layers:
+            tmp = compile_augment(path, augment, layer)
+            df = pd.concat((df, tmp))
+        df.to_csv(
+            f"../outputs/masterOutput/baseline/compiled/{augment}-cinic.csv"
+        )
 
     # path = "../outputs/masterOutput/correspondence/"
     # models_path = "../outputs/masterOutput/models/"
@@ -285,16 +309,18 @@ if __name__ == "__main__":
     # with open(os.path.join(path, "compiled", "baseline.json"), "w") as outfile:
     #     json.dump(data, outfile)
 
-    # path = "../outputs/masterOutput/baseline/"
+    # path = "../outputs/masterOutput/baseline/cinic/"
     # augments = ["color", "translate", "zoom", "reflect", "noise", "drop"]
     # for augment in augments:
     #     df = compile_augment_accuracy(path, augment)
     #     df.to_csv(
-    #         f"../outputs/masterOutput/baseline/compiled/{augment}Acc.csv"
+    #         f"../outputs/masterOutput/baseline/compiled/{augment}Acc-cinic.csv"
     #     )
 
-    missing = hub_rep_completion(
-        "../outputs/masterOutput/hubReps", "./hubModels.json"
-    )
-    for file in missing:
-        print(file)
+    # missing = hub_rep_completion(
+    #     "../outputs/masterOutput/hubReps", "./hubModels.json"
+    # )
+    # for file in missing:
+    #     print(file)
+
+    # limit_hub_rep_feature_size("../outputs/masterOutput/hubReps", 1024)
