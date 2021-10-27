@@ -100,7 +100,7 @@ if __name__ == "__main__":
         "-l",
         type=int,
         help="the maximum number of features a representation can have",
-        defalut=2048,
+        default=2048,
     )
     args = parser.parse_args()
 
