@@ -230,7 +230,7 @@ class preproc:
 
 
 def create_cinic10_set(
-    dataPath="/data/CINIC10/test", examples=10, dtype="float32"
+    dataPath="/data/CINIC10/test", examples=10, dtype="float64"
 ):
     """
     Return a part of CINIC10 dataset for testing. Each class will have the
@@ -268,6 +268,7 @@ def create_cinic10_set(
     imgStd = np.std(images)
 
     # ZCA whitening
+    images = (images - imgMean) / imgStd
     imgFlat = images.reshape(images.shape[0], -1)
     vec, val, _ = np.linalg.svd(np.cov(imgFlat, rowvar=False))
     prinComps = np.dot(
@@ -303,27 +304,28 @@ def create_cinic10_set(
             images = np.concatenate((images, img))
             labels = np.append(labels, i)
 
-    # Apply global contrast normalization
-    images = (images - imgMean) / imgStd
-    # Apply ZCA whitening
-    originalShape = images.shape
-    imagesFlat = images.reshape(images.shape[0], -1)
-    images = np.dot(imagesFlat, prinComps).reshape(originalShape)
-    # Cast to dtype
-    images = tf.cast(images, dtype)
+    # # Apply global contrast normalization
+    # images = (images - imgMean) / imgStd
+
+    # # Apply ZCA whitening
+    # imagesFlat = images.reshape(images.shape[0], -1)
+    # images = np.dot(imagesFlat, prinComps).reshape(images.shape)
+    # # Cast to dtype
+    # images = tf.cast(images, dtype)
+    images = preprocess(images)
 
     # Convert to numpy arrays
-    images = np.array(images)
+    # images = np.array(images)
     labels = np.array(labels)
     return images, labels
 
 
 if __name__ == "__main__":
     # Check if dataset is deterministic
-    # dataset = np.load("../outputs/masterOutput/dataset.npy")
-    # dataset2, labels = make_predict_data(
-    #     preprocess(x_testRaw), tf.one_hot(y_testRaw, 10)
-    # )
+    dataset = np.load("../outputs/masterOutput/dataset.npy")
+    dataset2, labels = make_predict_data(
+        preprocess(x_testRaw), tf.one_hot(y_testRaw, 10)
+    )
     # np.save("../outputs/masterOutput/labels.npy", labels)
 
     # preproc = tf.keras.applications.mobilenet_v3.preprocess_input
