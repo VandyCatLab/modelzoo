@@ -33,7 +33,9 @@ def get_reps(model, dataset, info):
     dataset = dataset.as_numpy_iterator()
     results = []
     for i, batch in enumerate(dataset):
-        print(f"-- Working on batch {i}", flush=True)
+        print(
+            f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True
+        )
         res = model.predict(batch)
         if "outputIdx" in info.keys():
             results += [res[info["outputIdx"]]]
@@ -115,7 +117,10 @@ if __name__ == "__main__":
         modelName = list(hubModels.keys())[args.index]
 
     if args.analysis == "reps":
-        print(f"==== Working on model: {modelName} ====", flush=True)
+        print(
+            f"==== Working on model: {modelName} [{datetime.datetime.now()}] ====",
+            flush=True,
+        )
         fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
         if os.path.exists(fileName):
             print(f"Already completed, skipping.")
