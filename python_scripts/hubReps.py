@@ -7,6 +7,7 @@ import os
 import analysis
 import itertools
 import pandas as pd
+import datetime
 
 
 def setup_hub_model(info, batch_size, data_dir, slice):
@@ -134,7 +135,7 @@ if __name__ == "__main__":
             print(f"Saved {fileName}", flush=True)
     elif args.analysis == "similarity":
         print(
-            f"==== Working on similarities for model: {modelName} ====",
+            f"==== Working on similarities for model: {modelName} [{datetime.datetime.now()}] ====",
             flush=True,
         )
 
@@ -155,7 +156,7 @@ if __name__ == "__main__":
             if reps.shape[1] >= args.feature_limit:
                 # Raise an error
                 raise ValueError(
-                    f"The number of features is too high: {reps.shape[0]}."
+                    f"The number of features is too high: {reps.shape[0]}. [{datetime.datetime.now()}]"
                 )
 
             # Get hub model names
@@ -185,7 +186,10 @@ if __name__ == "__main__":
             # Loop through hub model
             for _, pairModel in modelCombinations:
                 # Print progress
-                print(f"--- Comparing against {pairModel}", flush=True)
+                print(
+                    f"--- Comparing against {pairModel} [{datetime.datetime.now()}]",
+                    flush=True,
+                )
 
                 # Load hub model representations
                 pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-Reps.npy"
@@ -199,7 +203,7 @@ if __name__ == "__main__":
                 if pairReps.shape[1] >= args.feature_limit:
                     # Skip over this model
                     print(
-                        f"Too many features from {pairModel}, skipping",
+                        f"Too many features from {pairModel}, skipping [{datetime.datetime.now()}]",
                         flush=True,
                     )
                     continue
@@ -218,5 +222,7 @@ if __name__ == "__main__":
                 del pairReps
 
             # Save dataframe
-            print("Saving similarities", flush=True)
+            print(
+                f"Saving similarities [{datetime.datetime.now()}]", flush=True
+            )
             simDf.to_csv(fileName)
