@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
                 # If representations is not flat, average pool it
                 if len(pairReps.shape) > 2:
-                    pairReps = np.mean(pairReps, axis=0)
+                    pairReps = np.mean(pairReps, axis=(1, 2))
 
                 # Check if there's too many features
                 if pairReps.shape[1] >= args.feature_limit:
