@@ -228,7 +228,7 @@ if __name__ == "__main__":
                     pairReps = np.mean(pairReps, axis=(1, 2))
 
                 # Check if there's too many features
-                if pairReps.shape[1] >= args.feature_limit:
+                if pairReps.shape[-1] > args.feature_limit:
                     # Skip over this model
                     print(
                         f"Too many features from {pairModel}, skipping [{datetime.datetime.now()}]",
