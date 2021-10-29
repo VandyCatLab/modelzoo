@@ -43,7 +43,7 @@ def get_reps(model, dataset, info, batch_size):
         output_size = model.output_shape[1:]
 
     # Create empty array to store representations
-    reps = np.zeros((nBatches * batch_size, *output_size))
+    reps = np.zeros((nBatches * batch_size, *output_size), dtype="float32")
     numImgs = 0
     for i, batch in enumerate(dataset):
         print(

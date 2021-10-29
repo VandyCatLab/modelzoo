@@ -7,9 +7,6 @@
         "url": "https://tfhub.dev/emilutz/vgg19-block4-conv2-unpooling-encoder/1",
         "outputIdx": 0
     },
-    "vgg19-block1-conv2-unpooling-encoder": {
-        "url": "https://tfhub.dev/emilutz/vgg19-block1-conv2-unpooling-encoder/1"
-    },
     "tf2-preview/mobilenet_v2/feature_vector": {
         "url": "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4",
         "scale": 0.00392156862,
