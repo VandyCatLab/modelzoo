@@ -28,21 +28,42 @@ def setup_hub_model(info, batch_size, data_dir, slice):
     return model, dataset
 
 
-def get_reps(model, dataset, info):
+def get_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
+    # Num batches
+    nBatches = len(dataset)
+
     dataset = dataset.as_numpy_iterator()
-    results = []
+
+    if info["outputIdx"] is not None:
+        # Get output size of model
+        output_size = model.output_shape[info["outputIdx"]][1:]
+    else:
+        # Get output size of model
+        output_size = model.output_shape[1:]
+
+    # Create empty array to store representations
+    reps = np.zeros((nBatches * batch_size, *output_size))
+    numImgs = 0
     for i, batch in enumerate(dataset):
         print(
             f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True
         )
+        numImgs += len(batch)
         res = model.predict(batch)
+
         if "outputIdx" in info.keys():
-            results += [res[info["outputIdx"]]]
+            # Save representations
+            reps[i * batch_size : (i + 1) * batch_size] = res[
+                :, info["outputIdx"]
+            ]
         else:
-            results += [res]
-    results = np.concatenate(results)
-    return results
+            # Save representations
+            reps[i * batch_size : (i + 1) * batch_size] = res
+
+    # Remove empty rows
+    reps = reps[:numImgs]
+    return reps
 
 
 if __name__ == "__main__":
@@ -132,7 +153,9 @@ if __name__ == "__main__":
                 args.slice,
             )
 
-            reps = get_reps(model, dataset, hubModels[modelName])
+            reps = get_reps(
+                model, dataset, hubModels[modelName], args.batch_size
+            )
             np.save(
                 fileName,
                 reps,
