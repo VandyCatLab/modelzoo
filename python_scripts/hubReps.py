@@ -35,7 +35,7 @@ def get_reps(model, dataset, info, batch_size):
 
     dataset = dataset.as_numpy_iterator()
 
-    if info["outputIdx"] is not None:
+    if "outputIdx" in info.keys():
         # Get output size of model
         output_size = model.output_shape[info["outputIdx"]][1:]
     else:
