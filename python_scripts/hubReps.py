@@ -178,7 +178,7 @@ if __name__ == "__main__":
 
             # If representations is not flat, average pool it
             if len(reps.shape) > 2:
-                reps = np.mean(reps, axis=0)
+                reps = np.mean(reps, axis=(1, 2))
 
             # Check if there's too many features
             if reps.shape[1] >= args.feature_limit:
