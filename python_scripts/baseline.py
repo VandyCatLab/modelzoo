@@ -208,7 +208,7 @@ def yield_transforms(transform, model, layer_idx, dataset, return_aug=True):
             with tf.device("/cpu:0"):
                 noise = tf.zeros(1)
                 noise = tf.random.normal(
-                    shape=dataset.shape, stddev=sd * 3, dtype=dataset.dtype
+                    shape=dataset.shape, stddev=sd * a, dtype=dataset.dtype
                 )
                 transDataset = dataset + noise
 
