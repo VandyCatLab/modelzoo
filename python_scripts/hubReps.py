@@ -181,7 +181,7 @@ if __name__ == "__main__":
                 reps = np.mean(reps, axis=(1, 2))
 
             # Check if there's too many features
-            if reps.shape[1] >= args.feature_limit:
+            if reps.shape[-1] > args.feature_limit:
                 # Raise an error
                 raise ValueError(
                     f"The number of features is too high: {reps.shape[0]}. [{datetime.datetime.now()}]"
