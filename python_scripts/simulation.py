@@ -262,7 +262,7 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
     permuteData.to_csv(outPath)
 
 
-def parametricNoise(minNoise=0.0, maxNoise=1):
+def parametricNoise(minNoise=0.0, maxNoise=1, step=0.1):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -303,10 +303,10 @@ def parametricNoise(minNoise=0.0, maxNoise=1):
     ]
 
     colNames = [fun.__name__ for fun in simFuns] + ["Noise"]
-    nPermutes = 10000
+    nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames)
-    noiseRange = np.arange(minNoise, maxNoise + 0.1, 0.1)
+    noiseRange = np.arange(minNoise, maxNoise + 0.1, step)
     outPath = "../outputs/masterOutput/noiseSims.csv"
     print("Doing parametric noise simulation")
     for permute in range(nPermutes):
@@ -317,8 +317,8 @@ def parametricNoise(minNoise=0.0, maxNoise=1):
 
         df = pd.DataFrame(columns=colNames, index=noiseRange)
         for noise in noiseRange:
-            repNoise = (
-                rep + np.random.normal(scale=repSD, size=repShape) * noise
+            repNoise = rep + np.random.normal(
+                scale=repSD * noise, size=repShape
             )
             repNoise = repNoise.astype(np.float32)
 
@@ -390,4 +390,4 @@ def sanity_check():
 
 
 if __name__ == "__main__":
-    parametricNoise()
+    parametricNoise(maxNoise=4.0, step=0.01)
