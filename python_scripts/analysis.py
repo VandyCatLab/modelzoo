@@ -707,7 +707,7 @@ Large scale analysis functions
 """
 
 
-def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
+def multi_analysis(rep1, rep2, preproc_fun, sim_fun, verbose=False):
     """
     Perform similarity analysis between rep1 and rep2 once for each method as
     indicated by first applying a preproc_fun then the sim_fun. preproc_fun
@@ -721,7 +721,8 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
     # Loop through each pair
     simDict = {}
     for preproc, sim in zip(preproc_fun, sim_fun):
-        print(f"___Preprocessing with {preproc.__name__}")
+        if verbose:
+            print(f"___Preprocessing with {preproc.__name__}")
         # Preprocess each set of representations
         rep1Preproc = preproc(rep1)
         rep2Preproc = preproc(rep2)
@@ -729,7 +730,9 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun):
         # Get similarity between reps
         try:
             # Print what we're doing
-            print(f"___Doing {sim.__name__}", flush=True)
+            if verbose:
+                print(f"___Similarity with {sim.__name__}", flush=True)
+
             simDict[sim.__name__] = sim(rep1Preproc, rep2Preproc)
         except Exception as e:
             simDict[sim.__name__] = np.nan
