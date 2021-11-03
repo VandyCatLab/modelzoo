@@ -311,7 +311,7 @@ def parametricNoise(minNoise=0.0, maxNoise=1, step=0.1):
     print("Doing parametric noise simulation")
     for permute in range(nPermutes):
         if permute % 100 == 0:
-            print(f"-- Permutation at {permute}")
+            print(f"-- Permutation at {permute}", flush=True)
 
         rep = np.random.choice(rep_flat, size=repShape, replace=False)
 
@@ -322,7 +322,9 @@ def parametricNoise(minNoise=0.0, maxNoise=1, step=0.1):
             )
             repNoise = repNoise.astype(np.float32)
 
-            sims = analysis.multi_analysis(rep, repNoise, preprocFuns, simFuns)
+            sims = analysis.multi_analysis(
+                rep, repNoise, preprocFuns, simFuns, verbose=False
+            )
             df.loc[noise] = list(sims.values()) + [noise]
         permuteData = permuteData.append(df)
 
