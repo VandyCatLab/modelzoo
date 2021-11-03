@@ -262,7 +262,9 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
     permuteData.to_csv(outPath)
 
 
-def parametricNoise(minNoise=0.0, maxNoise=1, step=0.1):
+def parametricNoise(
+    minNoise=0.0, maxNoise=1, step=0.1, permutations=10000, seed=None
+):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -303,13 +305,19 @@ def parametricNoise(minNoise=0.0, maxNoise=1, step=0.1):
     ]
 
     colNames = [fun.__name__ for fun in simFuns] + ["Noise"]
-    nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames)
     noiseRange = np.arange(minNoise, maxNoise + 0.1, step)
-    outPath = "../outputs/masterOutput/noiseSims.csv"
+
+    # Set seed if available
+    if seed is not None:
+        print(f"Setting seed {seed}", flush=True)
+        np.random.seed(seed)
+        outPath = f"../outputs/masterOutput/noiseSims{seed}.csv"
+    else:
+        outPath = "../outputs/masterOutput/noiseSims.csv"
     print("Doing parametric noise simulation")
-    for permute in range(nPermutes):
+    for permute in range(permutations):
         if permute % 100 == 0:
             print(f"-- Permutation at {permute}", flush=True)
 
@@ -392,4 +400,32 @@ def sanity_check():
 
 
 if __name__ == "__main__":
-    parametricNoise(maxNoise=4.0, step=0.01)
+    # Setup argparse
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Do some simulation anlaysis, inteded to be used on HPC"
+    )
+    parser.add_argument(
+        "--analysis",
+        "-a",
+        type=str,
+        required=True,
+        help="analysis to perform",
+        choices=["noise"],
+    )
+    parser.add_argument(
+        "--seed",
+        "-s",
+        type=int,
+        help="seed for random number generator",
+        default=None,
+    )
+    args = parser.parse_args()
+
+    if args.analysis == "noise":
+        parametricNoise(
+            maxNoise=4.0, step=0.01, permutations=1, seed=args.seed
+        )
+    else:
+        raise ValueError(f"Unknown analysis: {args.analysis}")
