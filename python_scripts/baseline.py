@@ -387,11 +387,13 @@ if __name__ == "__main__":
     # Prep analysis functions
     preprocFuns = [
         analysis.preprocess_rsaNumba,
+        analysis.preprocess_eucRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
+        analysis.do_eucRsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
