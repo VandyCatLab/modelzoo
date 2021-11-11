@@ -39,11 +39,13 @@ def permuteTest():
     else:
         preprocFuns = [
             analysis.preprocess_rsaNumba,
+            analysis.preprocess_eucRsaNumba,
             analysis.preprocess_svcca,
             analysis.preprocess_ckaNumba,
         ]
         simFuns = [
             analysis.do_rsaNumba,
+            analysis.do_eucRsaNumba,
             analysis.do_svcca,
             analysis.do_linearCKANumba,
         ]
@@ -108,11 +110,13 @@ def sizeRatioTest():
 
     preprocFuns = [
         analysis.preprocess_rsaNumba,
+        analysis.preprocess_eucRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
+        analysis.do_eucRsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
@@ -157,11 +161,13 @@ def bigSizeRatioTest():
 
     preprocFuns = [
         analysis.preprocess_rsaNumba,
+        analysis.preprocess_eucRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
+        analysis.do_eucRsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
@@ -368,11 +374,13 @@ def sanity_check():
 
     preprocFuns = [
         analysis.preprocess_rsaNumba,
+        analysis.preprocess_eucRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
+        analysis.do_eucRsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
@@ -412,7 +420,7 @@ if __name__ == "__main__":
         type=str,
         required=True,
         help="analysis to perform",
-        choices=["noise"],
+        choices=["noise", "simulations"],
     )
     parser.add_argument(
         "--seed",
@@ -427,5 +435,7 @@ if __name__ == "__main__":
         parametricNoise(
             maxNoise=4.0, step=0.01, permutations=1, seed=args.seed
         )
+    elif args.analysis == "simulations":
+        permuteTest()
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
