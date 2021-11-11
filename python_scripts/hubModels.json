@@ -1,22 +1,35 @@
 {
     "vgg19-block5-conv2-unpooling-encoder": {
         "url": "https://tfhub.dev/emilutz/vgg19-block5-conv2-unpooling-encoder/1",
-        "outputIdx": 0
+        "outputIdx": 0,
+        "numFeatures": 512,
+        "type": "vgg",
+        "trainingSet": "coco"
     },
     "vgg19-block4-conv2-unpooling-encoder": {
         "url": "https://tfhub.dev/emilutz/vgg19-block4-conv2-unpooling-encoder/1",
-        "outputIdx": 0
+        "outputIdx": 0,
+        "numFeatures": 512,
+        "type": "vgg",
+        "trainingSet": "coco"
     },
-    "tf2-preview/mobilenet_v2/feature_vector": {
-        "url": "https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4",
-        "scale": 0.00392156862,
-        "offset": 0
+    "vgg19-block1-conv2-unpooling-encoder": {
+        "url": "https://tfhub.dev/emilutz/vgg19-block1-conv2-unpooling-encoder/1",
+        "numFeatures": 512,
+        "type": "vgg",
+        "trainingSet": "coco"
     },
     "experts/bit/r50x1/in21k/matter": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/matter/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/matter/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/tree": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/tree/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/tree/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector/2",
@@ -26,7 +39,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "numFeatures": 1280,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v1_100_128/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v1_100_128/feature_vector/5",
@@ -36,10 +52,16 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 1024
     },
     "experts/bit/r50x1/in21k/part": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/part/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/part/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector/2",
@@ -49,12 +71,18 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/mobilenet_v1_100_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v1_100_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 1024
     },
     "imagenet/mobilenet_v2_100_160/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_100_160/feature_vector/5",
@@ -64,18 +92,30 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "experts/bit/r50x1/in21k/whole": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/whole/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/whole/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/resnet_v1_152/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/resnet_v1_152/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "resnet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     },
     "experts/bit/r50x1/in21k/consumer_goods": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/consumer_goods/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/consumer_goods/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector/2",
@@ -85,7 +125,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/mobilenet_v1_025_192/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v1_025_192/feature_vector/5",
@@ -95,18 +138,30 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 256
     },
     "experts/bit/r50x1/in21k/artifact": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/artifact/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/artifact/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/resnet_v1_101/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/resnet_v1_101/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "resnet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     },
     "experts/bit/r50x1/in21k/flower": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/flower/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/flower/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_075_96/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_075_96/feature_vector/5",
@@ -116,15 +171,24 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "cropnet/feature_vector/cassava_disease_V1": {
         "url": "https://tfhub.dev/google/cropnet/feature_vector/cassava_disease_V1/1",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v3",
+        "trainingSet": "cassava",
+        "numFeatures": 1280
     },
     "experts/bit/r50x1/in21k/structure": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/structure/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/structure/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector/2",
@@ -134,7 +198,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/mobilenet_v1_050_160/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v1_050_160/feature_vector/5",
@@ -144,18 +211,30 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 512
     },
     "imagenet/mobilenet_v2_130_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_130_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1664
     },
     "experts/bit/r50x1/in21k/abstraction": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/abstraction/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/abstraction/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/plant": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/plant/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/plant/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_075_160/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_075_160/feature_vector/5",
@@ -165,10 +244,16 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "experts/bit/r50x1/in21k/object": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/object/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/object/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_b1/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_b1/feature_vector/2",
@@ -178,7 +263,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet21k_b2/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_b2/feature_vector/2",
@@ -188,20 +276,32 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "cropnet/feature_vector/imagenet": {
         "url": "https://tfhub.dev/google/cropnet/feature_vector/imagenet/1",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v3",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/resnet_v2_101/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/resnet_v2_101/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     },
     "experts/bit/r50x1/in21k/conveyance": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/conveyance/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/conveyance/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet1k_b2/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_b2/feature_vector/2",
@@ -211,12 +311,18 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/inception_v2/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/inception_v2/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "inception-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1048
     },
     "imagenet/mobilenet_v2_035_160/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_035_160/feature_vector/5",
@@ -226,7 +332,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet1k_l/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_l/feature_vector/2",
@@ -236,7 +345,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/inception_resnet_v2/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/inception_resnet_v2/feature_vector/5",
@@ -246,10 +358,16 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "inception-resnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1536
     },
     "experts/bit/r50x1/in21k/animal": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/animal/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/animal/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_100_128/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_100_128/feature_vector/5",
@@ -259,7 +377,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/mobilenet_v2_050_160/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_050_160/feature_vector/5",
@@ -269,7 +390,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet1k_m/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_m/feature_vector/2",
@@ -279,16 +403,28 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "experts/bit/r50x1/in21k/instrument": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/instrument/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/instrument/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/food": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/food/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/food/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/arthropod": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/arthropod/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/arthropod/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_035_96/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_035_96/feature_vector/5",
@@ -298,7 +434,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector/2",
@@ -308,10 +447,16 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "experts/bit/r50x1/in21k/spermatophyte": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/spermatophyte/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/spermatophyte/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_050_192/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_050_192/feature_vector/5",
@@ -321,10 +466,16 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "experts/bit/r50x1/in21k/vehicle": {
-        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/vehicle/1"
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/vehicle/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/nasnet_large/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/nasnet_large/feature_vector/5",
@@ -334,32 +485,50 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "nasnet-large",
+        "trainingSet": "imagenet",
+        "numFeatures": 4032
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector/2",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/mobilenet_v3_large_075_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v3_large_075_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v3",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/nasnet_mobile/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/nasnet_mobile/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "nasnet-mobile",
+        "trainingSet": "imagenet",
+        "numFeatures": 1056
     },
     "imagenet/mobilenet_v1_050_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v1_050_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 512
     },
     "imagenet/resnet_v2_152/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/resnet_v2_152/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector/2",
@@ -369,7 +538,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet1k_b3/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_b3/feature_vector/2",
@@ -379,12 +551,18 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/inception_v1/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/inception_v1/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "inception-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 1024
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector/2",
@@ -394,7 +572,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet21k_l/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_l/feature_vector/2",
@@ -404,28 +585,46 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "bit/s-r50x1": {
-        "url": "https://tfhub.dev/google/bit/s-r50x1/1"
+        "url": "https://tfhub.dev/google/bit/s-r50x1/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet"
     },
     "imagenet/mobilenet_v3_small_075_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v3_small_075_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v3",
+        "trainingSet": "imagenet",
+        "numFeatures": 1024
     },
     "bit/m-r101x1": {
-        "url": "https://tfhub.dev/google/bit/m-r101x1/1"
+        "url": "https://tfhub.dev/google/bit/m-r101x1/1",
+        "numFeatures": 2048,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_140_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1792
     },
     "imagenet/mobilenet_v3_small_100_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v3_small_100_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v3",
+        "trainingSet": "imagenet",
+        "numFeatures": 1024
     },
     "imagenet/pnasnet_large/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/pnasnet_large/feature_vector/5",
@@ -435,12 +634,18 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "pnasnet-large",
+        "trainingSet": "imagenet",
+        "numFeatures": 4320
     },
     "cropnet/feature_vector/concat": {
         "url": "https://tfhub.dev/google/cropnet/feature_vector/concat/1",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v3",
+        "trainingSet": "imagenet21k-plants",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet21k_b3/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_b3/feature_vector/2",
@@ -450,7 +655,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "inaturalist/inception_v3/feature_vector": {
         "url": "https://tfhub.dev/google/inaturalist/inception_v3/feature_vector/5",
@@ -460,12 +668,18 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "inception-v3",
+        "trainingSet": "inaturalist",
+        "numFeatures": 2048
     },
     "imagenet/mobilenet_v3_large_100_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v3_large_100_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v3",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet21k_s/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_s/feature_vector/2",
@@ -475,7 +689,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet21k_m/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_m/feature_vector/2",
@@ -485,17 +702,10 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
-    },
-    "tf2-preview/inception_v3/feature_vector": {
-        "url": "https://tfhub.dev/google/tf2-preview/inception_v3/feature_vector/4",
-        "shape": [
-            299,
-            299,
-            3
-        ],
-        "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/inception_v3/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/inception_v3/feature_vector/5",
@@ -505,17 +715,26 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "inception-v3",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     },
     "imagenet/mobilenet_v2_100_224/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "mobilenet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/resnet_v1_50/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/resnet_v1_50/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "resnet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     },
     "imagenet/efficientnet_v2_imagenet1k_s/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_s/feature_vector/2",
@@ -525,20 +744,32 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet21k_b0/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_b0/feature_vector/2",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/resnet_v2_50/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/resnet_v2_50/feature_vector/5",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "resnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     },
     "bit/m-r50x1": {
-        "url": "https://tfhub.dev/google/bit/m-r50x1/1"
+        "url": "https://tfhub.dev/google/bit/m-r50x1/1",
+        "type": "resnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 2048
     },
     "imagenet/efficientnet_v2_imagenet21k_xl/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_xl/feature_vector/2",
@@ -548,17 +779,25 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet21k",
+        "numFeatures": 1280
     },
     "imagenet/efficientnet_v2_imagenet1k_b0/feature_vector": {
         "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet1k_b0/feature_vector/2",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet-v2",
+        "trainingSet": "imagenet",
+        "numFeatures": 1280
     },
     "efficientnet/b0/feature-vector": {
         "url": "https://tfhub.dev/tensorflow/efficientnet/b0/feature-vector/1",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet",
+        "trainingSet": "imagenet"
     },
     "efficientnet/b1/feature-vector": {
         "url": "https://tfhub.dev/tensorflow/efficientnet/b1/feature-vector/1",
@@ -568,7 +807,9 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet",
+        "trainingSet": "imagenet"
     },
     "efficientnet/b4/feature-vector": {
         "url": "https://tfhub.dev/tensorflow/efficientnet/b4/feature-vector/1",
@@ -578,7 +819,9 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet",
+        "trainingSet": "imagenet"
     },
     "efficientnet/b5/feature-vector": {
         "url": "https://tfhub.dev/tensorflow/efficientnet/b5/feature-vector/1",
@@ -588,7 +831,9 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet",
+        "trainingSet": "imagenet"
     },
     "efficientnet/b2/feature-vector": {
         "url": "https://tfhub.dev/tensorflow/efficientnet/b2/feature-vector/1",
@@ -598,7 +843,9 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet",
+        "trainingSet": "imagenet"
     },
     "efficientnet/b3/feature-vector": {
         "url": "https://tfhub.dev/tensorflow/efficientnet/b3/feature-vector/1",
@@ -608,7 +855,9 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet",
+        "trainingSet": "imagenet"
     },
     "efficientnet/b7/feature-vector": {
         "url": "https://tfhub.dev/tensorflow/efficientnet/b7/feature-vector/1",
@@ -618,11 +867,16 @@
             3
         ],
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "efficientnet",
+        "trainingSet": "imagenet"
     },
     "resnet_50/feature_vector": {
         "url": "https://tfhub.dev/tensorflow/resnet_50/feature_vector/1",
         "scale": 0.00392156862,
-        "offset": 0
+        "offset": 0,
+        "type": "resnet-v1",
+        "trainingSet": "imagenet",
+        "numFeatures": 2048
     }
 }
