@@ -13,11 +13,6 @@ def permuteTest():
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
 
-    # Dataset information
-    num_imgs = imgset.shape[0]
-    dim = imgset.shape[1]
-    correlations = []
-
     # Set model to output reps at layer
     inp = model.input
     layer = model.layers[12]
@@ -229,11 +224,6 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
 
-    # Dataset information
-    num_imgs = imgset.shape[0]
-    dim = imgset.shape[1]
-    correlations = []
-
     # Set model to output reps at layer
     inp = model.input
     layer = model.layers[12]
@@ -384,11 +374,6 @@ def sanity_check():
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
 
-    # Dataset information
-    num_imgs = imgset.shape[0]
-    dim = imgset.shape[1]
-    correlations = []
-
     # Set model to output reps at layer
     inp = model.input
     layer = model.layers[12]
@@ -400,8 +385,6 @@ def sanity_check():
     rep_orig = tmpModel.predict(imgset)
     repShape = rep_orig.shape
     rep_flat = rep_orig.flatten()
-    repMean = np.mean(rep_flat)
-    repSD = np.std(rep_flat)
 
     preprocFuns = [
         analysis.preprocess_peaRsaNumba,
