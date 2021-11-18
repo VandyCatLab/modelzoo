@@ -13,214 +13,8 @@ sys.path.append("../imported_code/svcca")
 import cca_core, pwcca
 
 """
-For centroid RSA: 1st-level RDMs should be 10x10, not 1000x1000 (average before RSA-ing).
-CCAs should be averaged category-wise before reshaping.
-"""
-
-
-def correlate(
-    method: str,
-    path_to_instances: str,
-    x_predict,
-    consistency="exemplar",
-    cocktail_blank=False,
-):
-    """
-    Pre: ***HARDCODED*** 10 instances at specified path with 9 layers each, 1000 images
-    Post: returns 90x90 correlation matrix using RSA, SVCCA or PWCCA
-    """
-    # Get necessary functions
-    preprocess_func, corr_func = get_funcs(method)
-    # Get instances
-    instances = os.listdir(path_to_instances)
-    print("**** Load and Preprocess Acts ****")
-    # Load up all acts into layer * instance grid
-    all_acts = [[], [], [], [], [], [], [], [], []]
-    # TODO: remove the limiter when u do full experiment, right now limit to 10 for testing
-    limiter_idx = 0  # Remove
-    for instance in instances:
-        if limiter_idx == 10:
-            break  # Remove
-        # Skip any non-model files that may have snuck in
-        if ".h5" not in instance and ".pb" not in instance:
-            continue
-        print("*** Working on", instance, "***")
-        K.clear_session()
-        model = load_model(path_to_instances + instance)
-        acts_list = get_acts(model, range(9), x_predict, cocktail_blank)
-        # Loop through layers
-        layer_num = 0
-        for acts in acts_list:
-            print("* Preprocessing...")
-            acts = preprocess_func(acts, consistency)
-            all_acts[layer_num].append(acts)
-            layer_num += 1
-        limiter_idx += 1  # Remove
-
-    # Now do correlations
-    print("**** Done gathering representations, now correlations ****")
-    num_networks = 10
-    correlations = np.zeros((90, 90))
-    # Run Analysis
-    for i in range(correlations.shape[0]):
-        # Only perform on lower triangle, avoid repeats
-        # NOTE: Lower triangle b/c yields better separation with PWCCA
-        for j in range(i + 1):
-            print("Correlation", str(i), ",", str(j))
-            # Decode into the org scheme we want (i.e. layer * instance)
-            layer_i = i // num_networks
-            network_i = i % num_networks
-            layer_j = j // num_networks
-            network_j = j % num_networks
-            acts1 = all_acts[layer_i][network_i]
-            acts2 = all_acts[layer_j][network_j]
-
-            correlations[i, j] = corr_func(acts1, acts2)
-
-    # Fill in other side of graph with reflection
-    correlations += correlations.T
-    for i in range(correlations.shape[0]):
-        correlations[i, i] /= 2
-
-    print("Done!")
-    return correlations
-
-
-def correlate_trajectory(
-    epochs_scheme: str,
-    method: str,
-    path_to_instances: str,
-    category: str,
-    x_predict,
-    consistency="exemplar",
-    cocktail_black=False,
-):
-    """
-    Pre:  Arbitrary number of instances and corresponding acts at specified paths
-    Post: returns (num_epochs*num_instances) ^ 2 correlation matrix using RSA, SVCCA or PWCCA
-    """
-    # Establish epochs scheme and corresponding acts list
-    assert epochs_scheme in ["first_ten", "fifties"]
-    if epochs_scheme == "first_ten":
-        epochs = range(10)
-        all_acts = [[], [], [], [], [], [], [], [], [], []]
-    else:
-        epochs = [0, 49, 99, 149, 199, 249, 299, 349]
-        all_acts = [[], [], [], [], [], [], [], []]
-    # Which category are we testing
-    assert category in ["weights", "shuffle", "both"]
-    if category == "weights":
-        path_to_acts = "../outputs/representations/acts/weights/"
-    elif category == "shuffle":
-        path_to_acts = "../outputs/representations/acts/shuffle_seed/"
-    else:
-        path_to_acts = "../outputs/representations/acts/both/"
-    # Get necessary functions
-    preprocess_func, corr_func = get_funcs(method)
-    # Get instance names
-    instance_names = os.listdir(path_to_instances)
-    # TODO: remove the limiter when u do full experiment, right now limit to 10 for testing
-    limiter_idx = 0  # Remove
-    for name in instance_names:
-        if limiter_idx == 10:
-            break  # Remove
-        # Skip any non-model files that may have snuck in
-        if ".h5" not in name:
-            continue
-        # Grab the number from the instance name
-        i = name[:-3] if category == "both" else name[9:-3]
-        # Get all the acts from the relevant epochs of that instance number
-        epoch_index = 0
-        for e in epochs:
-            # Need to take [0] at the end because they were stored as arrays of 1
-            if category == "weights":
-                acts = np.load(path_to_acts + "i" + i + "e" + str(e) + ".npy")[
-                    0
-                ]
-            elif category == "shuffle":
-                acts = np.load(path_to_acts + "s" + i + "e" + str(e) + ".npy")[
-                    0
-                ]
-            else:
-                acts = np.load(path_to_acts + i + "e" + str(e) + ".npy")[0]
-            print("* Preprocessing...")
-            acts = preprocess_func(acts, consistency)
-            all_acts[epoch_index].append(acts)
-            epoch_index += 1
-
-        limiter_idx += 1  # Remove
-
-    # Now do correlations
-    print("**** Done gathering representations, now correlations ****")
-    num_instances = len(all_acts[0])
-    correlations = np.zeros(
-        (num_instances * len(epochs), num_instances * len(epochs))
-    )
-    # Run analysis
-    for i in range(correlations.shape[0]):
-        # Only perform on lower triangle, avoid repeats
-        # NOTE: Lower triangle b/c yields better separation with PWCCA
-        for j in range(i + 1):
-            print("Correlation", str(i), ",", str(j))
-            # Decode into the org scheme we want (i.e. layer * instance)
-            epoch_i = i // num_instances
-            instance_i = i % num_instances
-            epoch_j = j // num_instances
-            instance_j = j % num_instances
-            acts1 = all_acts[epoch_i][instance_i]
-            acts2 = all_acts[epoch_j][instance_j]
-            print("Acts1:", acts1.shape)
-            print("Acts2:", acts2.shape)
-            correlations[i, j] = corr_func(acts1, acts2)
-
-    # Fill in other side of graph with reflection
-    correlations += correlations.T
-    for i in range(correlations.shape[0]):
-        correlations[i, i] /= 2
-
-    print("Done!")
-    return correlations
-
-
-def get_funcs(method):
-    assert method in [
-        "RSA",
-        "SVCCA",
-        "PWCCA",
-        "CKA",
-    ], "Invalid correlation method"
-    if method == "RSA":
-        return preprocess_rsaNumba, do_rsaNumba
-    elif method == "SVCCA":
-        return preprocess_svcca, do_svcca
-    elif method == "PWCCA":
-        return preprocess_pwcca, do_pwcca
-    elif method == "CKA":
-        return preprocess_ckaNumba, do_linearCKANumba
-
-
-def _split_comma_str(string):
-    return [bit.strip() for bit in string.split(",")]
-
-
-"""
 Preprocessing functions
 """
-
-
-def preprocess_rsa(acts):
-    assert acts.ndim in (2, 4)
-
-    if acts.ndim == 4:
-        imgs, x, y, chans = acts.shape
-        newShape = x * y * chans
-        newActs = acts.reshape((imgs, newShape))
-        result = np.corrcoef(newActs, newActs)[0:imgs, imgs : imgs * 2]
-    else:
-        imgs = acts.shape[0]
-        result = np.corrcoef(acts, acts)[0:imgs, imgs : imgs * 2]
-
-    return result
 
 
 @nb.jit(nopython=True)
@@ -239,7 +33,35 @@ def preprocess_rsaNumba(acts):
     return result
 
 
-@nb.jit(nopython=True)
+def preprocess_peaRsaNumba(acts):
+    # Alias of above to match others
+    return preprocess_rsaNumba(acts)
+
+
+@nb.jit(nopython=True, parallel=True)
+def preprocess_speRsaNumba(acts):
+    assert acts.ndim in (2, 4)
+
+    if acts.ndim == 4:
+        imgs, x, y, chans = acts.shape
+        newShape = x * y * chans
+        acts = acts.reshape((imgs, newShape))
+    else:
+        imgs = acts.shape[0]
+
+    # Preallocate pairwise matrix
+    result = np.zeros((imgs, imgs))
+
+    # Calculate pairwise correlations
+    for i in nb.prange(imgs):
+        for j in range(i, imgs):
+            result[i, j] = nb_spearman(acts[i], acts[j])
+            result[j, i] = result[i, j]
+
+    return result
+
+
+@nb.jit(nopython=True, parallel=True)
 def preprocess_eucRsaNumba(acts):
     assert acts.ndim in (2, 4)
 
@@ -249,18 +71,20 @@ def preprocess_eucRsaNumba(acts):
         newActs = acts.reshape((imgs, newShape))
         # Preallocate array for RDM
         result = np.zeros((imgs, imgs))
-        # Loop through each image and calcualte euclidean distance
-        for i in range(imgs):
-            for j in range(imgs):
+        # Loop through each image and calculate euclidean distance
+        for i in nb.prange(imgs):
+            for j in nb.prange(imgs):
                 result[i, j] = np.linalg.norm(newActs[i] - newActs[j])
+                result[j, i] = result[i, j]
     else:
         imgs = acts.shape[0]
         # Preallocate array for RDM
         result = np.zeros((imgs, imgs))
         # Loop through each image and calculate euclidean distance
-        for i in range(imgs):
-            for j in range(imgs):
+        for i in nb.prange(imgs):
+            for j in nb.prange(imgs):
                 result[i, j] = np.linalg.norm(acts[i] - acts[j])
+                result[j, i] = result[i, j]
 
     return result
 
@@ -307,6 +131,21 @@ def nb_cor(x, y):
     return c
 
 
+@nb.jit(nopython=True)
+def nb_spearman(x, y):
+    """
+    Return Spearman rank correlation for the vectors x and y.
+    """
+    # Get ranks
+    xRank = np.argsort(x) + 1
+    yRank = np.argsort(y) + 1
+
+    # Get rank correlation
+    rankCor = nb_cor(xRank, yRank)
+
+    return rankCor
+
+
 # TODO: merge with interpolate
 def preprocess_svcca(acts, interpolate=False):
     if len(acts.shape) > 2:
@@ -330,14 +169,25 @@ def preprocess_pwcca(acts, interpolate=False):
     return acts
 
 
-def preprocess_cka(acts):
-    """
-    Changes to sample by neuron shape as needed. Uses global average pooling.
-    """
-    if len(acts.shape) > 2:
-        acts = np.squeeze(np.apply_over_axes(np.mean, acts, [1, 2]))
-
-    return acts
+def get_threshold(acts):
+    start = 0
+    end = acts.shape[0]
+    return_dict = {}
+    ans = -1
+    while start <= end:
+        mid = (start + end) // 2
+        # Move to right side if target is
+        # greater.
+        s = np.linalg.svd(
+            acts - np.mean(acts, axis=1, keepdims=True), full_matrices=False
+        )[1]
+        # Note: normally comparing floating points is a bad bad but the precision we need is low enough
+        if np.sum(s[:mid]) / np.sum(s) <= 0.99:
+            start = mid + 1
+        # Move left side.
+        else:
+            ans = mid
+            end = mid - 1
 
 
 @nb.jit(nopython=True, parallel=True)
@@ -360,27 +210,6 @@ Correlation analysis functions
 """
 
 
-def do_rsa_from_acts(acts1, acts2):
-    """
-    Pre: acts must be shape (neurons, datapoints)
-    """
-    rdm1 = get_rdm(acts1)
-    rdm2 = get_rdm(acts2)
-    return do_rsa(rdm1, rdm2)
-
-
-def do_rsa(rdm1, rdm2):
-    """
-    Pre: RDMs must be same shape
-    """
-    num_imgs = rdm1.shape[0]
-    # Only use upper-triangular values
-    rdm1_flat = rdm1[np.triu_indices(n=num_imgs, k=1)]
-    rdm2_flat = rdm2[np.triu_indices(n=num_imgs, k=1)]
-    # Return squared spearman coefficient
-    return np.corrcoef(rdm1_flat, rdm2_flat)[0, 1] ** 2
-
-
 @nb.jit(nopython=True, parallel=True)
 def do_rsaNumba(rdm1, rdm2):
     """
@@ -399,31 +228,8 @@ def do_rsaNumba(rdm1, rdm2):
         rdm1_flat[0, n] = rdm1[i, j]
         rdm2_flat[0, n] = rdm2[i, j]
 
-    # Return squared pearson coefficient
-    return nb_cor(rdm1_flat, rdm2_flat)[0, 1] ** 2
-
-
-@nb.jit(nopython=True, parallel=True)
-def do_eucRsaNumba(rdm1, rdm2):
-    """
-    Pre: RDMs must be same shape
-    This is actually just a copy of the original RSA but with a new name
-    """
-    imgs = rdm1.shape[0]
-
-    # Only use upper-triangular values
-    upperTri = np.triu_indices(n=imgs, k=1)
-
-    rdm1_flat = np.empty((1, upperTri[0].shape[0]), dtype="float32")
-    rdm2_flat = np.empty((1, upperTri[0].shape[0]), dtype="float32")
-    for n in nb.prange(upperTri[0].shape[0]):
-        i = upperTri[0][n]
-        j = upperTri[1][n]
-        rdm1_flat[0, n] = rdm1[i, j]
-        rdm2_flat[0, n] = rdm2[i, j]
-
-    # Return squared pearson coefficient
-    return nb_cor(rdm1_flat, rdm2_flat)[0, 1] ** 2
+    # Return spearman coefficient
+    return nb_spearman(rdm1_flat, rdm2_flat)
 
 
 def do_svcca(acts1, acts2):
@@ -456,28 +262,6 @@ def do_pwcca(acts1, acts2):
         print(e)
 
     return result
-
-
-def do_linearCKA(acts1, acts2):
-    """
-    Pre: acts must be shape (datapoints, neurons)
-    """
-
-    def _linearKernel(acts):
-        return np.dot(acts, acts.T)
-
-    def _centerMatrix(n):
-        return np.eye(n) - (np.ones((n, n)) / n)
-
-    def _hsic(x, y):
-        n = x.shape[0]
-        centeredX = np.dot(_linearKernel(x), _centerMatrix(n))
-        centeredY = np.dot(_linearKernel(y), _centerMatrix(n))
-        return np.trace(np.dot(centeredX, centeredY)) / ((n - 1) ** 2)
-
-    return _hsic(acts1, acts2) / (
-        (_hsic(acts1, acts1) * _hsic(acts2, acts2)) ** (1 / 2)
-    )
 
 
 @nb.jit(nopython=True)
@@ -562,74 +346,6 @@ def correspondence_test(
     winners
 
     return winners
-
-
-"""
-Helper functions
-"""
-
-
-def get_acts(model, layer_arr, x_predict, cocktail_blank):
-    """
-    Pre: model exists, layer_arr contains valid layer numbers, x_predict is organized
-    Post: Returns list of activations over x_predict for relevant layers in this particular model instance
-    """
-    inp = model.input
-    acts_list = []
-
-    for layer in layer_arr:
-        print("Layer", str(layer))
-        out = model.layers[layer].output
-        temp_model = Model(inputs=inp, outputs=out)
-        # Predict on x_predict, transpose for spearman
-        print("Getting activations...")
-        acts = temp_model.predict(x_predict)
-        if cocktail_blank:
-            # subtracting the mean activation pattern across all images from each network unit
-            acts -= np.mean(acts, axis=0)
-        acts_list.append(acts)
-
-    return acts_list
-
-
-def get_threshold(acts):
-    start = 0
-    end = acts.shape[0]
-    return_dict = {}
-    ans = -1
-    while start <= end:
-        mid = (start + end) // 2
-        # Move to right side if target is
-        # greater.
-        s = np.linalg.svd(
-            acts - np.mean(acts, axis=1, keepdims=True), full_matrices=False
-        )[1]
-        # Note: normally comparing floating points is a bad bad but the precision we need is low enough
-        if np.sum(s[:mid]) / np.sum(s) <= 0.99:
-            start = mid + 1
-        # Move left side.
-        else:
-            ans = mid
-            end = mid - 1
-
-    # print(
-    #     "Found",
-    #     ans,
-    #     "/",
-    #     acts.shape[0],
-    #     "neurons accounts for",
-    #     np.sum(s[:ans]) / np.sum(s),
-    #     "of variance",
-    # )
-
-    return ans
-
-
-def get_rdm(acts):
-    """
-    Pre: acts must be flattened
-    """
-    return np.corrcoef(acts, acts)
 
 
 def make_allout_model(model):
@@ -751,12 +467,39 @@ def get_model_from_args(args):
     return model, modelName, modelPath
 
 
+def get_funcs(method):
+    assert method in [
+        "peaRSA",
+        "speRSA",
+        "eucRSA",
+        "SVCCA",
+        "PWCCA",
+        "CKA",
+    ], "Invalid correlation method"
+    if method == "RSA":
+        return preprocess_rsaNumba, do_rsaNumba
+    elif method == "peaRSA":
+        return preprocess_peaRsaNumba, do_rsaNumba
+    elif method == "speRSA":
+        return preprocess_speRsaNumba, do_rsaNumba
+    elif method == "eucRSA":
+        return preprocess_eucRsaNumba, do_rsaNumba
+    elif method == "SVCCA":
+        return preprocess_svcca, do_svcca
+    elif method == "PWCCA":
+        return preprocess_pwcca, do_pwcca
+    elif method == "CKA":
+        return preprocess_ckaNumba, do_linearCKANumba
+
+
 """
 Large scale analysis functions
 """
 
 
-def multi_analysis(rep1, rep2, preproc_fun, sim_fun, verbose=False):
+def multi_analysis(
+    rep1, rep2, preproc_fun, sim_fun, names=None, verbose=False
+):
     """
     Perform similarity analysis between rep1 and rep2 once for each method as
     indicated by first applying a preproc_fun then the sim_fun. preproc_fun
@@ -766,6 +509,16 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun, verbose=False):
     before being passed to the paired similarity function.
     """
     assert len(preproc_fun) == len(sim_fun)
+
+    # If names is not none, pair up names and sim_fun
+    dictNames = {}
+    if names is not None:
+        assert len(names) == len(sim_fun)
+        for fun, name in zip(sim_fun, names):
+            dictNames[sim_fun.__name__] = name
+    else:
+        for fun in sim_fun:
+            dictNames[fun.__name__] = fun.__name__
 
     # Loop through each pair
     simDict = {}
@@ -780,12 +533,14 @@ def multi_analysis(rep1, rep2, preproc_fun, sim_fun, verbose=False):
         try:
             # Print what we're doing
             if verbose:
-                print(f"___Similarity with {sim.__name__}", flush=True)
+                print(
+                    f"___Similarity with {dictNames[sim.__name__]}", flush=True
+                )
 
-            simDict[sim.__name__] = sim(rep1Preproc, rep2Preproc)
+            simDict[dictNames[sim.__name__]] = sim(rep1Preproc, rep2Preproc)
         except Exception as e:
-            simDict[sim.__name__] = np.nan
-            print(f"{sim.__name__} produced an error, saving nan.")
+            simDict[dictNames[sim.__name__]] = np.nan
+            print(f"{dictNames[sim.__name__]} produced an error, saving nan.")
             print(e)
 
         # Clean up memory
