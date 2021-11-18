@@ -386,17 +386,20 @@ if __name__ == "__main__":
 
     # Prep analysis functions
     preprocFuns = [
-        analysis.preprocess_rsaNumba,
+        analysis.preprocess_peaRsaNumba,
         analysis.preprocess_eucRsaNumba,
+        analysis.preprocess_speRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
-        analysis.do_eucRsaNumba,
+        analysis.do_rsaNumba,
+        analysis.do_rsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
+    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
     basePath = "../outputs/masterOutput/baseline/"
 
@@ -405,7 +408,6 @@ if __name__ == "__main__":
         basePath += args.group + "/"
 
     if args.analysis in ["translate", "zoom", "reflect", "color", "noise"]:
-        simFunNames = [fun.__name__ for fun in simFuns]
         for layer in args.layer_index:
             print(f"Working on layer {layer}.", flush=True)
             # Get transforms generators
@@ -423,13 +425,11 @@ if __name__ == "__main__":
                 )
                 colNames = [
                     f"{fun}-{direct}"
-                    for direct, fun in zip(
-                        directions, [fun.__name__ for fun in simFuns] * 4
-                    )
+                    for direct, fun in zip(directions, analysisNames * 4)
                 ]
                 simDf = pd.DataFrame(columns=["version"] + colNames)
             else:
-                simDf = pd.DataFrame(columns=["version"] + simFunNames)
+                simDf = pd.DataFrame(columns=["version"] + analysisNames)
 
             # Get similarity measure per transform
             for v, rep1, rep2 in transforms:
@@ -452,7 +452,7 @@ if __name__ == "__main__":
                     simDf.loc[len(simDf.index)] = tmp
                 else:
                     sims = analysis.multi_analysis(
-                        rep1, rep2, preprocFuns, simFuns
+                        rep1, rep2, preprocFuns, simFuns, names=analysisNames
                     )
                     simDf.loc[len(simDf.index)] = [v] + [
                         sims[fun] for fun in sims.keys()
@@ -527,9 +527,7 @@ if __name__ == "__main__":
         layerIdx.sort()
         dropRates = np.arange(0, 1, 0.05)
 
-        data = pd.DataFrame(
-            columns=[fun.__name__ for fun in simFuns] + ["layer", "dropRate"]
-        )
+        data = pd.DataFrame(columns=analysisNames + ["layer", "dropRate"])
         for drop in dropRates:
             dropModel = make_dropout_model(model, layerIdx, drop)
             rep1 = dropModel.predict(dataset)
@@ -541,7 +539,7 @@ if __name__ == "__main__":
 
             for i in range(len(rep1)):
                 sims = analysis.multi_analysis(
-                    rep1[i], rep2[i], preprocFuns, simFuns
+                    rep1[i], rep2[i], preprocFuns, simFuns, names=analysisNames
                 )
                 sims["layer"] = layerIdx[i]
                 sims["dropRate"] = drop
