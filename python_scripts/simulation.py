@@ -38,19 +38,22 @@ def permuteTest():
         permuteData = pd.read_csv(permutePath)
     else:
         preprocFuns = [
-            analysis.preprocess_rsaNumba,
+            analysis.preprocess_peaRsaNumba,
             analysis.preprocess_eucRsaNumba,
+            analysis.preprocess_speRsaNumba,
             analysis.preprocess_svcca,
             analysis.preprocess_ckaNumba,
         ]
         simFuns = [
             analysis.do_rsaNumba,
-            analysis.do_eucRsaNumba,
+            analysis.do_rsaNumba,
+            analysis.do_rsaNumba,
             analysis.do_svcca,
             analysis.do_linearCKANumba,
         ]
-        colNames = [fun.__name__ for fun in simFuns] + ["analysis"]
-        nPermutes = 10000
+        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+        colNames = analysisNames + ["analysis"]
+        nPermutes = 1000
 
         permuteData = pd.DataFrame(columns=colNames)
 
@@ -64,7 +67,9 @@ def permuteTest():
             rep1 = np.random.choice(rep_flat, size=repShape, replace=False)
             rep2 = np.random.choice(rep_flat, size=repShape, replace=False)
 
-            sims = analysis.multi_analysis(rep1, rep2, preprocFuns, simFuns)
+            sims = analysis.multi_analysis(
+                rep1, rep2, preprocFuns, simFuns, names=analysisNames
+            )
             df.loc[permute] = list(sims.values()) + ["random"]
         permuteData = permuteData.append(df)
 
@@ -79,7 +84,9 @@ def permuteTest():
             repNoise = rep + np.random.normal(scale=repSD, size=repShape)
             repNoise = repNoise.astype(np.float32)
 
-            sims = analysis.multi_analysis(rep, repNoise, preprocFuns, simFuns)
+            sims = analysis.multi_analysis(
+                rep, repNoise, preprocFuns, simFuns, names=analysisNames
+            )
             df.loc[permute] = list(sims.values()) + ["noise"]
         permuteData = permuteData.append(df)
 
@@ -94,7 +101,9 @@ def permuteTest():
             repCut = np.copy(rep)
             repCut[:, np.random.choice(rep.shape[1])] = 0
 
-            sims = analysis.multi_analysis(rep, repCut, preprocFuns, simFuns)
+            sims = analysis.multi_analysis(
+                rep, repCut, preprocFuns, simFuns, names=analysisNames
+            )
             df.loc[permute] = list(sims.values()) + ["ablate"]
         permuteData = permuteData.append(df)
         permuteData.to_csv(permutePath)
@@ -109,24 +118,27 @@ def sizeRatioTest():
     rep = model.predict(imgset).flatten()
 
     preprocFuns = [
-        analysis.preprocess_rsaNumba,
+        analysis.preprocess_peaRsaNumba,
         analysis.preprocess_eucRsaNumba,
+        analysis.preprocess_speRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
-        analysis.do_eucRsaNumba,
+        analysis.do_rsaNumba,
+        analysis.do_rsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
-    colNames = [fun.__name__ for fun in simFuns] + ["sample", "features"]
+    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+    colNames = analysisNames + ["sample", "features"]
 
     permuteSims = pd.DataFrame(columns=colNames)
 
     nMax = imgset.shape[0]
     ratiosRange = np.arange(0.05, 1, 0.05)
-    nPermute = 10000
+    nPermute = 1000
 
     for ratio in ratiosRange:
         print(f"Analyzing img:samples ratio: {ratio}")
@@ -139,7 +151,9 @@ def sizeRatioTest():
             rep1 = np.random.choice(rep, size=repShape)
             rep2 = np.random.choice(rep, size=repShape)
 
-            sims = analysis.multi_analysis(rep1, rep2, preprocFuns, simFuns)
+            sims = analysis.multi_analysis(
+                rep1, rep2, preprocFuns, simFuns, names=analysisNames
+            )
             sims["sample"] = repShape[0]
             sims["features"] = repShape[1]
             permuteSims = pd.concat(
@@ -160,18 +174,21 @@ def bigSizeRatioTest():
     rep = model.predict(imgset).flatten()
 
     preprocFuns = [
-        analysis.preprocess_rsaNumba,
+        analysis.preprocess_peaRsaNumba,
         analysis.preprocess_eucRsaNumba,
+        analysis.preprocess_speRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
-        analysis.do_eucRsaNumba,
+        analysis.do_rsaNumba,
+        analysis.do_rsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
-    colNames = [fun.__name__ for fun in simFuns] + ["sample", "features"]
+    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+    colNames = analysisNames + ["sample", "features"]
 
     permuteSims = pd.DataFrame(columns=colNames)
 
@@ -190,7 +207,9 @@ def bigSizeRatioTest():
             rep1 = np.random.choice(rep, size=repShape)
             rep2 = np.random.choice(rep, size=repShape)
 
-            sims = analysis.multi_analysis(rep1, rep2, preprocFuns, simFuns)
+            sims = analysis.multi_analysis(
+                rep1, rep2, preprocFuns, simFuns, names=analysisNames
+            )
             sims["sample"] = repShape[0]
             sims["features"] = repShape[1]
             permuteSims = pd.concat(
@@ -230,20 +249,22 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
     repSD = np.std(rep_flat)
 
     preprocFuns = [
-        analysis.preprocess_rsaNumba,
-        analysis.preprocess_rsa,
+        analysis.preprocess_peaRsaNumba,
+        analysis.preprocess_eucRsaNumba,
+        analysis.preprocess_speRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
-        analysis.do_rsa,
+        analysis.do_rsaNumba,
+        analysis.do_rsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
-
-    colNames = [fun.__name__ for fun in simFuns] + ["Neurons"]
-    nPermutes = 10000
+    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+    colNames = analysisNames + ["Neurons"]
+    nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames)
     outPath = "../outputs/masterOutput/ablateSims.csv"
@@ -262,7 +283,9 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
                 :, np.random.choice(rep.shape[1], size=nNeurons, replace=False)
             ]
 
-            sims = analysis.multi_analysis(rep, repCut, preprocFuns, simFuns)
+            sims = analysis.multi_analysis(
+                rep, repCut, preprocFuns, simFuns, names=analysisNames
+            )
             df.loc[nNeurons] = list(sims.values()) + [nNeurons]
         permuteData = permuteData.append(df)
     permuteData.to_csv(outPath)
@@ -298,19 +321,22 @@ def parametricNoise(
     repSD = np.std(rep_flat)
 
     preprocFuns = [
-        analysis.preprocess_rsaNumba,
-        analysis.preprocess_rsa,
+        analysis.preprocess_peaRsaNumba,
+        analysis.preprocess_eucRsaNumba,
+        analysis.preprocess_speRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
-        analysis.do_rsa,
+        analysis.do_rsaNumba,
+        analysis.do_rsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
+    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
-    colNames = [fun.__name__ for fun in simFuns] + ["Noise"]
+    colNames = analysisNames + ["Noise"]
 
     permuteData = pd.DataFrame(columns=colNames)
     noiseRange = np.arange(minNoise, maxNoise + 0.1, step)
@@ -337,7 +363,12 @@ def parametricNoise(
             repNoise = repNoise.astype(np.float32)
 
             sims = analysis.multi_analysis(
-                rep, repNoise, preprocFuns, simFuns, verbose=False
+                rep,
+                repNoise,
+                preprocFuns,
+                simFuns,
+                verbose=False,
+                names=analysisNames,
             )
             df.loc[noise] = list(sims.values()) + [noise]
         permuteData = permuteData.append(df)
@@ -373,20 +404,23 @@ def sanity_check():
     repSD = np.std(rep_flat)
 
     preprocFuns = [
-        analysis.preprocess_rsaNumba,
+        analysis.preprocess_peaRsaNumba,
         analysis.preprocess_eucRsaNumba,
+        analysis.preprocess_speRsaNumba,
         analysis.preprocess_svcca,
         analysis.preprocess_ckaNumba,
     ]
     simFuns = [
         analysis.do_rsaNumba,
-        analysis.do_eucRsaNumba,
+        analysis.do_rsaNumba,
+        analysis.do_rsaNumba,
         analysis.do_svcca,
         analysis.do_linearCKANumba,
     ]
+    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
-    colNames = [fun.__name__ for fun in simFuns]
-    nPermutes = 10000
+    colNames = analysisNames
+    nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames, index=range(nPermutes))
     outPath = "../outputs/masterOutput/sanityCheckSims.csv"
@@ -401,7 +435,9 @@ def sanity_check():
             :, np.random.choice(rep.shape[1], size=repShape[1], replace=False)
         ]
 
-        sims = analysis.multi_analysis(rep, repPermute, preprocFuns, simFuns)
+        sims = analysis.multi_analysis(
+            rep, repPermute, preprocFuns, simFuns, names=analysisNames
+        )
         permuteData.loc[permute] = list(sims.values())
 
     permuteData.to_csv(outPath)
