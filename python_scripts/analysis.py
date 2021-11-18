@@ -291,6 +291,7 @@ def correspondence_test(
     model2: str,
     preproc_fun,
     sim_fun,
+    names: str = None,
     rep_dir="../outputs/masterOutput/representations",
 ):
     """
@@ -298,7 +299,8 @@ def correspondence_test(
     pregenerated representations in rep_dir with the preproc_fun and sim_funs.
     """
     # Get similarity function names
-    funNames = [fun.__name__ for fun in sim_fun]
+    if names is None:
+        names = [fun.__name__ for fun in sim_fun]
 
     # Make directories for representations and get representations
     model1Glob = os.path.join(rep_dir, model1, f"{model1}l*.npy")
@@ -331,12 +333,12 @@ def correspondence_test(
         rep2 = model2Reps[int(combo[1])]
 
         # Do analysis and save it
-        output = multi_analysis(rep1, rep2, preproc_fun, sim_fun)
-        combo[2:] = [output[fun] for fun in funNames]
+        output = multi_analysis(rep1, rep2, preproc_fun, sim_fun, names=names)
+        combo[2:] = [output[fun] for fun in names]
 
     # Find the winner for each layer for each
     print("Finding winners for each layer", flush=True)
-    winners = np.zeros((len(model1Reps), len(funNames)), dtype="int")
+    winners = np.zeros((len(model1Reps), len(names)), dtype="int")
     for layer in range(len(model1Reps)):
         print(f"Finding the winner for layer {layer}")
         winners[layer, :] = np.argmax(
@@ -490,6 +492,10 @@ def get_funcs(method):
         return preprocess_pwcca, do_pwcca
     elif method == "CKA":
         return preprocess_ckaNumba, do_linearCKANumba
+
+
+def _split_comma_str(string):
+    return [bit.strip() for bit in string.split(",")]
 
 
 """
@@ -697,13 +703,20 @@ if __name__ == "__main__":
         print("Performing correspondence analysis.", flush=True)
 
         preprocFuns = [
-            preprocess_rsaNumba,
+            preprocess_peaRsaNumba,
             preprocess_eucRsaNumba,
+            preprocess_speRsaNumba,
             preprocess_svcca,
             preprocess_ckaNumba,
         ]
-        simFuns = [do_rsaNumba, do_eucRsaNumba, do_svcca, do_linearCKANumba]
-        funNames = [fun.__name__ for fun in simFuns]
+        simFuns = [
+            do_rsaNumba,
+            do_rsaNumba,
+            do_rsaNumba,
+            do_svcca,
+            do_linearCKANumba,
+        ]
+        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
         # Get model
         _, modelName, _ = get_model_from_args(args)
@@ -723,15 +736,17 @@ if __name__ == "__main__":
             sum([[combo] * numLayers for combo in repCombos], []),
             columns=["model1", "model2"],
         )
-        winners[funNames] = -1
+        winners[analysisNames] = -1
 
         # Find the winners
         for model1, model2 in repCombos:
             print(f"Comparing {model1} and {model2}", flush=True)
             winners.loc[
                 (winners["model1"] == model1) & (winners["model2"] == model2),
-                funNames,
-            ] = correspondence_test(model1, model2, preprocFuns, simFuns)
+                analysisNames,
+            ] = correspondence_test(
+                model1, model2, preprocFuns, simFuns, names=analysisNames
+            )
 
         print("Saving results", flush=True)
         winners.to_csv(
