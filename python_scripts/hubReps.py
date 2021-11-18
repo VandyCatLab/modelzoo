@@ -198,19 +198,23 @@ if __name__ == "__main__":
 
             # Similarity functions
             preprocFuns = [
-                analysis.preprocess_rsaNumba,
+                analysis.preprocess_peaRsaNumba,
+                analysis.preprocess_eucRsaNumba,
+                analysis.preprocess_speRsaNumba,
                 analysis.preprocess_svcca,
                 analysis.preprocess_ckaNumba,
             ]
             simFuns = [
                 analysis.do_rsaNumba,
+                analysis.do_rsaNumba,
+                analysis.do_rsaNumba,
                 analysis.do_svcca,
                 analysis.do_linearCKANumba,
             ]
-            funNames = [fun.__name__ for fun in simFuns]
+            analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
             # Create dataframe to store results
-            simDf = pd.DataFrame(columns=["model1", "model2"] + funNames)
+            simDf = pd.DataFrame(columns=["model1", "model2"] + analysisNames)
             # Loop through hub model
             for _, pairModel in modelCombinations:
                 # Print progress
@@ -238,7 +242,7 @@ if __name__ == "__main__":
 
                 # Calculate similarity
                 sims = analysis.multi_analysis(
-                    reps, pairReps, preprocFuns, simFuns
+                    reps, pairReps, preprocFuns, simFuns, names=analysisNames
                 )
 
                 # Add to dataframe
