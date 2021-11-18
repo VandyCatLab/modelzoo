@@ -943,10 +943,11 @@ if __name__ == "__main__":
 
         preprocFuns = [
             preprocess_rsaNumba,
+            preprocess_eucRsaNumba,
             preprocess_svcca,
             preprocess_ckaNumba,
         ]
-        simFuns = [do_rsaNumba, do_svcca, do_linearCKANumba]
+        simFuns = [do_rsaNumba, do_eucRsaNumba, do_svcca, do_linearCKANumba]
         funNames = [fun.__name__ for fun in simFuns]
 
         # Get model
