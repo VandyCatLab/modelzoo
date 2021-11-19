@@ -534,7 +534,7 @@ def multi_analysis(
     if names is not None:
         assert len(names) == len(sim_fun)
         for fun, name in zip(sim_fun, names):
-            dictNames[sim_fun.__name__] = name
+            dictNames[fun.__name__] = name
     else:
         for fun in sim_fun:
             dictNames[fun.__name__] = fun.__name__
