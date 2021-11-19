@@ -199,6 +199,8 @@ def get_threshold(acts):
             ans = mid
             end = mid - 1
 
+    return ans
+
 
 @nb.jit(nopython=True, parallel=True)
 def preprocess_ckaNumba(acts):
@@ -239,7 +241,7 @@ def do_rsaNumba(rdm1, rdm2):
         rdm2_flat[0, n] = rdm2[i, j]
 
     # Return spearman coefficient
-    return nb_spearman(rdm1_flat, rdm2_flat)
+    return nb_spearman(rdm1_flat, rdm2_flat)[0, 1]
 
 
 def do_svcca(acts1, acts2):
@@ -526,18 +528,13 @@ def multi_analysis(
     """
     assert len(preproc_fun) == len(sim_fun)
 
-    # If names is not none, pair up names and sim_fun
-    dictNames = {}
-    if names is not None:
-        assert len(names) == len(sim_fun)
-        for fun, name in zip(sim_fun, names):
-            dictNames[fun.__name__] = name
-    else:
-        for fun in sim_fun:
-            dictNames[fun.__name__] = fun.__name__
+    # If names is not none, just use the function names
+    if names is None:
+        names = [fun.__name__ for fun in sim_fun]
 
     # Loop through each pair
     simDict = {}
+    counter = 0
     for preproc, sim in zip(preproc_fun, sim_fun):
         if verbose:
             print(f"___Preprocessing with {preproc.__name__}")
@@ -549,15 +546,15 @@ def multi_analysis(
         try:
             # Print what we're doing
             if verbose:
-                print(
-                    f"___Similarity with {dictNames[sim.__name__]}", flush=True
-                )
+                print(f"___Similarity with {names[counter]}", flush=True)
 
-            simDict[dictNames[sim.__name__]] = sim(rep1Preproc, rep2Preproc)
+            simDict[names[counter]] = sim(rep1Preproc, rep2Preproc)
         except Exception as e:
-            simDict[dictNames[sim.__name__]] = np.nan
-            print(f"{dictNames[sim.__name__]} produced an error, saving nan.")
+            simDict[names[counter]] = np.nan
+            print(f"{names[counter]} produced an error, saving nan.")
             print(e)
+
+        counter += 1
 
         # Clean up memory
         del rep1Preproc
