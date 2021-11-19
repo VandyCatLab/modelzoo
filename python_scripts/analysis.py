@@ -8,6 +8,8 @@ import pandas as pd
 import numba as nb
 import itertools
 
+from tensorflow.python.ops.gen_array_ops import parallel_concat
+
 
 sys.path.append("../imported_code/svcca")
 import cca_core, pwcca
@@ -33,6 +35,7 @@ def preprocess_rsaNumba(acts):
     return result
 
 
+@nb.jit(nopython=True)
 def preprocess_peaRsaNumba(acts):
     # Alias of above to match others
     return preprocess_rsaNumba(acts)
@@ -45,18 +48,12 @@ def preprocess_speRsaNumba(acts):
     if acts.ndim == 4:
         imgs, x, y, chans = acts.shape
         newShape = x * y * chans
-        acts = acts.reshape((imgs, newShape))
+        newActs = acts.reshape((imgs, newShape))
     else:
         imgs = acts.shape[0]
+        newActs = acts
 
-    # Preallocate pairwise matrix
-    result = np.zeros((imgs, imgs))
-
-    # Calculate pairwise correlations
-    for i in nb.prange(imgs):
-        for j in range(i, imgs):
-            result[i, j] = nb_spearman(acts[i], acts[j])
-            result[j, i] = result[i, j]
+    result = nb_spearman(newActs, newActs)[0:imgs, imgs : imgs * 2]
 
     return result
 
@@ -131,17 +128,33 @@ def nb_cor(x, y):
     return c
 
 
-@nb.jit(nopython=True)
+@nb.jit(nopython=True, parallel=True)
 def nb_spearman(x, y):
     """
-    Return Spearman rank correlation for the vectors x and y.
+    Return Spearman rank correlation.
     """
-    # Get ranks
-    xRank = np.argsort(x) + 1
-    yRank = np.argsort(y) + 1
+
+    def _rank(x):
+        idx = np.argsort(x)
+        counter = 1
+        for i in idx:
+            x[i] = counter
+            counter += 1
+
+        return x
+
+    # Get ranks for each vector
+    xr = np.zeros(x.shape)
+    yr = np.zeros(y.shape)
+    for i in nb.prange(x.shape[0]):
+        xr[i, :] = _rank(x[i, :])
+        yr[i, :] = _rank(y[i, :])
+
+    print(x[0])
+    print(xr[0])
 
     # Get rank correlation
-    rankCor = nb_cor(xRank, yRank)
+    rankCor = nb_cor(xr, yr)
 
     return rankCor
 
@@ -778,14 +791,17 @@ if __name__ == "__main__":
                 simMat,
             )
     else:
+        from scipy import stats
+
         print("No analysis argument, treating as main.")
         repFile = "../outputs/masterOutput/representations/w0s0/w0s0l9.npy"
-        reps = np.load(repFile)
+        rep1 = np.load(repFile)
 
-        repOrig = reps.copy()
-        repConst = reps.copy() + 1
+        repFile = "../outputs/masterOutput/representations/w0s1/w0s1l9.npy"
+        rep2 = np.load(repFile)
 
-        repOrig = preprocess_rsaNumba(repOrig)
-        repOrigCopy = preprocess_rsaNumba(repConst)
+        rdm1 = preprocess_speRsaNumba(rep1)
+        rdm2 = preprocess_speRsaNumba(rep2)
 
-        print(do_rsaNumba(repOrig, repOrigCopy))
+        sim = do_rsaNumba(rdm1, rdm2)
+        print(sim)
