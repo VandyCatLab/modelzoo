@@ -150,9 +150,6 @@ def nb_spearman(x, y):
         xr[i, :] = _rank(x[i, :])
         yr[i, :] = _rank(y[i, :])
 
-    print(x[0])
-    print(xr[0])
-
     # Get rank correlation
     rankCor = nb_cor(xr, yr)
 
