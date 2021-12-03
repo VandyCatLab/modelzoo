@@ -440,7 +440,7 @@ def get_trajectories(directory, file_str="*", file_name=None):
 
 def get_model_from_args(args):
     # Get model
-    if args.model_name == "mobilenet":
+    if args.has_key("model_name") and args.model_name == "mobilenet":
         model = tf.keras.applications.MobileNetV3Small(
             input_shape=(224, 224, 3)
         )
