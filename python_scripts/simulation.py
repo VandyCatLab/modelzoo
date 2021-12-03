@@ -452,7 +452,7 @@ if __name__ == "__main__":
 
     if args.analysis == "noise":
         parametricNoise(
-            maxNoise=4.0, step=0.01, permutations=1, seed=args.seed
+            maxNoise=4.0, step=0.01, permutations=100, seed=args.seed
         )
     elif args.analysis == "simulations":
         permuteTest()
