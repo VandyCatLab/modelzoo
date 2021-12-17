@@ -736,29 +736,45 @@ if __name__ == "__main__":
         repCombos = [x for x in repCombos if x[0] == modelName]
 
         # Prepare dataframes
-        numLayers = len(
-            glob.glob(f"{args.reps_dir}/{reps[0]}/{reps[0]}l*.npy")
-        )
-        winners = pd.DataFrame(
-            sum([[combo] * numLayers for combo in repCombos], []),
-            columns=["model1", "model2"],
-        )
-        winners[analysisNames] = -1
+        fileName = f"../outputs/masterOutput/correspondence/{modelName}Correspondence.csv"
+        if os.path.exists(fileName):
+            # Load existing dataframe
+            winners = pd.read_csv(fileName, index_col=0)
+        else:
+            numLayers = len(
+                glob.glob(f"{args.reps_dir}/{reps[0]}/{reps[0]}l*.npy")
+            )
+            winners = pd.DataFrame(
+                sum([[combo] * numLayers for combo in repCombos], []),
+                columns=["model1", "model2"],
+            )
+            winners[analysisNames] = -1
 
         # Find the winners
         for model1, model2 in repCombos:
             print(f"Comparing {model1} and {model2}", flush=True)
-            winners.loc[
-                (winners["model1"] == model1) & (winners["model2"] == model2),
-                analysisNames,
-            ] = correspondence_test(
-                model1, model2, preprocFuns, simFuns, names=analysisNames
-            )
+            if np.all(
+                winners.loc[
+                    (winners["model1"] == model1)
+                    & (winners["model2"] == model2),
+                    analysisNames,
+                ]
+                == -1
+            ):
+                winners.loc[
+                    (winners["model1"] == model1)
+                    & (winners["model2"] == model2),
+                    analysisNames,
+                ] = correspondence_test(
+                    model1, model2, preprocFuns, simFuns, names=analysisNames
+                )
 
-        print("Saving results", flush=True)
-        winners.to_csv(
-            f"../outputs/masterOutput/correspondence/{modelName}Correspondence.csv"
-        )
+                print("Saving results", flush=True)
+                winners.to_csv(
+                    f"../outputs/masterOutput/correspondence/{modelName}Correspondence.csv"
+                )
+            else:
+                print("This pair is complete, skipping", flush=True)
 
     elif args.analysis == "getReps":
         print("Getting representations each non-dropout layer", flush=True)
