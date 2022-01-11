@@ -438,7 +438,7 @@ def get_trajectories(directory, file_str="*", file_name=None):
     return out
 
 
-def get_model_from_args(args):
+def get_model_from_args(args, return_model=True):
     # Get model
     if hasattr(args, "model_name") and args.model_name == "mobilenet":
         model = tf.keras.applications.MobileNetV3Small(
@@ -465,18 +465,16 @@ def get_model_from_args(args):
         # Load main model
         modelName = f"w{weightSeed}s{shuffleSeed}.pb"
         modelPath = os.path.join(args.models_dir, modelName)
-        model = load_model(modelPath)
+        model = load_model(modelPath) if return_model else None
     elif args.shuffle_seed is not None and args.weight_seed is not None:
         weightSeed = args.weight_seed
         shuffleSeed = args.shuffle_seed
 
-    # Load main model
-    modelName = f"w{weightSeed}s{shuffleSeed}.pb"
-    modelPath = os.path.join(args.models_dir, modelName)
-    model = load_model(modelPath)
-    layerN = len(model.layers)
-    print(f"Model loaded: {modelName}", flush=True)
-    model.summary()
+        # Load main model
+        modelName = f"w{weightSeed}s{shuffleSeed}.pb"
+        modelPath = os.path.join(args.models_dir, modelName)
+        model = load_model(modelPath) if return_model else None
+        print(f"Model loaded: {modelName}", flush=True)
 
     return model, modelName, modelPath
 
@@ -538,9 +536,13 @@ def multi_analysis(
     for preproc, sim in zip(preproc_fun, sim_fun):
         if verbose:
             print(f"___Preprocessing with {preproc.__name__}")
+
+        rep1Copy = rep1.copy()
+        rep2Copy = rep2.copy()
+
         # Preprocess each set of representations
-        rep1Preproc = preproc(rep1)
-        rep2Preproc = preproc(rep2)
+        rep1Preproc = preproc(rep1Copy)
+        rep2Preproc = preproc(rep2Copy)
 
         # Get similarity between reps
         try:
@@ -557,8 +559,7 @@ def multi_analysis(
         counter += 1
 
         # Clean up memory
-        del rep1Preproc
-        del rep2Preproc
+        del rep1Preproc, rep2Preproc, rep1Copy, rep2Copy
 
     return simDict
 
@@ -726,7 +727,7 @@ if __name__ == "__main__":
         analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
         # Get model
-        _, modelName, _ = get_model_from_args(args)
+        _, modelName, _ = get_model_from_args(args, return_model=False)
         modelName = modelName.split(".")[0]
 
         # List model representations and make combinations
@@ -801,7 +802,7 @@ if __name__ == "__main__":
                 simMat,
             )
     else:
-        from scipy import stats
+        import analysisOld as old
 
         print("No analysis argument, treating as main.")
         repFile = "../outputs/masterOutput/representations/w0s0/w0s0l9.npy"
@@ -810,8 +811,14 @@ if __name__ == "__main__":
         repFile = "../outputs/masterOutput/representations/w0s1/w0s1l9.npy"
         rep2 = np.load(repFile)
 
-        rdm1 = preprocess_speRsaNumba(rep1)
-        rdm2 = preprocess_speRsaNumba(rep2)
+        rdm1 = preprocess_ckaNumba(rep1)
+        rdm2 = preprocess_ckaNumba(rep2)
 
-        sim = do_rsaNumba(rdm1, rdm2)
+        sim = do_linearCKANumba(rdm1, rdm2)
+
+        rdm1Old = old.preprocess_ckaNumba(rep1)
+        rdm2Old = old.preprocess_ckaNumba(rep2)
+
+        simOld = old.do_linearCKANumba(rdm1Old, rdm2Old)
+
         print(sim)
