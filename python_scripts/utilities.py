@@ -278,8 +278,72 @@ def limit_hub_rep_feature_size(repDir, featureLimit):
     return keptReps
 
 
+def hubSims_completion_check(simDir, hubInfo, featureLimit=None):
+    """
+    Return a list of missing Tensorflow Hub similarities in simDir given
+    hubInfo. If feature limit is set, check that the number of features is
+    valid.
+    """
+    # Load hub model info
+    with open(hubInfo, "r") as f:
+        hubModels = json.loads(f.read())
+
+    # Create combination of hub models
+    hubModels = list(hubModels.keys())
+
+    # Loop through models and look for the corresponding simliarity file
+    missing = []
+    for model1 in hubModels:
+        # Fix model name
+        model1 = model1.replace("/", "-")
+
+        if not model1 + ".csv" in os.listdir(simDir):
+            # Check if this model that was skipped because it was too big
+            if featureLimit is not None:
+                rep = np.load(os.path.join(simDir, "..", model1 + "-Reps.npy"))
+                if rep.shape[-1] > featureLimit:
+                    print(f"{model1} has {rep.shape[-1]} features, skipped!")
+                    continue
+            print(f"Missing similarity from model: {model1}")
+            missing += [model1]
+
+    return missing
+
+
+def compile_hub_sims(simDir):
+    """
+    Return a compiled dataframe of similarity data from simDir.
+    """
+    # Get list of sim files
+    simFiles = glob.glob(os.path.join(simDir, "*.csv"))
+
+    # Loop through sim files
+    df = pd.DataFrame()
+    for file in simFiles:
+        tmp = pd.read_csv(file, index_col=0)
+        df = pd.concat((df, tmp))
+
+    return df
+
+
+def compile_noise_sim(simDir):
+    """
+    Return a compiled dataframe of similarity data from simDir.
+    """
+    # Get list of sim files
+    simFiles = glob.glob(os.path.join(simDir, "noise*.csv"))
+
+    # Loop through sim files
+    df = pd.DataFrame()
+    for file in simFiles:
+        tmp = pd.read_csv(file, index_col=0)
+        df = pd.concat((df, tmp))
+
+    return df
+
+
 if __name__ == "__main__":
-    # layers = [3, 7, 11]
+    layers = [3, 7, 11]
     # path = "../outputs/masterOutput/baseline/cinic/"
     # df = compile_dropout(path, layers)
     # df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-cinic.csv")
@@ -296,11 +360,11 @@ if __name__ == "__main__":
     #         f"../outputs/masterOutput/baseline/compiled/{augment}-cinic.csv"
     #     )
 
-    # path = "../outputs/masterOutput/correspondence/"
-    # models_path = "../outputs/masterOutput/models/"
-    # results, missing = compile_correspondence(path, models_path)
-    # missing = correspondence_missing_optimizer(missing)
-    # results.to_csv(f"../outputs/masterOutput/correspondence.csv")
+    path = "../outputs/masterOutput/correspondence/"
+    models_path = "../outputs/masterOutput/models/"
+    results, missing = compile_correspondence(path, models_path)
+    missing = correspondence_missing_optimizer(missing)
+    results.to_csv(f"../outputs/masterOutput/correspondence.csv")
 
     # path = "../outputs/masterOutput/baseline/"
     # tests = ["color", "translate", "zoom", "reflect", "dropout"]
@@ -317,10 +381,22 @@ if __name__ == "__main__":
     #         f"../outputs/masterOutput/baseline/compiled/{augment}Acc-cinic.csv"
     #     )
 
-    missing = hub_rep_completion(
-        "../outputs/masterOutput/hubReps", "./hubModels.json"
-    )
-    for file in missing:
-        print(file)
+    # missing = hub_rep_completion(
+    #     "../outputs/masterOutput/hubReps", "./hubModels.json"
+    # )
+    # for file in missing:
+    #     print(file)
 
-    kept = limit_hub_rep_feature_size("../outputs/masterOutput/hubReps", 2048)
+    # kept = limit_hub_rep_feature_size("../outputs/masterOutput/hubReps", 2048)
+
+    # missing = hubSims_completion_check(
+    #     "../outputs/masterOutput/hubReps/hubSims", "./hubModels.json", 2048
+    # )
+
+    # Compile hub sims
+    # df = compile_hub_sims("../outputs/masterOutput/hubReps/hubSims")
+    # df.to_csv("../outputs/masterOutput/hubSims.csv")
+
+    # Compile noise sims
+    # df = compile_noise_sim("../outputs/masterOutput/simulation")
+    # df.to_csv("../outputs/masterOutput/bigNoiseSim.csv")
