@@ -439,7 +439,7 @@ if __name__ == "__main__":
         type=str,
         required=True,
         help="analysis to perform",
-        choices=["noise", "simulations", "sanity"],
+        choices=["noise", "simulations", "sanity", "ablate"],
     )
     parser.add_argument(
         "--seed",
@@ -458,5 +458,7 @@ if __name__ == "__main__":
         permuteTest()
     elif args.analysis == "sanity":
         sanity_check()
+    elif args.analysis == "ablate":
+        parametricAblation()
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
