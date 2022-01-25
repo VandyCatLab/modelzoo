@@ -439,7 +439,7 @@ if __name__ == "__main__":
         type=str,
         required=True,
         help="analysis to perform",
-        choices=["noise", "simulations", "sanity", "ablate"],
+        choices=["noise", "simulations", "sanity", "ablate", "sizeRatio"],
     )
     parser.add_argument(
         "--seed",
@@ -460,5 +460,7 @@ if __name__ == "__main__":
         sanity_check()
     elif args.analysis == "ablate":
         parametricAblation()
+    elif args.analysis == "sizeRatio":
+        sizeRatioTest()
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
