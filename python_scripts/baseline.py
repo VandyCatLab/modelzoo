@@ -431,38 +431,46 @@ if __name__ == "__main__":
             else:
                 simDf = pd.DataFrame(columns=["version"] + analysisNames)
 
-            # Get similarity measure per transform
-            for v, rep1, rep2 in transforms:
-                if args.analysis == "translate":
-                    # Calculate similarity for each direction
-                    simDirs = []
-                    for rep in rep2:
-                        rep = np.array(rep)
-                        simDirs += [
-                            analysis.multi_analysis(
-                                rep1, rep, preprocFuns, simFuns
-                            )
-                        ]
-
-                    # Save all directions
-                    tmp = [v.numpy()]
-                    for dic in simDirs:
-                        tmp += [dic[key] for key in dic.keys()]
-
-                    simDf.loc[len(simDf.index)] = tmp
-                else:
-                    sims = analysis.multi_analysis(
-                        rep1, rep2, preprocFuns, simFuns, names=analysisNames
-                    )
-                    simDf.loc[len(simDf.index)] = [v] + [
-                        sims[fun] for fun in sims.keys()
-                    ]
-
-            # Save
             outPath = os.path.join(
                 basePath, f"{modelName[0:-3]}l{layer}-{args.analysis}.csv"
             )
-            simDf.to_csv(outPath, index=False)
+
+            if not os.path.exists(os.path.dirname(outPath)):
+                # Get similarity measure per transform
+                for v, rep1, rep2 in transforms:
+                    if args.analysis == "translate":
+                        # Calculate similarity for each direction
+                        simDirs = []
+                        for rep in rep2:
+                            rep = np.array(rep)
+                            simDirs += [
+                                analysis.multi_analysis(
+                                    rep1, rep, preprocFuns, simFuns
+                                )
+                            ]
+
+                        # Save all directions
+                        tmp = [v.numpy()]
+                        for dic in simDirs:
+                            tmp += [dic[key] for key in dic.keys()]
+
+                        simDf.loc[len(simDf.index)] = tmp
+                    else:
+                        sims = analysis.multi_analysis(
+                            rep1,
+                            rep2,
+                            preprocFuns,
+                            simFuns,
+                            names=analysisNames,
+                        )
+                        simDf.loc[len(simDf.index)] = [v] + [
+                            sims[fun] for fun in sims.keys()
+                        ]
+
+                # Save
+                simDf.to_csv(outPath, index=False)
+            else:
+                print(f"{outPath} already exists, skipping.", flush=True)
 
     elif args.analysis == "accuracy":
         augList = ["zoom", "reflect", "color", "noise", "translate"]
