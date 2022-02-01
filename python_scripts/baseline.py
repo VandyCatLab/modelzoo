@@ -445,7 +445,11 @@ if __name__ == "__main__":
                             rep = np.array(rep)
                             simDirs += [
                                 analysis.multi_analysis(
-                                    rep1, rep, preprocFuns, simFuns
+                                    rep1,
+                                    rep,
+                                    preprocFuns,
+                                    simFuns,
+                                    analysisNames,
                                 )
                             ]
 
