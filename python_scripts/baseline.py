@@ -435,7 +435,7 @@ if __name__ == "__main__":
                 basePath, f"{modelName[0:-3]}l{layer}-{args.analysis}.csv"
             )
 
-            if not os.path.exists(os.path.dirname(outPath)):
+            if not os.path.exists(outPath):
                 # Get similarity measure per transform
                 for v, rep1, rep2 in transforms:
                     if args.analysis == "translate":
