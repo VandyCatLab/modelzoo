@@ -7,6 +7,7 @@ from tensorflow.keras.datasets import cifar10
 import tensorflow_datasets as tfds
 import PIL
 import random
+import pandas as pd
 
 
 # Get training information
@@ -318,6 +319,21 @@ def create_cinic10_set(
     # images = np.array(images)
     labels = np.array(labels)
     return images, labels
+
+
+def create_cinic10_big(data_dir, slice=None, examples=100, dtype="float64"):
+    split = f"validation{slice}" if slice is not None else "validation"
+    dataset = tfds.load(
+        "imagenet2012",
+        split=split,
+        as_supervised=True,
+        shuffle_files=False,
+        data_dir=data_dir,
+    )
+    synset2Cifar = "https://raw.githubusercontent.com/BayesWatch/cinic-10/master/imagenet-contributors.csv"
+    sysnset2Cifar = pd.read_csv(synset2Cifar)
+    idx2Synset = "https://raw.githubusercontent.com/tensorflow/datasets/master/tensorflow_datasets/image_classification/imagenet2012_labels.txt"
+    idx2Synset = pd.read_csv(idx2Synset, header=None, names=["idx", "synset"])
 
 
 if __name__ == "__main__":
