@@ -7,7 +7,6 @@ from tensorflow.keras.datasets import cifar10
 import tensorflow_datasets as tfds
 import PIL
 import random
-import pandas as pd
 
 
 # Get training information
@@ -321,7 +320,14 @@ def create_cinic10_set(
     return images, labels
 
 
-def create_cinic10_big(data_dir, slice=None, examples=100, dtype="float64"):
+def create_imagenet_subset(
+    data_dir,
+    slice=None,
+    examples=10,
+    dtype="float64",
+    preprocFun=None,
+    save_dir=None,
+):
     split = f"validation{slice}" if slice is not None else "validation"
     dataset = tfds.load(
         "imagenet2012",
@@ -330,18 +336,39 @@ def create_cinic10_big(data_dir, slice=None, examples=100, dtype="float64"):
         shuffle_files=False,
         data_dir=data_dir,
     )
-    synset2Cifar = "https://raw.githubusercontent.com/BayesWatch/cinic-10/master/imagenet-contributors.csv"
-    sysnset2Cifar = pd.read_csv(synset2Cifar)
-    idx2Synset = "https://raw.githubusercontent.com/tensorflow/datasets/master/tensorflow_datasets/image_classification/imagenet2012_labels.txt"
-    idx2Synset = pd.read_csv(idx2Synset, header=None, names=["idx", "synset"])
+
+    # Create dictionary for examples
+    outImgs = {i: [] for i in range(1000)}
+    for example in dataset.take(len(dataset)):
+        img, idx = example
+
+        idx = int(idx.numpy())
+        # Check if there are enough examples and add
+        if len(outImgs[idx]) < examples:
+            if preprocFun is not None:
+                img = preprocFun(img, idx)
+            outImgs[idx].append(img)
+
+        # Check if we have enough examples
+        if all([len(outImgs[i]) == examples for i in range(1000)]):
+            break
+
+    # Save images
+    if save_dir is not None:
+        for i in range(1000):
+            for j, img in enumerate(outImgs[i]):
+                PIL.Image.fromarray(img.numpy()).save(
+                    save_dir + f"/{i}_{j}.png"
+                )
+    return outImgs
 
 
 if __name__ == "__main__":
     # Check if dataset is deterministic
-    dataset = np.load("../outputs/masterOutput/dataset.npy")
-    dataset2, labels = make_predict_data(
-        preprocess(x_testRaw), tf.one_hot(y_testRaw, 10)
-    )
+    # dataset = np.load("../outputs/masterOutput/dataset.npy")
+    # dataset2, labels = make_predict_data(
+    #     preprocess(x_testRaw), tf.one_hot(y_testRaw, 10)
+    # )
     # np.save("../outputs/masterOutput/labels.npy", labels)
 
     # preproc = tf.keras.applications.mobilenet_v3.preprocess_input
@@ -354,16 +381,49 @@ if __name__ == "__main__":
     # print(results)
 
     # Test imagenet
-    # preprocFun = preproc(
-    #     shape=(224, 224, 3),
-    #     dtype=tf.float32,
-    #     scale=1.0 / 255,
-    #     offset=0,
-    #     labels=False,
-    # )
+    preprocFun = preproc(
+        shape=(32, 32, 3),
+        dtype=tf.float32,
+        # scale=1.0 / 255,
+        # offset=0,
+        labels=False,
+    )
     # data = get_imagenet_set(preprocFun, 256)
 
-    random.seed(2021)
-    dataset, labels = create_cinic10_set(examples=100)
-    np.save("../outputs/masterOutput/cinicData.npy", dataset)
-    np.save("../outputs/masterOutput/cinicLabels.npy", labels)
+    # random.seed(2021)
+    # dataset, labels = create_cinic10_set(examples=100)
+    # np.save("../outputs/masterOutput/cinicData.npy", dataset)
+    # np.save("../outputs/masterOutput/cinicLabels.npy", labels)
+
+    out = create_imagenet_subset(
+        "/data/tensorflow_datasets", preprocFun=preprocFun
+    )
+    out
+
+    # Combine all images into array
+    imgs = []
+    labels = []
+    for key, value in out.items():
+        imgs.extend(value)
+        labels.append(key)
+
+    # Convert to array
+    imgs = np.array(imgs)
+    labels = np.array(labels)
+
+    # Apply global contrast normalization
+    imgs = (imgs - mean) / sd
+    print("ZCA...")
+    # Do ZCA whitening
+    x_flat = imgs.reshape(imgs.shape[0], -1)
+
+    vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
+    prinComps = np.dot(
+        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
+    )
+
+    imgs = np.dot(x_flat, prinComps).reshape(imgs.shape)
+
+    np.save("../outputs/masterOutput/imagenetSubsetSmall.npy", imgs)
+    np.save("../outputs/masterOutput/imagenetSubsetLabels.npy", labels)
+    imgs
