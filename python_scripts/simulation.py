@@ -5,13 +5,17 @@ import pandas as pd
 import os
 
 
-def permuteTest():
+def permuteTest(nImgs=None):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
 
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Subset dataset
+    if nImgs is not None:
+        imgset = imgset[:nImgs]
 
     # Set model to output reps at layer
     inp = model.input
@@ -104,9 +108,14 @@ def permuteTest():
         permuteData.to_csv(permutePath)
 
 
-def sizeRatioTest():
+def sizeRatioTest(nImgs=None):
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Subset dataset
+    if nImgs is not None:
+        imgset = imgset[:nImgs]
+
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     model = tf.keras.models.load_model(modelPath)
     model = tf.keras.Model(inputs=model.input, outputs=model.layers[-2].output)
@@ -216,13 +225,17 @@ def bigSizeRatioTest():
     permuteSims.to_csv("../outputs/masterOutput/bigRatioSims.csv", index=False)
 
 
-def parametricAblation(minNeuron=3, maxNeuron=10):
+def parametricAblation(minNeuron=3, maxNeuron=10, nImgs=None):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
 
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Subset dataset
+    if nImgs is not None:
+        imgset = imgset[:nImgs]
 
     # Set model to output reps at layer
     inp = model.input
@@ -282,7 +295,12 @@ def parametricAblation(minNeuron=3, maxNeuron=10):
 
 
 def parametricNoise(
-    minNoise=0.0, maxNoise=1, step=0.1, permutations=10000, seed=None
+    minNoise=0.0,
+    maxNoise=1,
+    step=0.1,
+    permutations=10000,
+    seed=None,
+    numImgs=None,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -290,6 +308,10 @@ def parametricNoise(
 
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Only use a subset of the images
+    if numImgs is not None:
+        imgset = imgset[:numImgs]
 
     # Dataset information
     num_imgs = imgset.shape[0]
@@ -366,13 +388,17 @@ def parametricNoise(
     permuteData.to_csv(outPath)
 
 
-def sanity_check():
+def sanity_check(nImgs=None):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
 
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
+
+    # Subset dataset
+    if nImgs is not None:
+        imgset = imgset[:nImgs]
 
     # Set model to output reps at layer
     inp = model.input
@@ -448,19 +474,29 @@ if __name__ == "__main__":
         help="seed for random number generator",
         default=None,
     )
+    parser.add_argument(
+        "--nImgs",
+        type=str,
+        default=None,
+        help="number images from the dataset to use",
+    )
     args = parser.parse_args()
 
     if args.analysis == "noise":
         parametricNoise(
-            maxNoise=4.0, step=0.01, permutations=100, seed=args.seed
+            maxNoise=4.0,
+            step=0.01,
+            permutations=100,
+            seed=args.seed,
+            numImgs=args.nImgs,
         )
     elif args.analysis == "simulations":
-        permuteTest()
+        permuteTest(numImgs=args.nImgs)
     elif args.analysis == "sanity":
-        sanity_check()
+        sanity_check(numImgs=args.nImgs)
     elif args.analysis == "ablate":
-        parametricAblation()
+        parametricAblation(numImgs=args.nImgs)
     elif args.analysis == "sizeRatio":
-        sizeRatioTest()
+        sizeRatioTest(numImgs=args.nImgs)
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
