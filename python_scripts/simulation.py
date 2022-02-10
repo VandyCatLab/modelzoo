@@ -312,7 +312,7 @@ def parametricNoise(
     step=0.1,
     permutations=10000,
     seed=None,
-    numImgs=None,
+    nImgs=None,
     outputPath=None,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
@@ -323,8 +323,8 @@ def parametricNoise(
     imgset = np.load("../outputs/masterOutput/dataset.npy")
 
     # Only use a subset of the images
-    if numImgs is not None:
-        imgset = imgset[:numImgs]
+    if nImgs is not None:
+        imgset = imgset[:nImgs]
 
     # Dataset information
     num_imgs = imgset.shape[0]
@@ -514,16 +514,16 @@ if __name__ == "__main__":
             step=0.01,
             permutations=100,
             seed=args.seed,
-            numImgs=args.nImgs,
+            nImgs=args.nImgs,
             outputPath=args.outputPath,
         )
     elif args.analysis == "simulations":
-        permuteTest(numImgs=args.nImgs, outputPath=args.outputPath)
+        permuteTest(nImgs=args.nImgs, outputPath=args.outputPath)
     elif args.analysis == "sanity":
-        sanity_check(numImgs=args.nImgs, outputPath=args.outputPath)
+        sanity_check(nImgs=args.nImgs, outputPath=args.outputPath)
     elif args.analysis == "ablate":
-        parametricAblation(numImgs=args.nImgs, outputPath=args.outputPath)
+        parametricAblation(nImgs=args.nImgs, outputPath=args.outputPath)
     elif args.analysis == "sizeRatio":
-        sizeRatioTest(numImgs=args.nImgs, outputPath=args.outputPath)
+        sizeRatioTest(nImgs=args.nImgs, outputPath=args.outputPath)
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
