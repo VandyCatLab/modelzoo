@@ -476,7 +476,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--nImgs",
-        type=str,
+        type=int,
         default=None,
         help="number images from the dataset to use",
     )
