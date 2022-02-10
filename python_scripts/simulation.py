@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 
-def permuteTest(nImgs=None):
+def permuteTest(nImgs=None, outputPath=None):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -31,7 +31,11 @@ def permuteTest(nImgs=None):
     repMean = np.mean(rep_flat)
     repSD = np.std(rep_flat)
 
-    permutePath = "../outputs/masterOutput/permuteSims.csv"
+    if outputPath is None:
+        permutePath = "../outputs/masterOutput/permuteSims.csv"
+    else:
+        permutePath = outputPath
+
     if os.path.exists(permutePath):
         print("Using existing permutation test results")
         permuteData = pd.read_csv(permutePath)
@@ -108,7 +112,7 @@ def permuteTest(nImgs=None):
         permuteData.to_csv(permutePath)
 
 
-def sizeRatioTest(nImgs=None):
+def sizeRatioTest(nImgs=None, outputPath=None):
     # load dataset
     imgset = np.load("../outputs/masterOutput/dataset.npy")
 
@@ -166,7 +170,12 @@ def sizeRatioTest(nImgs=None):
                     pd.DataFrame.from_dict(sims, orient="index").transpose(),
                 )
             )
-    permuteSims.to_csv("../outputs/masterOutput/ratioSims.csv", index=False)
+
+    if outputPath is None:
+        outPath = "../outputs/masterOutput/ratioSims.csv"
+    else:
+        outPath = outputPath
+    permuteSims.to_csv(outPath, index=False)
 
 
 def bigSizeRatioTest():
@@ -225,7 +234,7 @@ def bigSizeRatioTest():
     permuteSims.to_csv("../outputs/masterOutput/bigRatioSims.csv", index=False)
 
 
-def parametricAblation(minNeuron=3, maxNeuron=10, nImgs=None):
+def parametricAblation(minNeuron=3, maxNeuron=10, nImgs=None, outputPath=None):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -270,7 +279,10 @@ def parametricAblation(minNeuron=3, maxNeuron=10, nImgs=None):
     nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames)
-    outPath = "../outputs/masterOutput/ablateSims.csv"
+    if outputPath is None:
+        outPath = "../outputs/masterOutput/ablateSims.csv"
+    else:
+        outPath = outputPath
     print("Doing ablation simulation")
     for permute in range(nPermutes):
         if permute % 100 == 0:
@@ -301,6 +313,7 @@ def parametricNoise(
     permutations=10000,
     seed=None,
     numImgs=None,
+    outputPath=None,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -359,7 +372,10 @@ def parametricNoise(
         np.random.seed(seed)
         outPath = f"../outputs/masterOutput/noiseSims{seed}.csv"
     else:
-        outPath = "../outputs/masterOutput/noiseSims.csv"
+        if outputPath is None:
+            outPath = "../outputs/masterOutput/noiseSims.csv"
+        else:
+            outPath = outputPath
     print("Doing parametric noise simulation")
     for permute in range(permutations):
         if permute % 100 == 0:
@@ -388,7 +404,7 @@ def parametricNoise(
     permuteData.to_csv(outPath)
 
 
-def sanity_check(nImgs=None):
+def sanity_check(nImgs=None, outputPath=None):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -432,7 +448,11 @@ def sanity_check(nImgs=None):
     nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames, index=range(nPermutes))
-    outPath = "../outputs/masterOutput/sanityCheckSims.csv"
+
+    if outputPath is None:
+        outPath = "../outputs/masterOutput/sanityCheckSims.csv"
+    else:
+        outPath = outputPath
     print("Performing sanity check, permuting features.")
     for permute in range(nPermutes):
         if permute % 100 == 0:
@@ -480,6 +500,12 @@ if __name__ == "__main__":
         default=None,
         help="number images from the dataset to use",
     )
+    parser.add_argument(
+        "--outputPath",
+        type=str,
+        default=None,
+        help="path to output file, if not specified will use default",
+    )
     args = parser.parse_args()
 
     if args.analysis == "noise":
@@ -489,14 +515,15 @@ if __name__ == "__main__":
             permutations=100,
             seed=args.seed,
             numImgs=args.nImgs,
+            outputPath=args.outputPath,
         )
     elif args.analysis == "simulations":
-        permuteTest(numImgs=args.nImgs)
+        permuteTest(numImgs=args.nImgs, outputPath=args.outputPath)
     elif args.analysis == "sanity":
-        sanity_check(numImgs=args.nImgs)
+        sanity_check(numImgs=args.nImgs, outputPath=args.outputPath)
     elif args.analysis == "ablate":
-        parametricAblation(numImgs=args.nImgs)
+        parametricAblation(numImgs=args.nImgs, outputPath=args.outputPath)
     elif args.analysis == "sizeRatio":
-        sizeRatioTest(numImgs=args.nImgs)
+        sizeRatioTest(numImgs=args.nImgs, outputPath=args.outputPath)
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
