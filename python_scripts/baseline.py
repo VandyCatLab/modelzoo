@@ -15,7 +15,9 @@ import pandas as pd
 import os
 
 
-def yield_transforms(transform, model, layer_idx, dataset, return_aug=True):
+def yield_transforms(
+    transform, model, layer_idx, dataset, return_aug=True, versions=None
+):
     """
     Yield transformed representations successfully from the dataset after
     passing through the model to a certain layer_idx. Transforms control what
@@ -86,11 +88,12 @@ def yield_transforms(transform, model, layer_idx, dataset, return_aug=True):
             yield 0, rep1, rep2
 
     elif transform == "translate":
-        versions = (
-            dataset.shape[1]
-            if dataset.shape[1] <= dataset.shape[2]
-            else dataset.shape[2]
-        )
+        if versions is None:
+            versions = (
+                dataset.shape[1]
+                if dataset.shape[1] <= dataset.shape[2]
+                else dataset.shape[2]
+            )
 
         print(f" - Yielding {versions} versions.")
         for v in tf.range(versions):
@@ -130,7 +133,8 @@ def yield_transforms(transform, model, layer_idx, dataset, return_aug=True):
                 yield v, rep1, rep2
 
     elif transform == "color":
-        versions = 51
+        if versions is None:
+            versions = 51
         alphas = np.linspace(-1.5, 1.5, versions)
 
         # print(
@@ -176,7 +180,9 @@ def yield_transforms(transform, model, layer_idx, dataset, return_aug=True):
             if dataset.shape[1] <= dataset.shape[2]
             else dataset.shape[2]
         )
-        versions = smallDim // 2
+
+        if versions is None:
+            versions = smallDim // 2
 
         print(f" - Yielding {versions} versions.", flush=True)
         for v in range(versions):
@@ -200,7 +206,8 @@ def yield_transforms(transform, model, layer_idx, dataset, return_aug=True):
 
     elif transform == "noise":
         sd = np.std(dataset)
-        versions = 20
+        if versions is None:
+            versions = 20
         alphas = np.linspace(0, 1, versions)
 
         print(f" - Yielding {versions} versions.", flush=True)
@@ -371,6 +378,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--group", "-g", type=str, help="analysis group to store together"
     )
+    parser.add_argument(
+        "--versions",
+        "-v",
+        type=int,
+        help="number of augmentation versions",
+        default=None,
+    )
     args = parser.parse_args()
 
     # Load model
@@ -412,7 +426,12 @@ if __name__ == "__main__":
             print(f"Working on layer {layer}.", flush=True)
             # Get transforms generators
             transforms = yield_transforms(
-                args.analysis, model, int(layer), dataset, return_aug=False
+                args.analysis,
+                model,
+                int(layer),
+                dataset,
+                return_aug=False,
+                versions=args.versions,
             )
 
             # Create dataframe
