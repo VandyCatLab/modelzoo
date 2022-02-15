@@ -19,7 +19,7 @@ def permuteTest(nImgs=None, outputPath=None):
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[12]
+    layer = model.layers[-2]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
@@ -248,7 +248,7 @@ def parametricAblation(minNeuron=3, maxNeuron=10, nImgs=None, outputPath=None):
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[12]
+    layer = model.layers[-2]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
@@ -333,7 +333,7 @@ def parametricNoise(
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[12]
+    layer = model.layers[-2]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
@@ -418,7 +418,7 @@ def sanity_check(nImgs=None, outputPath=None):
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[12]
+    layer = model.layers[-2]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
