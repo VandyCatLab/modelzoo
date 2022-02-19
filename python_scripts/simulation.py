@@ -476,7 +476,7 @@ if __name__ == "__main__":
         "--simSet",
         type=str,
         default="all",
-        options=["all", "rsa", "cs"],
+        choices=["all", "rsa", "cs"],
         help="which set of similarity functions to use",
     )
     args = parser.parse_args()
