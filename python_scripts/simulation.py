@@ -108,7 +108,6 @@ def sizeRatioTest(
     outputPath=None,
     model=None,
     imgset=None,
-    ratiosRange=None,
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
@@ -136,9 +135,8 @@ def sizeRatioTest(
     permuteSims = pd.DataFrame(columns=colNames)
 
     nMax = imgset.shape[0]
-    if ratiosRange is None:
-        ratiosRange = np.arange(0.05, 1, 0.05)
-    nPermute = 1000
+    ratiosRange = np.arange(0.05, 2, 0.05)
+    nPermute = 100
 
     for ratio in ratiosRange:
         print(f"Analyzing img:samples ratio: {ratio}")
