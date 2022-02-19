@@ -5,7 +5,13 @@ import pandas as pd
 import os
 
 
-def permuteTest(nImgs=None, outputPath=None):
+def permuteTest(
+    nImgs=None,
+    outputPath=None,
+    preprocFuns=None,
+    simFuns=None,
+    analysisNames=None,
+):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -40,21 +46,6 @@ def permuteTest(nImgs=None, outputPath=None):
         print("Using existing permutation test results")
         permuteData = pd.read_csv(permutePath)
     else:
-        preprocFuns = [
-            analysis.preprocess_peaRsaNumba,
-            analysis.preprocess_eucRsaNumba,
-            analysis.preprocess_speRsaNumba,
-            analysis.preprocess_svcca,
-            analysis.preprocess_ckaNumba,
-        ]
-        simFuns = [
-            analysis.do_rsaNumba,
-            analysis.do_rsaNumba,
-            analysis.do_rsaNumba,
-            analysis.do_svcca,
-            analysis.do_linearCKANumba,
-        ]
-        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
         colNames = analysisNames + ["analysis"]
         nPermutes = 1000
 
@@ -112,40 +103,41 @@ def permuteTest(nImgs=None, outputPath=None):
         permuteData.to_csv(permutePath)
 
 
-def sizeRatioTest(nImgs=None, outputPath=None):
+def sizeRatioTest(
+    nImgs=None,
+    outputPath=None,
+    model=None,
+    imgset=None,
+    ratiosRange=None,
+    preprocFuns=None,
+    simFuns=None,
+    analysisNames=None,
+):
     # load dataset
-    imgset = np.load("../outputs/masterOutput/dataset.npy")
+    if imgset is None:
+        imgset = np.load("../outputs/masterOutput/dataset.npy")
+    else:
+        imgset = np.load(imgset)
 
     # Subset dataset
     if nImgs is not None:
         imgset = imgset[:nImgs]
 
-    modelPath = "../outputs/masterOutput/models/w0s0.pb"
-    model = tf.keras.models.load_model(modelPath)
-    model = tf.keras.Model(inputs=model.input, outputs=model.layers[-2].output)
+    if model is None:
+        modelPath = "../outputs/masterOutput/models/w0s0.pb"
+        model = tf.keras.models.load_model(modelPath)
+        model = tf.keras.Model(
+            inputs=model.input, outputs=model.layers[-2].output
+        )
     rep = model.predict(imgset).flatten()
 
-    preprocFuns = [
-        analysis.preprocess_peaRsaNumba,
-        analysis.preprocess_eucRsaNumba,
-        analysis.preprocess_speRsaNumba,
-        analysis.preprocess_svcca,
-        analysis.preprocess_ckaNumba,
-    ]
-    simFuns = [
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_svcca,
-        analysis.do_linearCKANumba,
-    ]
-    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
     colNames = analysisNames + ["sample", "features"]
 
     permuteSims = pd.DataFrame(columns=colNames)
 
     nMax = imgset.shape[0]
-    ratiosRange = np.arange(0.05, 1, 0.05)
+    if ratiosRange is None:
+        ratiosRange = np.arange(0.05, 1, 0.05)
     nPermute = 1000
 
     for ratio in ratiosRange:
@@ -234,7 +226,15 @@ def bigSizeRatioTest():
     permuteSims.to_csv("../outputs/masterOutput/bigRatioSims.csv", index=False)
 
 
-def parametricAblation(minNeuron=3, maxNeuron=10, nImgs=None, outputPath=None):
+def parametricAblation(
+    minNeuron=3,
+    maxNeuron=10,
+    nImgs=None,
+    outputPath=None,
+    preprocFuns=None,
+    simFuns=None,
+    analysisNames=None,
+):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -260,21 +260,6 @@ def parametricAblation(minNeuron=3, maxNeuron=10, nImgs=None, outputPath=None):
     repMean = np.mean(rep_flat)
     repSD = np.std(rep_flat)
 
-    preprocFuns = [
-        analysis.preprocess_peaRsaNumba,
-        analysis.preprocess_eucRsaNumba,
-        analysis.preprocess_speRsaNumba,
-        analysis.preprocess_svcca,
-        analysis.preprocess_ckaNumba,
-    ]
-    simFuns = [
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_svcca,
-        analysis.do_linearCKANumba,
-    ]
-    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
     colNames = analysisNames + ["Neurons"]
     nPermutes = 1000
 
@@ -314,6 +299,9 @@ def parametricNoise(
     seed=None,
     nImgs=None,
     outputPath=None,
+    preprocFuns=None,
+    simFuns=None,
+    analysisNames=None,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -344,22 +332,6 @@ def parametricNoise(
     rep_flat = rep_orig.flatten()
     repMean = np.mean(rep_flat)
     repSD = np.std(rep_flat)
-
-    preprocFuns = [
-        analysis.preprocess_peaRsaNumba,
-        analysis.preprocess_eucRsaNumba,
-        analysis.preprocess_speRsaNumba,
-        analysis.preprocess_svcca,
-        analysis.preprocess_ckaNumba,
-    ]
-    simFuns = [
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_svcca,
-        analysis.do_linearCKANumba,
-    ]
-    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
     colNames = analysisNames + ["Noise"]
 
@@ -404,7 +376,13 @@ def parametricNoise(
     permuteData.to_csv(outPath)
 
 
-def sanity_check(nImgs=None, outputPath=None):
+def sanity_check(
+    nImgs=None,
+    outputPath=None,
+    preprocFuns=None,
+    simFuns=None,
+    analysisNames=None,
+):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
     model = tf.keras.models.load_model(modelPath)
@@ -427,22 +405,6 @@ def sanity_check(nImgs=None, outputPath=None):
     rep_orig = tmpModel.predict(imgset)
     repShape = rep_orig.shape
     rep_flat = rep_orig.flatten()
-
-    preprocFuns = [
-        analysis.preprocess_peaRsaNumba,
-        analysis.preprocess_eucRsaNumba,
-        analysis.preprocess_speRsaNumba,
-        analysis.preprocess_svcca,
-        analysis.preprocess_ckaNumba,
-    ]
-    simFuns = [
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_svcca,
-        analysis.do_linearCKANumba,
-    ]
-    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
 
     colNames = analysisNames
     nPermutes = 1000
@@ -506,7 +468,59 @@ if __name__ == "__main__":
         default=None,
         help="path to output file, if not specified will use default",
     )
+    parser.add_argument(
+        "--imgset",
+        type=str,
+        default=None,
+        help="path to representations to use",
+    )
+    parser.add_argument(
+        "--simSet",
+        type=str,
+        default="all",
+        options=["all", "rsa", "cs"],
+        help="which set of similarity functions to use",
+    )
     args = parser.parse_args()
+
+    if args.simSet == "all":
+        preprocFuns = [
+            analysis.preprocess_peaRsaNumba,
+            analysis.preprocess_eucRsaNumba,
+            analysis.preprocess_speRsaNumba,
+            analysis.preprocess_svcca,
+            analysis.preprocess_ckaNumba,
+        ]
+        simFuns = [
+            analysis.do_rsaNumba,
+            analysis.do_rsaNumba,
+            analysis.do_rsaNumba,
+            analysis.do_svcca,
+            analysis.do_linearCKANumba,
+        ]
+        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+    elif args.simSet == "rsa":
+        preprocFuns = [
+            analysis.preprocess_peaRsaNumba,
+            analysis.preprocess_eucRsaNumba,
+            analysis.preprocess_speRsaNumba,
+        ]
+        simFuns = [
+            analysis.do_rsaNumba,
+            analysis.do_rsaNumba,
+            analysis.do_rsaNumba,
+        ]
+        analysisNames = ["peaRsa", "eucRsa", "speRsa"]
+    elif args.simSet == "cs":
+        preprocFuns = [
+            analysis.preprocess_svcca,
+            analysis.preprocess_ckaNumba,
+        ]
+        simFuns = [
+            analysis.do_svcca,
+            analysis.do_linearCKANumba,
+        ]
+        analysisNames = ["svcca", "cka"]
 
     if args.analysis == "noise":
         parametricNoise(
@@ -516,14 +530,42 @@ if __name__ == "__main__":
             seed=args.seed,
             nImgs=args.nImgs,
             outputPath=args.outputPath,
+            preprocFuns=preprocFuns,
+            simFuns=simFuns,
+            analysisNames=analysisNames,
         )
     elif args.analysis == "simulations":
-        permuteTest(nImgs=args.nImgs, outputPath=args.outputPath)
+        permuteTest(
+            nImgs=args.nImgs,
+            outputPath=args.outputPath,
+            preprocFuns=preprocFuns,
+            simFuns=simFuns,
+            analysisNames=analysisNames,
+        )
     elif args.analysis == "sanity":
-        sanity_check(nImgs=args.nImgs, outputPath=args.outputPath)
+        sanity_check(
+            nImgs=args.nImgs,
+            outputPath=args.outputPath,
+            preprocFuns=preprocFuns,
+            simFuns=simFuns,
+            analysisNames=analysisNames,
+        )
     elif args.analysis == "ablate":
-        parametricAblation(nImgs=args.nImgs, outputPath=args.outputPath)
+        parametricAblation(
+            nImgs=args.nImgs,
+            outputPath=args.outputPath,
+            preprocFuns=preprocFuns,
+            simFuns=simFuns,
+            analysisNames=analysisNames,
+        )
     elif args.analysis == "sizeRatio":
-        sizeRatioTest(nImgs=args.nImgs, outputPath=args.outputPath)
+        sizeRatioTest(
+            nImgs=args.nImgs,
+            outputPath=args.outputPath,
+            imgset=args.imgset,
+            preprocFuns=preprocFuns,
+            simFuns=simFuns,
+            analysisNames=analysisNames,
+        )
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
