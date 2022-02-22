@@ -11,6 +11,7 @@ def permuteTest(
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
+    outputIdx=-2,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -25,7 +26,7 @@ def permuteTest(
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[-2]
+    layer = model.layers[outputIdx]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
@@ -111,6 +112,7 @@ def sizeRatioTest(
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
+    outputIdx=-2,
 ):
     # load dataset
     if imgset is None:
@@ -126,7 +128,7 @@ def sizeRatioTest(
         modelPath = "../outputs/masterOutput/models/w0s0.pb"
         model = tf.keras.models.load_model(modelPath)
         model = tf.keras.Model(
-            inputs=model.input, outputs=model.layers[-2].output
+            inputs=model.input, outputs=model.layers[outputIdx].output
         )
     rep = model.predict(imgset).flatten()
 
@@ -232,6 +234,7 @@ def parametricAblation(
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
+    outputIdx=-2,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -246,7 +249,7 @@ def parametricAblation(
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[-2]
+    layer = model.layers[outputIdx]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
@@ -300,6 +303,7 @@ def parametricNoise(
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
+    outputIdx=-2,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -319,7 +323,7 @@ def parametricNoise(
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[-2]
+    layer = model.layers[outputIdx]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
@@ -380,6 +384,7 @@ def sanity_check(
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
+    outputIdx=-2,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -394,7 +399,7 @@ def sanity_check(
 
     # Set model to output reps at layer
     inp = model.input
-    layer = model.layers[-2]
+    layer = model.layers[outputIdx]
     out = layer.output
 
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
@@ -479,6 +484,12 @@ if __name__ == "__main__":
         choices=["all", "rsa", "cs"],
         help="which set of similarity functions to use",
     )
+    parser.add_argument(
+        "--outputIdx",
+        type=int,
+        default=-2,
+        help="index of layer to output from",
+    )
     args = parser.parse_args()
 
     if args.simSet == "all":
@@ -531,6 +542,7 @@ if __name__ == "__main__":
             preprocFuns=preprocFuns,
             simFuns=simFuns,
             analysisNames=analysisNames,
+            outputIdx=args.outputIdx,
         )
     elif args.analysis == "simulations":
         permuteTest(
@@ -539,6 +551,7 @@ if __name__ == "__main__":
             preprocFuns=preprocFuns,
             simFuns=simFuns,
             analysisNames=analysisNames,
+            outputIdx=args.outputIdx,
         )
     elif args.analysis == "sanity":
         sanity_check(
@@ -547,6 +560,7 @@ if __name__ == "__main__":
             preprocFuns=preprocFuns,
             simFuns=simFuns,
             analysisNames=analysisNames,
+            outputIdx=args.outputIdx,
         )
     elif args.analysis == "ablate":
         parametricAblation(
@@ -555,6 +569,7 @@ if __name__ == "__main__":
             preprocFuns=preprocFuns,
             simFuns=simFuns,
             analysisNames=analysisNames,
+            outputIdx=args.outputIdx,
         )
     elif args.analysis == "sizeRatio":
         sizeRatioTest(
@@ -564,6 +579,7 @@ if __name__ == "__main__":
             preprocFuns=preprocFuns,
             simFuns=simFuns,
             analysisNames=analysisNames,
+            outputIdx=args.outputIdx,
         )
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
