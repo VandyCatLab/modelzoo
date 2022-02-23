@@ -150,7 +150,7 @@ if __name__ == "__main__":
 
             # Create dataset
             preprocFun = datasets.preproc(
-                hubModels[modelName],
+                **hubModels[modelName],
                 labels=False,
             )
 
