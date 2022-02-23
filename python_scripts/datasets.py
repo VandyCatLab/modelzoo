@@ -188,7 +188,7 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
     return dataset
 
 
-def get_novset_imgs(data_dir, preprocFun=None):
+def get_novset_imgs(data_dir, preprocFun=None, batch_size=64):
     """
     Return novel image set images. Assumes that it all fits in memory.
     """
@@ -198,9 +198,13 @@ def get_novset_imgs(data_dir, preprocFun=None):
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
         img = np.array(img)
-        img = preprocFun(img)
+        if preprocFun is not None:
+            img = preprocFun(img)
         imgs[i] = img
 
+    imgs = tf.data.Dataset.from_tensors(imgs)
+    imgs = imgs.batch(batch_size)
+    imgs = imgs.prefetch(tf.data.AUTOTUNE)
     return imgs
 
 

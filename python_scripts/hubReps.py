@@ -15,8 +15,7 @@ def get_reps(model, dataset, info, batch_size):
     # Num batches
     nBatches = len(dataset)
 
-    if isinstance(dataset, tf.data.Dataset):
-        dataset = dataset.as_numpy_iterator()
+    dataset = dataset.as_numpy_iterator()
 
     if "outputIdx" in info.keys():
         # Get output size of model
