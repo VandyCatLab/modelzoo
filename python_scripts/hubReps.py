@@ -154,11 +154,14 @@ if __name__ == "__main__":
                 labels=False,
             )
 
-            if args.dataset == 'imagenet':
+            if args.dataset == "imagenet":
                 dataset = datasets.get_imagenet_set(
-                    preprocFun, args.batch_size, args.data_dir, slice=args.slice
+                    preprocFun,
+                    args.batch_size,
+                    args.data_dir,
+                    slice=args.slice,
                 )
-            elif args.dataset == 'novset':
+            elif args.dataset == "novset":
                 dataset = datasets.get_novset_imgs(args.data_dir, preprocFun)
             else:
                 raise ValueError(f"Unknown dataset {args.dataset}")
@@ -166,7 +169,7 @@ if __name__ == "__main__":
             reps = get_reps(
                 model, dataset, hubModels[modelName], args.batch_size
             )
-            
+
             np.save(fileName, reps)
             print(f"Saved {fileName}", flush=True)
     elif args.analysis == "similarity":
