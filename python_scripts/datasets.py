@@ -193,7 +193,7 @@ def get_novset_imgs(data_dir, preprocFun=None):
     Return novel image set images. Assumes that it all fits in memory.
     """
     files = os.listdir(data_dir)
-    imgs = np.empty([len(files)].extend(preprocFun.shape))
+    imgs = np.empty([len(files)] + list(preprocFun.shape))
 
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
@@ -201,7 +201,7 @@ def get_novset_imgs(data_dir, preprocFun=None):
         img = preprocFun(img)
         imgs[i] = img
 
-    return files
+    return imgs
 
 
 class preproc:
