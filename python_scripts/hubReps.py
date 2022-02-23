@@ -162,7 +162,11 @@ if __name__ == "__main__":
                     slice=args.slice,
                 )
             elif args.dataset == "novset":
-                dataset = datasets.get_novset_imgs(
+                dataset = datasets.get_flat_dataset(
+                    args.data_dir, preprocFun, args.batch_size
+                )
+            elif args.dataset == "kriegset":
+                dataset = datasets.get_flat_dataset(
                     args.data_dir, preprocFun, args.batch_size
                 )
             else:

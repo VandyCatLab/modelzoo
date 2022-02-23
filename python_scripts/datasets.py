@@ -188,9 +188,10 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
     return dataset
 
 
-def get_novset_imgs(data_dir, preprocFun=None, batch_size=64):
+def get_flat_dataset(data_dir, preprocFun=None, batch_size=64):
     """
-    Return novel image set images. Assumes that it all fits in memory.
+    Return a dataset where all images are from data_dir. Assumes that it all
+    fits in memory.
     """
     files = os.listdir(data_dir)
     imgs = np.empty([len(files)] + list(preprocFun.shape))
@@ -409,8 +410,9 @@ if __name__ == "__main__":
         labels=False,
     )
 
-    data = get_novset_imgs("/data/novset", preprocFun)
-    np.save("../outputs/masterOutput/novsetDataSmall.npy", data)
+    data = get_flat_dataset("/data/kriegset", preprocFun)
+    data = np.concatenate(list(data.as_numpy_iterator()))
+    np.save("../outputs/masterOutput/kriegsetDataSmall.npy", data)
     # data = get_imagenet_set(preprocFun, 256)
 
     # random.seed(2021)
