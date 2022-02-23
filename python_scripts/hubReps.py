@@ -162,7 +162,9 @@ if __name__ == "__main__":
                     slice=args.slice,
                 )
             elif args.dataset == "novset":
-                dataset = datasets.get_novset_imgs(args.data_dir, preprocFun)
+                dataset = datasets.get_novset_imgs(
+                    args.data_dir, preprocFun, args.batch_size
+                )
             else:
                 raise ValueError(f"Unknown dataset {args.dataset}")
 

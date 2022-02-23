@@ -202,7 +202,7 @@ def get_novset_imgs(data_dir, preprocFun=None, batch_size=64):
             img = preprocFun(img)
         imgs[i] = img
 
-    imgs = tf.data.Dataset.from_tensors(imgs)
+    imgs = tf.data.Dataset.from_tensor_slices(imgs)
     imgs = imgs.batch(batch_size)
     imgs = imgs.prefetch(tf.data.AUTOTUNE)
     return imgs
