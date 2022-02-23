@@ -10,24 +10,6 @@ import pandas as pd
 import datetime
 
 
-def setup_hub_model(info, batch_size, data_dir, slice):
-    # Create model
-    shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
-    inp = tf.keras.Input(shape=shape)
-    out = hub.KerasLayer(info["url"])(inp)
-    model = tf.keras.Model(inputs=inp, outputs=out)
-
-    # Create dataset
-    preprocFun = datasets.preproc(
-        **info,
-        labels=False,
-    )
-    dataset = datasets.get_imagenet_set(
-        preprocFun, batch_size, data_dir=data_dir, slice=slice
-    )
-    return model, dataset
-
-
 def get_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
     # Num batches
@@ -126,6 +108,16 @@ if __name__ == "__main__":
         help="the maximum number of features a representation can have",
         default=2048,
     )
+    parser.add_argument(
+        "--rep_name",
+        type=str,
+        help="name of the representation to save",
+    )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        help="name of the dataset to use",
+    )
     args = parser.parse_args()
 
     with open(args.models_file, "r") as f:
@@ -142,15 +134,27 @@ if __name__ == "__main__":
             f"==== Working on model: {modelName} [{datetime.datetime.now()}] ====",
             flush=True,
         )
-        fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
+        if args.rep_name is not None:
+            fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
+        else:
+            fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
         if os.path.exists(fileName):
             print(f"Already completed, skipping.")
         else:
-            model, dataset = setup_hub_model(
+            # Create model
+            info = hubModels[modelName]
+            shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
+            inp = tf.keras.Input(shape=shape)
+            out = hub.KerasLayer(info["url"])(inp)
+            model = tf.keras.Model(inputs=inp, outputs=out)
+
+            # Create dataset
+            preprocFun = datasets.preproc(
                 hubModels[modelName],
-                args.batch_size,
-                args.data_dir,
-                args.slice,
+                labels=False,
+            )
+            dataset = datasets.get_imagenet_set(
+                preprocFun, args.batch_size, args.data_dir, slice=args.slice
             )
 
             reps = get_reps(
