@@ -479,29 +479,49 @@ def get_model_from_args(args, return_model=True):
     return model, modelName, modelPath
 
 
-def get_funcs(method):
-    assert method in [
-        "peaRSA",
-        "speRSA",
-        "eucRSA",
-        "SVCCA",
-        "PWCCA",
-        "CKA",
-    ], "Invalid correlation method"
-    if method == "RSA":
-        return preprocess_rsaNumba, do_rsaNumba
-    elif method == "peaRSA":
-        return preprocess_peaRsaNumba, do_rsaNumba
-    elif method == "speRSA":
-        return preprocess_speRsaNumba, do_rsaNumba
-    elif method == "eucRSA":
-        return preprocess_eucRsaNumba, do_rsaNumba
-    elif method == "SVCCA":
-        return preprocess_svcca, do_svcca
-    elif method == "PWCCA":
-        return preprocess_pwcca, do_pwcca
-    elif method == "CKA":
-        return preprocess_ckaNumba, do_linearCKANumba
+def get_funcs(method="all"):
+    assert method in ["all", "rsa", "cs"], "Invalid similarity functions"
+
+    if method == "all":
+        preprocFuns = [
+            preprocess_peaRsaNumba,
+            preprocess_eucRsaNumba,
+            preprocess_speRsaNumba,
+            preprocess_svcca,
+            preprocess_ckaNumba,
+        ]
+        simFuns = [
+            do_rsaNumba,
+            do_rsaNumba,
+            do_rsaNumba,
+            do_svcca,
+            do_linearCKANumba,
+        ]
+        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+    elif method == "rsa":
+        preprocFuns = [
+            preprocess_peaRsaNumba,
+            preprocess_eucRsaNumba,
+            preprocess_speRsaNumba,
+        ]
+        simFuns = [
+            do_rsaNumba,
+            do_rsaNumba,
+            do_rsaNumba,
+        ]
+        analysisNames = ["peaRsa", "eucRsa", "speRsa"]
+    elif method == "cs":
+        preprocFuns = [
+            preprocess_svcca,
+            preprocess_ckaNumba,
+        ]
+        simFuns = [
+            do_svcca,
+            do_linearCKANumba,
+        ]
+        analysisNames = ["svcca", "cka"]
+
+    return preprocFuns, simFuns, analysisNames
 
 
 def _split_comma_str(string):
