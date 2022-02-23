@@ -492,44 +492,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.simSet == "all":
-        preprocFuns = [
-            analysis.preprocess_peaRsaNumba,
-            analysis.preprocess_eucRsaNumba,
-            analysis.preprocess_speRsaNumba,
-            analysis.preprocess_svcca,
-            analysis.preprocess_ckaNumba,
-        ]
-        simFuns = [
-            analysis.do_rsaNumba,
-            analysis.do_rsaNumba,
-            analysis.do_rsaNumba,
-            analysis.do_svcca,
-            analysis.do_linearCKANumba,
-        ]
-        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
-    elif args.simSet == "rsa":
-        preprocFuns = [
-            analysis.preprocess_peaRsaNumba,
-            analysis.preprocess_eucRsaNumba,
-            analysis.preprocess_speRsaNumba,
-        ]
-        simFuns = [
-            analysis.do_rsaNumba,
-            analysis.do_rsaNumba,
-            analysis.do_rsaNumba,
-        ]
-        analysisNames = ["peaRsa", "eucRsa", "speRsa"]
-    elif args.simSet == "cs":
-        preprocFuns = [
-            analysis.preprocess_svcca,
-            analysis.preprocess_ckaNumba,
-        ]
-        simFuns = [
-            analysis.do_svcca,
-            analysis.do_linearCKANumba,
-        ]
-        analysisNames = ["svcca", "cka"]
+    preprocFuns, simFuns, analysisNames = analysis.get_funcs(args.simSet)
 
     if args.analysis == "noise":
         parametricNoise(
