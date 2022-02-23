@@ -193,7 +193,7 @@ def get_novset_imgs(data_dir, preprocFun=None):
     Return novel image set images. Assumes that it all fits in memory.
     """
     files = os.listdir(data_dir)
-    imgs = np.empty([len(files)] + list(preprocFun.shape))
+    imgs = np.empty([len(files)].extend(preprocFun.shape))
 
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
@@ -406,7 +406,7 @@ if __name__ == "__main__":
     )
 
     data = get_novset_imgs("/data/novset", preprocFun)
-    np.save('../outputs/masterOutput/novsetDataSmall.npy', data)
+    np.save("../outputs/masterOutput/novsetDataSmall.npy", data)
     # data = get_imagenet_set(preprocFun, 256)
 
     # random.seed(2021)
