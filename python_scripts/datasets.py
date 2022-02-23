@@ -188,6 +188,22 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
     return dataset
 
 
+def get_novset_imgs(data_dir, preprocFun=None):
+    """
+    Return novel image set images. Assumes that it all fits in memory.
+    """
+    files = os.listdir(data_dir)
+    imgs = np.empty([len(files)] + list(preprocFun.shape))
+
+    for i, file in enumerate(files):
+        img = PIL.Image.open(os.path.join(data_dir, file))
+        img = np.array(img)
+        img = preprocFun(img)
+        imgs[i] = img
+
+    return files
+
+
 class preproc:
     def __init__(
         self,
@@ -208,7 +224,7 @@ class preproc:
         self.numCat = numCat
         self.labels = labels
 
-    def __call__(self, img, label):
+    def __call__(self, img, label=None):
         # Rescale then cast to correct datatype
         img = tf.keras.preprocessing.image.smart_resize(img, self.shape[:2])
         img = tf.reshape(img, self.shape)
@@ -388,6 +404,9 @@ if __name__ == "__main__":
         # offset=0,
         labels=False,
     )
+
+    data = get_novset_imgs("/data/novset", preprocFun)
+    np.save('../outputs/masterOutput/novsetDataSmall.npy', data)
     # data = get_imagenet_set(preprocFun, 256)
 
     # random.seed(2021)
@@ -395,35 +414,35 @@ if __name__ == "__main__":
     # np.save("../outputs/masterOutput/cinicData.npy", dataset)
     # np.save("../outputs/masterOutput/cinicLabels.npy", labels)
 
-    out = create_imagenet_subset(
-        "/data/tensorflow_datasets", preprocFun=preprocFun
-    )
-    out
+    # out = create_imagenet_subset(
+    #     "/data/tensorflow_datasets", preprocFun=preprocFun
+    # )
+    # out
 
-    # Combine all images into array
-    imgs = []
-    labels = []
-    for key, value in out.items():
-        imgs.extend(value)
-        labels.append(key)
+    # # Combine all images into array
+    # imgs = []
+    # labels = []
+    # for key, value in out.items():
+    #     imgs.extend(value)
+    #     labels.append(key)
 
-    # Convert to array
-    imgs = np.array(imgs)
-    labels = np.array(labels)
+    # # Convert to array
+    # imgs = np.array(imgs)
+    # labels = np.array(labels)
 
-    # Apply global contrast normalization
-    imgs = (imgs - mean) / sd
-    print("ZCA...")
-    # Do ZCA whitening
-    x_flat = imgs.reshape(imgs.shape[0], -1)
+    # # Apply global contrast normalization
+    # imgs = (imgs - mean) / sd
+    # print("ZCA...")
+    # # Do ZCA whitening
+    # x_flat = imgs.reshape(imgs.shape[0], -1)
 
-    vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
-    prinComps = np.dot(
-        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
-    )
+    # vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
+    # prinComps = np.dot(
+    #     vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
+    # )
 
-    imgs = np.dot(x_flat, prinComps).reshape(imgs.shape)
+    # imgs = np.dot(x_flat, prinComps).reshape(imgs.shape)
 
-    np.save("../outputs/masterOutput/imagenetSubsetSmall.npy", imgs)
-    np.save("../outputs/masterOutput/imagenetSubsetLabels.npy", labels)
-    imgs
+    # np.save("../outputs/masterOutput/imagenetSubsetSmall.npy", imgs)
+    # np.save("../outputs/masterOutput/imagenetSubsetLabels.npy", labels)
+    # imgs
