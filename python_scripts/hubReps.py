@@ -41,7 +41,10 @@ def get_reps(model, dataset, info, batch_size):
             ]
         else:
             # Save representations
-            reps[i * batch_size : (i + 1) * batch_size] = res
+            if res.shape[0] == batch_size:
+                reps[i * batch_size : (i + 1) * batch_size] = res
+            else:
+                reps[i * batch_size : i * batch_size + len(res)] = res
 
     # Remove empty rows
     reps = reps[:numImgs]
