@@ -36,7 +36,11 @@ def yield_transforms(
     def batched_call(model, input, batch_size):
         # Get counts
         nImages = input.shape[0]
-        completeBatches = nImages // batch_size
+        completeBatches = (
+            nImages // batch_size
+            if batch_size < input.shape[0]
+            else input.shape[0]
+        )
         finalBatchSize = nImages % batch_size
 
         # Loop through batches
