@@ -190,6 +190,27 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
     return dataset
 
 
+def get_flat_dataset(data_dir, preprocFun=None, batch_size=64):
+    """
+    Return a dataset where all images are from data_dir. Assumes that it all
+    fits in memory.
+    """
+    files = os.listdir(data_dir)
+    imgs = np.empty([len(files)] + list(preprocFun.shape))
+
+    for i, file in enumerate(files):
+        img = PIL.Image.open(os.path.join(data_dir, file))
+        img = np.array(img)
+        if preprocFun is not None:
+            img = preprocFun(img)
+        imgs[i] = img
+
+    imgs = tf.data.Dataset.from_tensor_slices(imgs)
+    imgs = imgs.batch(batch_size)
+    imgs = imgs.prefetch(tf.data.AUTOTUNE)
+    return imgs
+
+
 class preproc:
     def __init__(
         self,
@@ -210,7 +231,7 @@ class preproc:
         self.numCat = numCat
         self.labels = labels
 
-    def __call__(self, img, label):
+    def __call__(self, img, label=None):
         # Rescale then cast to correct datatype
         img = tf.keras.preprocessing.image.smart_resize(img, self.shape[:2])
         img = tf.reshape(img, self.shape)
@@ -381,6 +402,7 @@ if __name__ == "__main__":
     # print(results)
 
     # Test imagenet
+<<<<<<< HEAD
     # preprocFun = preproc(
     #     shape=(32, 32, 3),
     #     dtype=tf.float32,
@@ -388,6 +410,19 @@ if __name__ == "__main__":
     #     # offset=0,
     #     labels=False,
     # )
+=======
+    preprocFun = preproc(
+        shape=(32, 32, 3),
+        dtype=tf.float32,
+        # scale=1.0 / 255,
+        # offset=0,
+        labels=False,
+    )
+
+    data = get_flat_dataset("/data/kriegset", preprocFun)
+    data = np.concatenate(list(data.as_numpy_iterator()))
+    np.save("../outputs/masterOutput/kriegsetDataSmall.npy", data)
+>>>>>>> 503f65499fb46a0ce0991943e69c4d4bf6fbba05
     # data = get_imagenet_set(preprocFun, 256)
 
     # random.seed(2021)
@@ -399,6 +434,7 @@ if __name__ == "__main__":
     #     "/data/tensorflow_datasets", preprocFun=preprocFun
     # )
     # out
+<<<<<<< HEAD
 
     # # Combine all images into array
     # imgs = []
@@ -433,3 +469,33 @@ if __name__ == "__main__":
     img, labels = create_cinic10_set("/data/CINIC10Original", examples=100)
     np.save("../outputs/masterOutput/cinicData.npy", img)
     np.save("../outputs/masterOutput/cinicLabels.npy", labels)
+=======
+
+    # # Combine all images into array
+    # imgs = []
+    # labels = []
+    # for key, value in out.items():
+    #     imgs.extend(value)
+    #     labels.append(key)
+
+    # # Convert to array
+    # imgs = np.array(imgs)
+    # labels = np.array(labels)
+
+    # # Apply global contrast normalization
+    # imgs = (imgs - mean) / sd
+    # print("ZCA...")
+    # # Do ZCA whitening
+    # x_flat = imgs.reshape(imgs.shape[0], -1)
+
+    # vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
+    # prinComps = np.dot(
+    #     vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
+    # )
+
+    # imgs = np.dot(x_flat, prinComps).reshape(imgs.shape)
+
+    # np.save("../outputs/masterOutput/imagenetSubsetSmall.npy", imgs)
+    # np.save("../outputs/masterOutput/imagenetSubsetLabels.npy", labels)
+    # imgs
+>>>>>>> 503f65499fb46a0ce0991943e69c4d4bf6fbba05

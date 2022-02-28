@@ -36,7 +36,11 @@ def yield_transforms(
     def batched_call(model, input, batch_size):
         # Get counts
         nImages = input.shape[0]
-        completeBatches = nImages // batch_size
+        completeBatches = (
+            nImages // batch_size
+            if batch_size < input.shape[0]
+            else input.shape[0]
+        )
         finalBatchSize = nImages % batch_size
 
         # Loop through batches
@@ -420,6 +424,8 @@ if __name__ == "__main__":
     # Add analysis group
     if args.group is not None:
         basePath += args.group + "/"
+        if not os.path.exists(basePath):
+            os.mkdir(basePath)
 
     if args.analysis in ["translate", "zoom", "reflect", "color", "noise"]:
         for layer in args.layer_index:
