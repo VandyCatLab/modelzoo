@@ -520,6 +520,10 @@ def get_funcs(method="all"):
             do_linearCKANumba,
         ]
         analysisNames = ["svcca", "cka"]
+    elif method == "good":
+        preprocFuns = [preprocess_eucRsaNumba, preprocess_ckaNumba]
+        simFuns = [do_rsaNumba, do_linearCKANumba]
+        analysisNames = ["eucRsa", "cka"]
 
     return preprocFuns, simFuns, analysisNames
 
