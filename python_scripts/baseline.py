@@ -424,6 +424,8 @@ if __name__ == "__main__":
     # Add analysis group
     if args.group is not None:
         basePath += args.group + "/"
+        if not os.path.exists(basePath):
+            os.mkdir(basePath)
 
     if args.analysis in ["translate", "zoom", "reflect", "color", "noise"]:
         for layer in args.layer_index:
