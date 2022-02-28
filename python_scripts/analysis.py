@@ -480,7 +480,7 @@ def get_model_from_args(args, return_model=True):
 
 
 def get_funcs(method="all"):
-    assert method in ["all", "rsa", "cs"], "Invalid similarity functions"
+    assert method in ["all", "rsa", "cs", 'good'], "Invalid similarity functions"
 
     if method == "all":
         preprocFuns = [

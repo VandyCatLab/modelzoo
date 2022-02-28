@@ -389,6 +389,13 @@ if __name__ == "__main__":
         help="number of augmentation versions",
         default=None,
     )
+    parser.add_argument(
+        "--sim_funs",
+        type=str,
+        default="all",
+        help="which similarity functions to use",
+        choices=["all", "rsa", "cs", "good"],
+    )
     args = parser.parse_args()
 
     # Load model
@@ -403,21 +410,7 @@ if __name__ == "__main__":
     print(f"dataset shape: {dataset.shape}", flush=True)
 
     # Prep analysis functions
-    preprocFuns = [
-        analysis.preprocess_peaRsaNumba,
-        analysis.preprocess_eucRsaNumba,
-        analysis.preprocess_speRsaNumba,
-        analysis.preprocess_svcca,
-        analysis.preprocess_ckaNumba,
-    ]
-    simFuns = [
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_rsaNumba,
-        analysis.do_svcca,
-        analysis.do_linearCKANumba,
-    ]
-    analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+    preprocFuns, simFuns, analysisNames = analysis.get_funcs(args.sim_funs)
 
     basePath = "../outputs/masterOutput/baseline/"
 
