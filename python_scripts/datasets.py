@@ -7,6 +7,8 @@ from tensorflow.keras.datasets import cifar10
 import tensorflow_datasets as tfds
 import PIL
 import random
+import pandas as pd
+import shutil
 
 
 # Get training information
@@ -236,46 +238,7 @@ def create_cinic10_set(
     Return a part of CINIC10 dataset for testing. Each class will have the
     number of examples, global contrast normalized,
     """
-    # Prepare statistics
-    cats = os.listdir("/data/CINIC10/train")
-
-    # Loop through each category
-    images = np.empty((0, 32, 32, 3))
-    for cat in cats:
-        catImgs = os.listdir("/data/CINIC10/train/" + cat)
-        # Shuffle image list
-        random.shuffle(catImgs)
-
-        # Loop through each images in category
-        for imgName in catImgs[0:100]:
-            # Load image
-            img = PIL.Image.open("/data/CINIC10/train/" + cat + "/" + imgName)
-
-            # If image is grayscale, convert to RGB
-            if len(img.getbands()) == 1:
-                img = img.convert("RGB")
-
-            # Convert to numpy array
-            img = np.array(img)
-
-            # Add batch dimension
-            img = np.expand_dims(img, axis=0)
-            # Concatenate to images
-            images = np.concatenate((images, img))
-
-    # Calculate dataset statistics
-    imgMean = np.mean(images)
-    imgStd = np.std(images)
-
-    # ZCA whitening
-    images = (images - imgMean) / imgStd
-    imgFlat = images.reshape(images.shape[0], -1)
-    vec, val, _ = np.linalg.svd(np.cov(imgFlat, rowvar=False))
-    prinComps = np.dot(
-        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
-    )
-
-    # Work on our dataset
+    # Get categories
     cats = os.listdir(dataPath)
 
     # Loop through each category
@@ -298,24 +261,18 @@ def create_cinic10_set(
             # Convert to numpy array
             img = np.array(img)
 
+            # Resize images
+            img = tf.keras.preprocessing.image.smart_resize(img, (32, 32))
+
             # Add batch dimension
             img = np.expand_dims(img, axis=0)
             # Concatenate to images
             images = np.concatenate((images, img))
             labels = np.append(labels, i)
 
-    # # Apply global contrast normalization
-    # images = (images - imgMean) / imgStd
-
-    # # Apply ZCA whitening
-    # imagesFlat = images.reshape(images.shape[0], -1)
-    # images = np.dot(imagesFlat, prinComps).reshape(images.shape)
-    # # Cast to dtype
-    # images = tf.cast(images, dtype)
     images = preprocess(images)
 
     # Convert to numpy arrays
-    # images = np.array(images)
     labels = np.array(labels)
     return images, labels
 
@@ -363,6 +320,49 @@ def create_imagenet_subset(
     return outImgs
 
 
+def collect_big_cifar10(output_dir):
+    """
+    Collect the original images of CIFAR10 from Imagenet21k using the CINIC10
+    test mapping.
+    """
+    # load CINIC10 mapping
+    cinicMapping = pd.read_csv(
+        "https://raw.githubusercontent.com/BayesWatch/cinic-10/master/imagenet-contributors.csv"
+    )
+
+    # Strip whitespace in mapping column names
+    cinicMapping.columns = [c.strip() for c in cinicMapping.columns]
+
+    # Strip whitespace in mapping content
+    cinicMapping = cinicMapping.applymap(
+        lambda x: x.strip() if isinstance(x, str) else x
+    )
+
+    # Only keep the test set
+    cinicMapping = cinicMapping[cinicMapping["cinic_set"] == "test"]
+
+    # Load synsets from ImageNet21k
+    synsets = os.listdir("/data/imagenet21k/")
+
+    # Loop through each image in cinic and look for it in synsets
+    for i, row in cinicMapping.iterrows():
+        # Check if the synset exists
+        if row["synset"] not in synsets:
+            print(f'Missing synset "{row["synset"]}"')
+
+        # Check if the image exists
+        imagePath = f"/data/imagenet21k/{row['synset']}/{row['synset']}_{row['image_num']}.JPEG"
+        if not os.path.exists(imagePath):
+            print(f'Missing image "{row["synset"]}_{row["image_num"]}.JPEG"')
+
+        # Create directory if it doesn't exist for the class
+        if not os.path.exists(output_dir + "/" + row["class"]):
+            os.makedirs(output_dir + "/" + row["class"])
+
+        # Copy image to directory
+        shutil.copy(imagePath, output_dir + "/" + row["class"])
+
+
 if __name__ == "__main__":
     # Check if dataset is deterministic
     # dataset = np.load("../outputs/masterOutput/dataset.npy")
@@ -381,13 +381,13 @@ if __name__ == "__main__":
     # print(results)
 
     # Test imagenet
-    preprocFun = preproc(
-        shape=(32, 32, 3),
-        dtype=tf.float32,
-        # scale=1.0 / 255,
-        # offset=0,
-        labels=False,
-    )
+    # preprocFun = preproc(
+    #     shape=(32, 32, 3),
+    #     dtype=tf.float32,
+    #     # scale=1.0 / 255,
+    #     # offset=0,
+    #     labels=False,
+    # )
     # data = get_imagenet_set(preprocFun, 256)
 
     # random.seed(2021)
@@ -395,35 +395,41 @@ if __name__ == "__main__":
     # np.save("../outputs/masterOutput/cinicData.npy", dataset)
     # np.save("../outputs/masterOutput/cinicLabels.npy", labels)
 
-    out = create_imagenet_subset(
-        "/data/tensorflow_datasets", preprocFun=preprocFun
-    )
-    out
+    # out = create_imagenet_subset(
+    #     "/data/tensorflow_datasets", preprocFun=preprocFun
+    # )
+    # out
 
-    # Combine all images into array
-    imgs = []
-    labels = []
-    for key, value in out.items():
-        imgs.extend(value)
-        labels.append(key)
+    # # Combine all images into array
+    # imgs = []
+    # labels = []
+    # for key, value in out.items():
+    #     imgs.extend(value)
+    #     labels.append(key)
 
-    # Convert to array
-    imgs = np.array(imgs)
-    labels = np.array(labels)
+    # # Convert to array
+    # imgs = np.array(imgs)
+    # labels = np.array(labels)
 
-    # Apply global contrast normalization
-    imgs = (imgs - mean) / sd
-    print("ZCA...")
-    # Do ZCA whitening
-    x_flat = imgs.reshape(imgs.shape[0], -1)
+    # # Apply global contrast normalization
+    # imgs = (imgs - mean) / sd
+    # print("ZCA...")
+    # # Do ZCA whitening
+    # x_flat = imgs.reshape(imgs.shape[0], -1)
 
-    vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
-    prinComps = np.dot(
-        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
-    )
+    # vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
+    # prinComps = np.dot(
+    #     vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
+    # )
 
-    imgs = np.dot(x_flat, prinComps).reshape(imgs.shape)
+    # imgs = np.dot(x_flat, prinComps).reshape(imgs.shape)
 
-    np.save("../outputs/masterOutput/imagenetSubsetSmall.npy", imgs)
-    np.save("../outputs/masterOutput/imagenetSubsetLabels.npy", labels)
-    imgs
+    # np.save("../outputs/masterOutput/imagenetSubsetSmall.npy", imgs)
+    # np.save("../outputs/masterOutput/imagenetSubsetLabels.npy", labels)
+    # imgs
+
+    # collect_big_cifar10("/data/CINIC10Original")
+    random.seed(2021)
+    img, labels = create_cinic10_set("/data/CINIC10Original", examples=100)
+    np.save("../outputs/masterOutput/cinicData.npy", img)
+    np.save("../outputs/masterOutput/cinicLabels.npy", labels)
