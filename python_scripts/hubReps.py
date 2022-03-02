@@ -121,6 +121,16 @@ if __name__ == "__main__":
         type=str,
         help="name of the dataset to use",
     )
+    parser.add_argument(
+        "--group", "-g", type=str, help="analysis group to store together"
+    )
+    parser.add_argument(
+        "--simSet",
+        type=str,
+        default="all",
+        choices=["all", "rsa", "cs", "good"],
+        help="which set of similarity functions to use",
+    )
     args = parser.parse_args()
 
     with open(args.models_file, "r") as f:
@@ -187,13 +197,22 @@ if __name__ == "__main__":
             flush=True,
         )
 
+        # Add analysis group
+        basePath = "../outputs/masterOutput/hubReps/hubSims/"
+        if args.group is not None:
+            basePath += args.group + "/"
+        if not os.path.exists(basePath):
+            os.mkdir(basePath)
         # Check if similarity file already exists
-        fileName = f"../outputs/masterOutput/hubReps/hubSims/{modelName.replace('/', '-')}.csv"
+        fileName = f"{basePath}{modelName.replace('/', '-')}.csv"
         if os.path.exists(fileName):
             print(f"Already completed, skipping.")
         else:
             # Load representations
-            modelRepsName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
+            if args.rep_name is not None:
+                modelRepsName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
+            else:
+                modelRepsName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
             reps = np.load(modelRepsName)
 
             # If representations is not flat, average pool it
@@ -201,7 +220,10 @@ if __name__ == "__main__":
                 reps = np.mean(reps, axis=(1, 2))
 
             # Check if there's too many features
-            if reps.shape[-1] > args.feature_limit:
+            if (
+                args.feature_limit is not None
+                and reps.shape[-1] > args.feature_limit
+            ):
                 # Raise an error
                 raise ValueError(
                     f"The number of features is too high: {reps.shape[0]}. [{datetime.datetime.now()}]"
@@ -217,21 +239,9 @@ if __name__ == "__main__":
             ]
 
             # Similarity functions
-            preprocFuns = [
-                analysis.preprocess_peaRsaNumba,
-                analysis.preprocess_eucRsaNumba,
-                analysis.preprocess_speRsaNumba,
-                analysis.preprocess_svcca,
-                analysis.preprocess_ckaNumba,
-            ]
-            simFuns = [
-                analysis.do_rsaNumba,
-                analysis.do_rsaNumba,
-                analysis.do_rsaNumba,
-                analysis.do_svcca,
-                analysis.do_linearCKANumba,
-            ]
-            analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+            preprocFuns, simFuns, analysisNames = analysis.get_funcs(
+                args.simSet
+            )
 
             # Create dataframe to store results
             simDf = pd.DataFrame(columns=["model1", "model2"] + analysisNames)
