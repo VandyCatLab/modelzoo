@@ -254,7 +254,10 @@ if __name__ == "__main__":
                 )
 
                 # Load hub model representations
-                pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-Reps.npy"
+                if args.rep_name is not None:
+                    pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-{args.rep_name}Reps.npy"
+                else:
+                    pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-Reps.npy"
                 pairReps = np.load(pairModelRepsName)
 
                 # If representations is not flat, average pool it
