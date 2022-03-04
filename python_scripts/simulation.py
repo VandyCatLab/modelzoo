@@ -478,12 +478,6 @@ if __name__ == "__main__":
         help="path to output file, if not specified will use default",
     )
     parser.add_argument(
-        "--dataset",
-        type=str,
-        default=None,
-        help="path to dataset to generate representations",
-    )
-    parser.add_argument(
         "--simSet",
         type=str,
         default="all",
