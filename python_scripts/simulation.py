@@ -6,23 +6,20 @@ import os
 
 
 def permuteTest(
+    model,
+    dataset,
     nImgs=None,
     outputPath=None,
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
     outputIdx=-2,
+    nPermutes=1000,
 ):
-    modelPath = "../outputs/masterOutput/models/w0s0.pb"
-    print("Loading model")
-    model = tf.keras.models.load_model(modelPath)
-
-    # load dataset
-    imgset = np.load("../outputs/masterOutput/dataset.npy")
 
     # Subset dataset
     if nImgs is not None:
-        imgset = imgset[:nImgs]
+        dataset = dataset[:nImgs]
 
     # Set model to output reps at layer
     inp = model.input
@@ -32,10 +29,9 @@ def permuteTest(
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
 
     # Get reps for originals and flatten
-    rep_orig = tmpModel.predict(imgset)
+    rep_orig = tmpModel.predict(dataset)
     repShape = rep_orig.shape
     rep_flat = rep_orig.flatten()
-    repMean = np.mean(rep_flat)
     repSD = np.std(rep_flat)
 
     if outputPath is None:
@@ -48,7 +44,6 @@ def permuteTest(
         permuteData = pd.read_csv(permutePath)
     else:
         colNames = analysisNames + ["analysis"]
-        nPermutes = 1000
 
         permuteData = pd.DataFrame(columns=colNames)
 
@@ -379,23 +374,19 @@ def parametricNoise(
 
 
 def sanity_check(
+    model,
+    dataset,
     nImgs=None,
     outputPath=None,
     preprocFuns=None,
     simFuns=None,
     analysisNames=None,
     outputIdx=-2,
+    nPermutes=1000,
 ):
-    modelPath = "../outputs/masterOutput/models/w0s0.pb"
-    print("Loading model")
-    model = tf.keras.models.load_model(modelPath)
-
-    # load dataset
-    imgset = np.load("../outputs/masterOutput/dataset.npy")
-
     # Subset dataset
     if nImgs is not None:
-        imgset = imgset[:nImgs]
+        dataset = dataset[:nImgs]
 
     # Set model to output reps at layer
     inp = model.input
@@ -405,12 +396,11 @@ def sanity_check(
     tmpModel = tf.keras.Model(inputs=inp, outputs=out)
 
     # Get reps for originals and flatten
-    rep_orig = tmpModel.predict(imgset)
+    rep_orig = tmpModel.predict(dataset)
     repShape = rep_orig.shape
     rep_flat = rep_orig.flatten()
 
     colNames = analysisNames
-    nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames, index=range(nPermutes))
 
@@ -460,6 +450,22 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument(
+        "--model",
+        "-m",
+        type=str,
+        help="model to use for representations",
+        choices=["allcnnc", "mobilenet"],
+        default="allcnnc",
+    )
+    parser.add_argument(
+        "--dataset",
+        "-d",
+        type=str,
+        help="dataset to use",
+        choices=["cifar10", "imagenet"],
+        default="cifar10",
+    )
+    parser.add_argument(
         "--nImgs",
         type=int,
         default=None,
@@ -472,16 +478,16 @@ if __name__ == "__main__":
         help="path to output file, if not specified will use default",
     )
     parser.add_argument(
-        "--imgset",
+        "--dataset",
         type=str,
         default=None,
-        help="path to representations to use",
+        help="path to dataset to generate representations",
     )
     parser.add_argument(
         "--simSet",
         type=str,
         default="all",
-        choices=["all", "rsa", "cs", 'good'],
+        choices=["all", "rsa", "cs", "good"],
         help="which set of similarity functions to use",
     )
     parser.add_argument(
@@ -508,7 +514,23 @@ if __name__ == "__main__":
             outputIdx=args.outputIdx,
         )
     elif args.analysis == "simulations":
+        if args.dataset == "cifar10":
+            dataset = np.load("../outputs/masterOutput/dataset.npy")
+        elif args.dataset == "imagenet":
+            dataset = np.load("../outputs/masterOutput/bigDataset.npy")
+
+        if args.model == "allcnnc":
+            modelPath = "../outputs/masterOutput/models/w0s0.pb"
+            model = tf.keras.models.load_model(modelPath)
+        elif args.model == "mobilenet":
+            model = tf.keras.applications.MobileNetV3Small(
+                input_shape=(224, 224, 3)
+            )
+            model.compile(metrics=["top_k_categorical_accuracy"])
+
         permuteTest(
+            dataset=dataset,
+            model=model,
             nImgs=args.nImgs,
             outputPath=args.outputPath,
             preprocFuns=preprocFuns,
@@ -517,7 +539,23 @@ if __name__ == "__main__":
             outputIdx=args.outputIdx,
         )
     elif args.analysis == "sanity":
+        if args.dataset == "cifar10":
+            dataset = np.load("../outputs/masterOutput/dataset.npy")
+        elif args.dataset == "imagenet":
+            dataset = np.load("../outputs/masterOutput/bigDataset.npy")
+
+        if args.model == "allcnnc":
+            modelPath = "../outputs/masterOutput/models/w0s0.pb"
+            model = tf.keras.models.load_model(modelPath)
+        elif args.model == "mobilenet":
+            model = tf.keras.applications.MobileNetV3Small(
+                input_shape=(224, 224, 3)
+            )
+            model.compile(metrics=["top_k_categorical_accuracy"])
+
         sanity_check(
+            model=model,
+            dataset=dataset,
             nImgs=args.nImgs,
             outputPath=args.outputPath,
             preprocFuns=preprocFuns,
