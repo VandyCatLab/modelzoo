@@ -17,7 +17,15 @@ mean = np.mean(x_trainRaw)
 sd = np.std(x_trainRaw)
 
 
-def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
+def make_train_data(
+    shuffle_seed=None,
+    set_seed=False,
+    augment=False,
+    data_seed=None,
+    item_max=3,
+    cat_max=3,
+    cat_weighting=False,
+):
     """
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
     """
@@ -33,6 +41,7 @@ def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
 
     print("Making train data...")
     print("GCN...")
+    y_train = np.copy(y_trainRaw)
     # Apply global contrast normalization
     x_train = (x_trainRaw - mean) / sd
     x_test = (x_testRaw - mean) / sd
@@ -49,8 +58,39 @@ def make_train_data(shuffle_seed=None, set_seed=False, augment=False):
     testFlat = x_test.reshape(x_test.shape[0], -1)
     x_test = np.dot(testFlat, prinComps).reshape(x_test.shape)
 
+    if data_seed is not None:
+        np.random.seed(data_seed)
+        weights = np.random.randint(1, item_max + 1, x_train.shape[0])
+
+        if cat_weighting:
+            catWeight = np.random.randint(
+                1, cat_max + 1, len(np.unique(y_train))
+            )
+            catWeight = catWeight / np.sum(catWeight)
+
+            # Generate category counts with category weight
+            catCounts = np.zeros(len(np.unique(y_train)))
+            for i in range(len(np.unique(y_train))):
+                catCounts[i] = catWeight[i] * x_train.shape[0]
+
+        else:
+            catCounts = np.array(
+                [int(y_train.shape[0] / np.unique(y_train))]
+                * np.unique(y_train)
+            )
+
+        # Loop through each category and sample images
+        for i in range(np.max(y_trainRaw) + 1):
+            indices = np.where(y_trainRaw == i)[0]
+            indWeight = weights[indices] / np.sum(weights[indices])
+            newIndices = np.random.choice(
+                indices, size=catCounts[i], p=indWeight
+            )
+            x_train[indices] = np.copy(x_train[newIndices])
+            y_train[indices] = i
+
     # Convert to one hot vector
-    y_train = tf.keras.utils.to_categorical(y_trainRaw, 10)
+    y_train = tf.keras.utils.to_categorical(y_train, 10)
     y_test = tf.keras.utils.to_categorical(y_testRaw, 10)
 
     trainData = tf.data.Dataset.from_tensor_slices((x_train, y_train))

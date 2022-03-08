@@ -162,7 +162,7 @@ def init_all_cnn_c(seed: int):
 
 def krieg_all_cnn_c(seed: int):
     """
-    Implement the Kriegeskorte version of All_CNN_C, differences from the 
+    Implement the Kriegeskorte version of All_CNN_C, differences from the
     perfect implementation from the original paper commented out.
     """
 
@@ -373,6 +373,18 @@ if __name__ == "__main__":
         description="Trains a single CNN, hopefully to completion."
     )
     parser.add_argument(
+        "--train_differences",
+        "-t",
+        type=str,
+        choices=["seed", "item", "category"],
+        help="type of training difference to use",
+    )
+    parser.add_argument(
+        "--data_seed",
+        type=int,
+        help="seed to instantiate item- and category-level differences",
+    )
+    parser.add_argument(
         "--shuffle_seed",
         "-s",
         type=int,
@@ -393,30 +405,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    if args.model_index is not None:
-        print(f"Using model index: {args.model_index}")
-        # Create list
-        nums = np.arange(0, 10)
-        weights, shuffles = np.meshgrid(nums, nums)
-
-        weights = np.expand_dims(weights.flatten(), 1)
-        shuffles = np.expand_dims(shuffles.flatten(), 1)
-
-        modelSeeds = np.concatenate((weights, shuffles), 1)
-
-        weightSeed, shuffleSeed = modelSeeds[args.model_index, :]
-    elif args.shuffle_seed is not None and args.weight_seed is not None:
-        print(
-            f"Using shuffle seed: {args.shuffle_seed} and weight seed: {args.weight_seed}"
-        )
-        weightSeed = args.weight_seed
-        shuffleSeed = args.shuffle_seed
-
-    else:
-        raise ValueError(
-            "Missing either both shuffle and weight seed or a model index."
-        )
-
     # Make GPU training deterministic
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
     os.environ["TF_DETERMINISTIC_OPS"] = "1"
@@ -427,42 +415,144 @@ if __name__ == "__main__":
     tf.random.set_seed(0)
     random.seed(0)
 
-    # Prepare data
-    trainData, testData = datasets.make_train_data(
-        shuffle_seed=shuffleSeed, augment=True
-    )
-    x_predict, y_predict = datasets.make_predict_data(testData)
+    if args.train_differences == "seed":
+        if args.model_index is not None:
+            print(f"Using model index: {args.model_index}")
+            # Create list
+            nums = np.arange(0, 10)
+            weights, shuffles = np.meshgrid(nums, nums)
 
-    # Create model
-    model = krieg_all_cnn_c(seed=weightSeed)
+            weights = np.expand_dims(weights.flatten(), 1)
+            shuffles = np.expand_dims(shuffles.flatten(), 1)
 
-    # Set flag to true if converges to local min
-    abort = False
-    history = model.fit(
-        trainData,
-        epochs=350,
-        verbose=2,
-        validation_data=testData.prefetch(tf.data.experimental.AUTOTUNE).batch(
-            128
-        ),
-        callbacks=[LR_Callback, Trajectory_Callback()],
-    )
+            modelSeeds = np.concatenate((weights, shuffles), 1)
 
-    if not abort:
-        print(
-            f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
+            weightSeed, shuffleSeed = modelSeeds[args.model_index, :]
+        elif args.shuffle_seed is not None and args.weight_seed is not None:
+            print(
+                f"Using shuffle seed: {args.shuffle_seed} and weight seed: {args.weight_seed}"
+            )
+            weightSeed = args.weight_seed
+            shuffleSeed = args.shuffle_seed
+
+        else:
+            raise ValueError(
+                "Missing either both shuffle and weight seed or a model index."
+            )
+
+        # Prepare data
+        trainData, testData = datasets.make_train_data(
+            shuffle_seed=shuffleSeed, augment=True
         )
-        save_model(
-            model,
-            "../outputs/masterOutput/models/w"
-            + str(weightSeed)
-            + "s"
-            + str(shuffleSeed)
-            + ".pb",
+        x_predict, y_predict = datasets.make_predict_data(testData)
+
+        # Create model
+        model = krieg_all_cnn_c(seed=weightSeed)
+
+        # Set flag to true if converges to local min
+        abort = False
+        history = model.fit(
+            trainData,
+            epochs=350,
+            verbose=2,
+            validation_data=testData.prefetch(
+                tf.data.experimental.AUTOTUNE
+            ).batch(128),
+            callbacks=[LR_Callback, Trajectory_Callback()],
         )
+
+        if not abort:
+            print(
+                f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
+            )
+            save_model(
+                model,
+                "../outputs/masterOutput/models/w"
+                + str(weightSeed)
+                + "s"
+                + str(shuffleSeed)
+                + ".pb",
+            )
+        else:
+            print(
+                f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
+            )
+            exit(1)
+    elif args.train_differences == "item":
+        print("Training on item differences")
+        trainData, testData = datasets.make_train_data(
+            shuffle_seed=2022, augment=True, data_seed=args.data_seed
+        )
+
+        # Create model
+        model = krieg_all_cnn_c(seed=2022)
+
+        # Set flag to true if converges to local min
+        abort = False
+        history = model.fit(
+            trainData,
+            epochs=350,
+            verbose=2,
+            validation_data=testData.prefetch(
+                tf.data.experimental.AUTOTUNE
+            ).batch(128),
+            callbacks=[LR_Callback, Trajectory_Callback()],
+        )
+
+        if not abort:
+            print(
+                f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
+            )
+            save_model(
+                model,
+                "../outputs/masterOutput/models/itemDiff/model"
+                + str(args.data_seed)
+                + ".pb",
+            )
+        else:
+            print(
+                f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
+            )
+            exit(1)
+    elif args.train_differences == "category":
+        print("Training on category differences")
+        trainData, testData = datasets.make_train_data(
+            shuffle_seed=2022,
+            augment=True,
+            data_seed=args.data_seed,
+            cat_weighting=True,
+        )
+
+        # Create model
+        model = krieg_all_cnn_c(seed=2022)
+
+        # Set flag to true if converges to local min
+        abort = False
+        history = model.fit(
+            trainData,
+            epochs=350,
+            verbose=2,
+            validation_data=testData.prefetch(
+                tf.data.experimental.AUTOTUNE
+            ).batch(128),
+            callbacks=[LR_Callback, Trajectory_Callback()],
+        )
+
+        if not abort:
+            print(
+                f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
+            )
+            save_model(
+                model,
+                "../outputs/masterOutput/models/catDiff/model"
+                + str(args.data_seed)
+                + ".pb",
+            )
+        else:
+            print(
+                f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
+            )
+            exit(1)
+
     else:
-        print(
-            f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
-        )
-        exit(1)
-
+        print("No training difference argument given, treating as main")
