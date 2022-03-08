@@ -380,11 +380,6 @@ if __name__ == "__main__":
         help="type of training difference to use",
     )
     parser.add_argument(
-        "--data_seed",
-        type=int,
-        help="seed to instantiate item- and category-level differences",
-    )
-    parser.add_argument(
         "--shuffle_seed",
         "-s",
         type=int,
@@ -400,8 +395,7 @@ if __name__ == "__main__":
         "--model_index",
         "-i",
         type=int,
-        choices=range(100),
-        help="model parameter index given a 10x10 table of shuffle and weight seeds between 0 and 9",
+        help="model parameter index that dictate either the shuffle and weight seeds or the data seed",
     )
     args = parser.parse_args()
 
@@ -481,7 +475,7 @@ if __name__ == "__main__":
     elif args.train_differences == "item":
         print("Training on item differences")
         trainData, testData = datasets.make_train_data(
-            shuffle_seed=2022, augment=True, data_seed=args.data_seed
+            shuffle_seed=2022, augment=True, data_seed=args.model_index
         )
 
         # Create model
@@ -506,7 +500,7 @@ if __name__ == "__main__":
             save_model(
                 model,
                 "../outputs/masterOutput/models/itemDiff/model"
-                + str(args.data_seed)
+                + str(args.model_index)
                 + ".pb",
             )
         else:
@@ -519,7 +513,7 @@ if __name__ == "__main__":
         trainData, testData = datasets.make_train_data(
             shuffle_seed=2022,
             augment=True,
-            data_seed=args.data_seed,
+            data_seed=args.model_index,
             cat_weighting=True,
         )
 
@@ -545,7 +539,7 @@ if __name__ == "__main__":
             save_model(
                 model,
                 "../outputs/masterOutput/models/catDiff/model"
-                + str(args.data_seed)
+                + str(args.model_index)
                 + ".pb",
             )
         else:
