@@ -75,8 +75,8 @@ def make_train_data(
 
         else:
             catCounts = np.array(
-                [int(y_train.shape[0] / np.unique(y_train))]
-                * np.unique(y_train)
+                [int(y_train.shape[0] / len(np.unique(y_train)))]
+                * len(np.unique(y_train))
             )
 
         # Loop through each category and sample images
