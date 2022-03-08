@@ -166,7 +166,7 @@ def make_predict_data(x, y, dtype=None):
         cur_count = counts[index]
         if cur_count != 100:
             x_predict[100 * index + cur_count] = img
-            y_predict[100 * index + cur_count] = label.numpy()
+            y_predict[100 * index + cur_count] = label
             counts[index] += 1
         # Finish once all 10 categories are full
         if all(count == 100 for count in counts):
