@@ -369,7 +369,12 @@ class Trajectory_Callback(Callback):
             acts = self.get_acts(self.model, layer_arr, self.predictData)
 
             np.save(
-                self.actDir + "/" + self.modelName + ".npy",
+                self.actDir
+                + "/"
+                + self.modelName
+                + "e"
+                + str(int(epoch) + 1)
+                + ".npy",
                 acts,
             )
             print("\n")
