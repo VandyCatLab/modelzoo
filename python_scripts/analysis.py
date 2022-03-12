@@ -632,6 +632,52 @@ def get_reps_from_all(modelDir, dataset, outputDir=None):
                 np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
 
 
+def get_unstruct_model_sims(repDir, layers, preprocFuns, simFuns, simNames):
+    """
+    Return pairwise similarity from all model representations in repDir for the
+    given layers using preprocFuns and simFuns.
+    """
+    # Get list of models
+    models = os.listdir(repDir)
+
+    # Get combinations
+    combos = itertools.combinations(models)
+
+    # Create dataframe for model similarities
+    sims = pd.DataFrame(columns=["model1", "model2"] + simNames)
+
+    # Loop through layers and combinations
+    for layer in layers:
+        for combo in combos:
+            # Get reps
+            rep1 = np.load(
+                os.path.join(repDir, combo[0], combo[0] + "l" + layer + ".npy")
+            )
+            rep2 = np.load(
+                os.path.join(repDir, combo[1], combo[1] + "l" + layer + ".npy")
+            )
+
+            # Get similarities
+            simDict = multi_analysis(
+                rep1, rep2, preprocFuns, simFuns, names=simNames, verbose=False
+            )
+
+            # Add to dataframe
+            sims = sims.append(
+                pd.DataFrame.from_dict(simDict, orient="index").T,
+                ignore_index=True,
+            )
+
+        # Save
+        sims.to_csv(
+            "../outputs/masterOutput/similarities/itemDiff_layer"
+            + layer
+            + ".csv"
+        )
+
+    return sims
+
+
 def get_seed_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
     """
     Return similarity matrix across all models in repDir and from a specific
@@ -686,7 +732,7 @@ if __name__ == "__main__":
         "-a",
         type=str,
         help="type of analysis to run",
-        choices=["correspondence", "getReps", "modelSimMat"],
+        choices=["correspondence", "getReps", "seedSimMat", "itemSimMat"],
     )
     parser.add_argument(
         "--model_index",
@@ -819,9 +865,9 @@ if __name__ == "__main__":
 
         # Run it!
         get_reps_from_all(args.models_dir, dataset)
-    elif args.analysis == "modelSimMat":
+    elif args.analysis == "seedSimMat":
         print("Creating model similarity matrix.", flush=True)
-        preprocFun, simFun = get_funcs(args.sim_fun)
+        preprocFun, simFun, simNames = get_funcs(args.sim_fun)
 
         for layer in args.layer_index:
             print(f"Working on layer {layer} with {simFun.__name__}")
@@ -833,6 +879,16 @@ if __name__ == "__main__":
                 f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun.__name__}.npy",
                 simMat,
             )
+    elif args.analysis == "itemSimMat":
+        print(
+            "Creating model similarity matrix for item weighting differences.",
+            flush=True,
+        )
+        preprocFun, simFun, simNames = get_funcs(args.sim_fun)
+
+        get_unstruct_model_sims(
+            args.reps_dir, args.layer_index, preprocFun, simFun, simNames
+        )
     else:
         import analysisOld as old
 
