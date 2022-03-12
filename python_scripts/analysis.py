@@ -480,7 +480,12 @@ def get_model_from_args(args, return_model=True):
 
 
 def get_funcs(method="all"):
-    assert method in ["all", "rsa", "cs", 'good'], "Invalid similarity functions"
+    assert method in [
+        "all",
+        "rsa",
+        "cs",
+        "good",
+    ], "Invalid similarity functions"
 
     if method == "all":
         preprocFuns = [
@@ -588,7 +593,7 @@ def multi_analysis(
     return simDict
 
 
-def get_reps_from_all(modelDir, dataset):
+def get_reps_from_all(modelDir, dataset, outputDir=None):
     """
     Save representations for each model at every layer in modelDir by passing
     dataset through it.
@@ -604,7 +609,10 @@ def get_reps_from_all(modelDir, dataset):
         outModel = make_allout_model(load_model(modelPath))
 
         # Check if representation folder exists, make if not
-        repDir = f"../outputs/masterOutput/representations/{model[0:-3]}"
+        if outputDir is None:
+            repDir = f"../outputs/masterOutput/representations/{model[0:-3]}"
+        else:
+            repDir = os.path.join(outputDir, model[0:-3])
         if not os.path.exists(repDir):
             os.mkdir(repDir)
 
@@ -624,7 +632,7 @@ def get_reps_from_all(modelDir, dataset):
                 np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
 
 
-def get_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
+def get_seed_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
     """
     Return similarity matrix across all models in repDir and from a specific
     layer index using preprocFun and simFun. Representations should be in their
@@ -817,7 +825,7 @@ if __name__ == "__main__":
 
         for layer in args.layer_index:
             print(f"Working on layer {layer} with {simFun.__name__}")
-            simMat = get_model_sims(
+            simMat = get_seed_model_sims(
                 args.model_seeds, args.reps_dir, layer, preprocFun, simFun
             )
 
