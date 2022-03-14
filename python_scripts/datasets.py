@@ -59,10 +59,14 @@ def make_train_data(
     x_test = np.dot(testFlat, prinComps).reshape(x_test.shape)
 
     if data_seed is not None:
+        print(
+            f"Generating dataset for item-level differences, max items {item_max}"
+        )
         np.random.seed(data_seed)
         weights = np.random.randint(1, item_max + 1, x_train.shape[0])
 
         if cat_weighting:
+            print(f"Adding category level weighting, max weight {cat_max}")
             catWeight = np.random.randint(
                 1, cat_max + 1, len(np.unique(y_train))
             )
