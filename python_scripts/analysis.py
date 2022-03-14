@@ -638,10 +638,12 @@ def get_unstruct_model_sims(repDir, layers, preprocFuns, simFuns, simNames):
     given layers using preprocFuns and simFuns.
     """
     # Get list of models
-    models = os.listdir(repDir)
+    models = glob.glob(os.path.join(repDir, "model*"))
+    # Strip model directories
+    models = [model.split('/')[-1] for model in models]
 
     # Get combinations
-    combos = itertools.combinations(models)
+    combos = itertools.combinations(models, 2)
 
     # Create dataframe for model similarities
     sims = pd.DataFrame(columns=["model1", "model2"] + simNames)
@@ -663,10 +665,7 @@ def get_unstruct_model_sims(repDir, layers, preprocFuns, simFuns, simNames):
             )
 
             # Add to dataframe
-            sims = sims.append(
-                pd.DataFrame.from_dict(simDict, orient="index").T,
-                ignore_index=True,
-            )
+            sims.loc[len(sims)] = list(combo) + list(simDict.values())
 
         # Save
         sims.to_csv(
@@ -771,10 +770,11 @@ if __name__ == "__main__":
         help="directory for representations",
     )
     parser.add_argument(
-        "--sim_fun",
+        "--simSet",
         type=str,
-        help="function to calculate representation similarity",
-        choices=["RSA", "SVCCA", "PWCCA", "CKA"],
+        default="all",
+        choices=["all", "rsa", "cs", "good"],
+        help="which set of similarity functions to use",
     )
     parser.add_argument(
         "--layer_index",
@@ -782,6 +782,7 @@ if __name__ == "__main__":
         type=_split_comma_str,
         default="layer indices, split by a comma",
     )
+    parser.add_argument("--output_dir", "-o", type=str, default=None)
     args = parser.parse_args()
 
     # Now do analysis
@@ -864,10 +865,10 @@ if __name__ == "__main__":
         print(f"dataset shape: {dataset.shape}", flush=True)
 
         # Run it!
-        get_reps_from_all(args.models_dir, dataset)
+        get_reps_from_all(args.models_dir, dataset, args.output_dir)
     elif args.analysis == "seedSimMat":
         print("Creating model similarity matrix.", flush=True)
-        preprocFun, simFun, simNames = get_funcs(args.sim_fun)
+        preprocFun, simFun, simNames = get_funcs(args.simSet)
 
         for layer in args.layer_index:
             print(f"Working on layer {layer} with {simFun.__name__}")
@@ -884,7 +885,7 @@ if __name__ == "__main__":
             "Creating model similarity matrix for item weighting differences.",
             flush=True,
         )
-        preprocFun, simFun, simNames = get_funcs(args.sim_fun)
+        preprocFun, simFun, simNames = get_funcs(args.simSet)
 
         get_unstruct_model_sims(
             args.reps_dir, args.layer_index, preprocFun, simFun, simNames
