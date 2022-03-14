@@ -71,7 +71,7 @@ def make_train_data(
             # Generate category counts with category weight
             catCounts = np.zeros(len(np.unique(y_train)))
             for i in range(len(np.unique(y_train))):
-                catCounts[i] = catWeight[i] * x_train.shape[0]
+                catCounts[i] = int(catWeight[i] * x_train.shape[0])
 
         else:
             catCounts = np.array(
@@ -80,14 +80,23 @@ def make_train_data(
             )
 
         # Loop through each category and sample images
+        newTrain = np.zeros(
+            (0, x_train.shape[1], x_train.shape[2], x_train.shape[3])
+        )
+        newLabels = np.zeros((0, 1))
         for i in range(np.max(y_trainRaw) + 1):
             indices = np.where(y_trainRaw == i)[0]
             indWeight = weights[indices] / np.sum(weights[indices])
             newIndices = np.random.choice(
-                indices, size=catCounts[i], p=indWeight
+                indices, size=int(catCounts[i]), p=indWeight
             )
-            x_train[indices] = np.copy(x_train[newIndices])
-            y_train[indices] = i
+            newTrain = np.concatenate((newTrain, x_train[newIndices]))
+            newLabels = np.concatenate((newLabels, y_train[newIndices]))
+
+    # Shuffle the new data and assign back
+    shuffleIndices = np.random.permutation(newTrain.shape[0])
+    x_train = newTrain[shuffleIndices]
+    y_train = newLabels[shuffleIndices]
 
     # Convert to one hot vector
     y_train = tf.keras.utils.to_categorical(y_train, 10)
