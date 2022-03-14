@@ -423,6 +423,18 @@ if __name__ == "__main__":
         type=int,
         help="model parameter index that dictate either the shuffle and weight seeds or the data seed",
     )
+    parser.add_argument(
+        "--item_max",
+        type=int,
+        help="maximum number of items to use in training for item differences",
+        default=3,
+    )
+    parser.add_argument(
+        "--category_max",
+        type=int,
+        help="maximum number to use as a weight for category differences",
+        default=None,
+    )
     args = parser.parse_args()
 
     # Make GPU training deterministic
@@ -508,7 +520,10 @@ if __name__ == "__main__":
     elif args.train_differences == "item":
         print("Training on item differences")
         trainData, testData = datasets.make_train_data(
-            shuffle_seed=2022, augment=True, data_seed=args.model_index
+            shuffle_seed=2022,
+            augment=True,
+            data_seed=args.model_index,
+            item_max=args.item_max,
         )
         x_predict = np.array([x for x, _ in testData.as_numpy_iterator()])
         y_predict = np.array([y for _, y in testData.as_numpy_iterator()])
@@ -555,7 +570,9 @@ if __name__ == "__main__":
             shuffle_seed=2022,
             augment=True,
             data_seed=args.model_index,
+            item_max=args.item_max,
             cat_weighting=True,
+            category_max=args.category_max,
         )
         x_predict = np.array([x for x, _ in testData.as_numpy_iterator()])
         y_predict = np.array([y for _, y in testData.as_numpy_iterator()])
