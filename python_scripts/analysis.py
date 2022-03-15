@@ -614,7 +614,7 @@ def get_reps_from_all(modelDir, dataset, outputDir=None):
         else:
             repDir = os.path.join(outputDir, model[0:-3])
         if not os.path.exists(repDir):
-            os.mkdir(repDir)
+            os.makedirs(repDir)
 
         # Check if already done
         layerRepFiles = glob.glob(os.path.join(repDir, model[0:-3] + "l*"))
@@ -640,7 +640,7 @@ def get_unstruct_model_sims(repDir, layers, preprocFuns, simFuns, simNames):
     # Get list of models
     models = glob.glob(os.path.join(repDir, "model*"))
     # Strip model directories
-    models = [model.split('/')[-1] for model in models]
+    models = [model.split("/")[-1] for model in models]
 
     # Get combinations
     combos = itertools.combinations(models, 2)
