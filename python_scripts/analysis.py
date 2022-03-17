@@ -632,7 +632,15 @@ def get_reps_from_all(modelDir, dataset, outputDir=None):
                 np.save(f"{repDir}/{model[0:-3]}l{i}.npy", rep)
 
 
-def get_unstruct_model_sims(repDir, layers, preprocFuns, simFuns, simNames):
+def get_unstruct_model_sims(
+    repDir,
+    layers,
+    preprocFuns,
+    simFuns,
+    simNames,
+    simMatType,
+    outputDir="../outputs/masterOutput/similarities/",
+):
     """
     Return pairwise similarity from all model representations in repDir for the
     given layers using preprocFuns and simFuns.
@@ -668,11 +676,7 @@ def get_unstruct_model_sims(repDir, layers, preprocFuns, simFuns, simNames):
             sims.loc[len(sims)] = list(combo) + list(simDict.values())
 
         # Save
-        sims.to_csv(
-            "../outputs/masterOutput/similarities/itemDiff_layer"
-            + layer
-            + ".csv"
-        )
+        sims.to_csv(os.path.join(outputDir, f"{simMatType}_layer{layer}.csv"))
 
     return sims
 
@@ -780,7 +784,12 @@ if __name__ == "__main__":
         "--layer_index",
         "-l",
         type=_split_comma_str,
-        default="layer indices, split by a comma",
+        help="which layer to use, must be positive here, split by comma",
+    )
+    parser.add_argument(
+        "--simMatType",
+        type=str,
+        help="what to name the output similarity matrix file",
     )
     parser.add_argument("--output_dir", "-o", type=str, default=None)
     args = parser.parse_args()
@@ -888,7 +897,13 @@ if __name__ == "__main__":
         preprocFun, simFun, simNames = get_funcs(args.simSet)
 
         get_unstruct_model_sims(
-            args.reps_dir, args.layer_index, preprocFun, simFun, simNames
+            args.reps_dir,
+            args.layer_index,
+            preprocFun,
+            simFun,
+            simNames,
+            args.simMatType,
+            args.output_dir,
         )
     else:
         import analysisOld as old
