@@ -877,18 +877,25 @@ if __name__ == "__main__":
         get_reps_from_all(args.models_dir, dataset, args.output_dir)
     elif args.analysis == "seedSimMat":
         print("Creating model similarity matrix.", flush=True)
-        preprocFun, simFun, simNames = get_funcs(args.simSet)
+        preprocFuns, simFuns, simNames = get_funcs(args.simSet)
 
         for layer in args.layer_index:
-            print(f"Working on layer {layer} with {simFun.__name__}")
-            simMat = get_seed_model_sims(
-                args.model_seeds, args.reps_dir, layer, preprocFun, simFun
-            )
+            for preprocFun, simFun, simName in zip(
+                preprocFuns, simFuns, simNames
+            ):
+                print(f"Working on layer {layer} with {simFun.__name__}")
+                simMat = get_seed_model_sims(
+                    args.model_seeds,
+                    args.reps_dir,
+                    layer,
+                    preprocFun,
+                    simFun,
+                )
 
-            np.save(
-                f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun.__name__}.npy",
-                simMat,
-            )
+                np.save(
+                    f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun}.npy",
+                    simMat,
+                )
     elif args.analysis == "itemSimMat":
         print(
             "Creating model similarity matrix for item weighting differences.",
