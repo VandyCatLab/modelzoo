@@ -16,7 +16,13 @@ import os
 
 
 def yield_transforms(
-    transform, model, layer_idx, dataset, return_aug=True, versions=None
+    transform,
+    model,
+    layer_idx,
+    dataset,
+    return_aug=True,
+    versions=None,
+    slice=None,
 ):
     """
     Yield transformed representations successfully from the dataset after
@@ -101,6 +107,8 @@ def yield_transforms(
 
         print(f" - Yielding {versions} versions.")
         for v in tf.range(versions):
+            if slice is not None and not slice == v:
+                continue
             print(f"Translating {v} pixels.", flush=True)
 
             # Generate transformed imageset
@@ -154,6 +162,8 @@ def yield_transforms(
 
         print(f" - Yielding {versions} versions.", flush=True)
         for v in range(versions):
+            if slice is not None and not slice == v:
+                continue
             # Add multiple of shift
             alpha = alphas[v]
             print(f"Color shifting alpha: {alpha}.", flush=True)
@@ -190,6 +200,8 @@ def yield_transforms(
 
         print(f" - Yielding {versions} versions.", flush=True)
         for v in range(versions):
+            if slice is not None and not slice == v:
+                continue
             print(f"Zooming {v} pixels.", flush=True)
             # Generate transformed imageset
             with tf.device("/cpu:0"):
@@ -216,6 +228,8 @@ def yield_transforms(
 
         print(f" - Yielding {versions} versions.", flush=True)
         for a in alphas:
+            if slice is not None and not slice == a:
+                continue
             with tf.device("/cpu:0"):
                 noise = tf.zeros(1)
                 noise = tf.random.normal(
@@ -390,6 +404,12 @@ if __name__ == "__main__":
         default=None,
     )
     parser.add_argument(
+        "--version_slice",
+        type=int,
+        help="If set, instead of sweep across versions, only return a single version slice",
+        default=None,
+    )
+    parser.add_argument(
         "--sim_funs",
         type=str,
         default="all",
@@ -431,6 +451,7 @@ if __name__ == "__main__":
                 dataset,
                 return_aug=False,
                 versions=args.versions,
+                slice=args.version_slice,
             )
 
             # Create dataframe
@@ -450,7 +471,8 @@ if __name__ == "__main__":
                 simDf = pd.DataFrame(columns=["version"] + analysisNames)
 
             outPath = os.path.join(
-                basePath, f"{modelName[0:-3]}l{layer}-{args.analysis}.csv"
+                basePath,
+                f"{modelName[0:-3]}l{layer}-{args.analysis}{'-v'+str(args.version_slice) if args.version_slice is not None else ''}.csv",
             )
 
             if not os.path.exists(outPath):
@@ -502,7 +524,12 @@ if __name__ == "__main__":
         for aug in augList:
             # Make transforms, note selecting first layer for efficiency sake
             transforms = yield_transforms(
-                aug, model, 1, dataset, return_aug=True
+                aug,
+                model,
+                1,
+                dataset,
+                return_aug=True,
+                slice=args.version_slice,
             )
 
             # Create dataframe
@@ -533,7 +560,8 @@ if __name__ == "__main__":
 
             # Save
             outPath = os.path.join(
-                basePath, f"{modelName[0:-3]}-acc-{aug}.csv"
+                basePath,
+                f"{modelName[0:-3]}-acc-{aug}{'-v'+str(args.version_slice) if args.version_slice is not None else ''}.csv",
             )
             accDF.to_csv(outPath, index=False)
 
