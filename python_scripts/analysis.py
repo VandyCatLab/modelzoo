@@ -438,7 +438,7 @@ def get_trajectories(directory, file_str="*", file_name=None):
     return out
 
 
-def get_model_from_args(args, return_model=True):
+def get_model_from_args(args, return_model=True, modelType="seed"):
     # Get model
     if hasattr(args, "model_name") and args.model_name == "mobilenet":
         model = tf.keras.applications.MobileNetV3Small(
@@ -448,6 +448,15 @@ def get_model_from_args(args, return_model=True):
         print(f"Model loaded: MobileNetV3Small", flush=True)
         model.summary()
         return model, "mobilenet", "."
+    elif hasattr(args, "model_dir"):
+        # List models in model_dir
+        modelList = glob.glob(os.path.join(args.model_dir, "*.pb"))
+        # Sort model list
+        modelList.sort()
+        # Get mode
+        modelPath = modelList[args.model_index]
+        modelName = modelPath.split("/")[-1].split(".")[0]
+        model = load_model(modelPath)
     elif args.model_index is not None:
         import pandas as pd
 
