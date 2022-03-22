@@ -405,7 +405,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--version_slice",
-        type=int,
+        type=float,
         help="If set, instead of sweep across versions, only return a single version slice",
         default=None,
     )
@@ -587,6 +587,11 @@ if __name__ == "__main__":
 
         data = pd.DataFrame(columns=analysisNames + ["layer", "dropRate"])
         for drop in dropRates:
+            if (
+                args.version_slice is not None
+                and not args.version_slice == drop
+            ):
+                continue
             dropModel = make_dropout_model(model, layerIdx, drop)
             rep1 = dropModel.predict(dataset)
             rep2 = dropModel.predict(dataset)
