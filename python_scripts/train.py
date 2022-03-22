@@ -530,7 +530,7 @@ if __name__ == "__main__":
             augment=True,
             data_seed=args.model_index,
             item_max=args.item_max,
-            cat_max=args.cat_max,
+            cat_max=args.category_max,
         )
         x_predict = np.array([x for x, _ in testData.as_numpy_iterator()])
         y_predict = np.array([y for _, y in testData.as_numpy_iterator()])
@@ -571,6 +571,7 @@ if __name__ == "__main__":
                     "../outputs/masterOutput/models/", args.output_group
                 )
             )
+            os.makedirs(modelDir)
             print(
                 f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
             )
