@@ -402,7 +402,7 @@ if __name__ == "__main__":
         "--train_differences",
         "-t",
         type=str,
-        choices=["seed", "item", "category"],
+        choices=["seed", "data"],
         help="type of training difference to use",
     )
     parser.add_argument(
@@ -427,12 +427,18 @@ if __name__ == "__main__":
         "--item_max",
         type=int,
         help="maximum number of items to use in training for item differences",
-        default=3,
+        default=None,
     )
     parser.add_argument(
         "--category_max",
         type=int,
         help="maximum number to use as a weight for category differences",
+        default=None,
+    )
+    parser.add_argument(
+        "--output_group",
+        type=str,
+        help="group directory to place intermediate representations and completed models",
         default=None,
     )
     args = parser.parse_args()
@@ -517,13 +523,14 @@ if __name__ == "__main__":
                 f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
             )
             exit(1)
-    elif args.train_differences == "item":
+    elif args.train_differences == "data":
         print("Training on item differences")
         trainData, testData = datasets.make_train_data(
             shuffle_seed=2022,
             augment=True,
             data_seed=args.model_index,
             item_max=args.item_max,
+            cat_max=args.cat_max,
         )
         x_predict = np.array([x for x, _ in testData.as_numpy_iterator()])
         y_predict = np.array([y for _, y in testData.as_numpy_iterator()])
@@ -532,11 +539,18 @@ if __name__ == "__main__":
         # Create model
         model = krieg_all_cnn_c(seed=2022)
 
+        trajDir = (
+            "../outputs/masterOutput/representations/dataDiff"
+            if args.output_group is None
+            else os.path.join(
+                "../outputs/masterOutput/representations/", args.output_group
+            )
+        )
         # Set flag to true if converges to local min
         abort = False
         trajCallback = Trajectory_Callback(
             modelName=f"model{args.model_index}",
-            actDir="../outputs/masterOutput/representations/item",
+            actDir=trajDir,
             predictData=x_predict,
         )
         history = model.fit(
@@ -550,69 +564,24 @@ if __name__ == "__main__":
         )
 
         if not abort:
+            modelDir = (
+                "../outputs/masterOutput/models/itemDiff"
+                if args.output_group is None
+                else os.path.join(
+                    "../outputs/masterOutput/models/", args.output_group
+                )
+            )
             print(
                 f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
             )
             save_model(
                 model,
-                "../outputs/masterOutput/models/itemDiff/model"
-                + str(args.model_index)
-                + ".pb",
+                os.path.join(modelDir, f"model{str(args.model_index)}.pb"),
             )
         else:
             print(
                 f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
             )
             exit(1)
-    elif args.train_differences == "category":
-        print("Training on category differences")
-        trainData, testData = datasets.make_train_data(
-            shuffle_seed=2022,
-            augment=True,
-            data_seed=args.model_index,
-            item_max=args.item_max,
-            cat_weighting=True,
-            cat_max=args.category_max,
-        )
-        x_predict = np.array([x for x, _ in testData.as_numpy_iterator()])
-        y_predict = np.array([y for _, y in testData.as_numpy_iterator()])
-        x_predict, y_predict = datasets.make_predict_data(x_predict, y_predict)
-
-        # Create model
-        model = krieg_all_cnn_c(seed=2022)
-
-        # Set flag to true if converges to local min
-        abort = False
-        trajCallback = Trajectory_Callback(
-            modelName=f"model{args.model_index}",
-            actDir="../outputs/masterOutput/representations/cat",
-            predictData=x_predict,
-        )
-        history = model.fit(
-            trainData,
-            epochs=350,
-            verbose=2,
-            validation_data=testData.prefetch(
-                tf.data.experimental.AUTOTUNE
-            ).batch(128),
-            callbacks=[LR_Callback, trajCallback],
-        )
-
-        if not abort:
-            print(
-                f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
-            )
-            save_model(
-                model,
-                "../outputs/masterOutput/models/catDiff/model"
-                + str(args.model_index)
-                + ".pb",
-            )
-        else:
-            print(
-                f'Stuck at local minimum, final validation acc: {history.history["val_accuracy"][-1]}'
-            )
-            exit(1)
-
     else:
         print("No training difference argument given, treating as main")
