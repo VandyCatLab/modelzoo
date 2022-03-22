@@ -21,10 +21,9 @@ def make_train_data(
     shuffle_seed=None,
     set_seed=False,
     augment=False,
-    data_seed=None,
-    item_max=3,
-    cat_max=3,
-    cat_weighting=False,
+    data_seed=2022,
+    item_max=None,
+    cat_max=None,
 ):
     """
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
@@ -58,14 +57,16 @@ def make_train_data(
     testFlat = x_test.reshape(x_test.shape[0], -1)
     x_test = np.dot(testFlat, prinComps).reshape(x_test.shape)
 
-    if data_seed is not None:
+    if item_max is not None or cat_max is not None:
+        item_max = item_max if item_max is not None else 1
+
         print(
             f"Generating dataset for item-level differences, max items {item_max}"
         )
         np.random.seed(data_seed)
         weights = np.random.randint(1, item_max + 1, x_train.shape[0])
 
-        if cat_weighting:
+        if cat_max is not None:
             print(f"Adding category level weighting, max weight {cat_max}")
             catWeight = np.random.randint(
                 1, cat_max + 1, len(np.unique(y_train))
