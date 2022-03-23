@@ -649,6 +649,7 @@ def get_unstruct_model_sims(
     simNames,
     simMatType,
     outputDir="../outputs/masterOutput/similarities/",
+    noise=None,
 ):
     """
     Return pairwise similarity from all model representations in repDir for the
@@ -676,6 +677,14 @@ def get_unstruct_model_sims(
                 os.path.join(repDir, combo[1], combo[1] + "l" + layer + ".npy")
             )
 
+            if noise is not None:
+                rep1 = rep1 + np.random.normal(
+                    0, noise * np.std(rep1), size=rep1.shape
+                )
+                rep2 = rep2 + np.random.normal(
+                    0, noise * np.std(rep2), size=rep2.shape
+                )
+
             # Get similarities
             simDict = multi_analysis(
                 rep1, rep2, preprocFuns, simFuns, names=simNames, verbose=False
@@ -690,7 +699,9 @@ def get_unstruct_model_sims(
     return sims
 
 
-def get_seed_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
+def get_seed_model_sims(
+    modelSeeds, repDir, layer, preprocFun, simFun, noise=None
+):
     """
     Return similarity matrix across all models in repDir and from a specific
     layer index using preprocFun and simFun. Representations should be in their
@@ -711,6 +722,11 @@ def get_seed_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
         print(f"==Working on index {i} model: {model1}==")
         # Load representations of i and preprocess
         rep1 = np.load(os.path.join(repDir, model1, f"{model1}l{layer}.npy"))
+
+        if noise is not None:
+            rep1 = rep1 + np.random.normal(
+                0, noise * np.std(rep1), size=rep1.shape
+            )
         rep1 = preprocFun(rep1)
         for j, jRow in modelSeeds.iterrows():
             if i > j:  # Only do triangle
@@ -723,6 +739,10 @@ def get_seed_model_sims(modelSeeds, repDir, layer, preprocFun, simFun):
             rep2 = np.load(
                 os.path.join(repDir, model2, f"{model2}l{layer}.npy")
             )
+            if noise is not None:
+                rep2 = rep2 + np.random.normal(
+                    0, noise * np.std(rep2), size=rep2.shape
+                )
             rep2 = preprocFun(rep2)
 
             # Do similarity calculation
@@ -801,6 +821,12 @@ if __name__ == "__main__":
         help="what to name the output similarity matrix file",
     )
     parser.add_argument("--output_dir", "-o", type=str, default=None)
+    parser.add_argument(
+        "--noise",
+        type=float,
+        default=None,
+        help="if set, add this proportion of noise to the representations based on their standard deviation",
+    )
     args = parser.parse_args()
 
     # Now do analysis
@@ -899,12 +925,21 @@ if __name__ == "__main__":
                     layer,
                     preprocFun,
                     simFun,
+                    args.noise,
                 )
 
-                np.save(
-                    f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun}.npy",
-                    simMat,
-                )
+                if args.output_dir is None:
+                    np.save(
+                        f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun}.npy",
+                        simMat,
+                    )
+                else:
+                    np.save(
+                        os.path.join(
+                            args.output_dir, f"simMat_l{layer}_{simFun}.npy"
+                        ),
+                        simMat,
+                    )
     elif args.analysis == "itemSimMat":
         print(
             "Creating model similarity matrix for item weighting differences.",
@@ -920,6 +955,7 @@ if __name__ == "__main__":
             simNames,
             args.simMatType,
             args.output_dir,
+            args.noise,
         )
     else:
         import analysisOld as old
