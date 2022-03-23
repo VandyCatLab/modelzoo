@@ -694,6 +694,8 @@ def get_unstruct_model_sims(
             sims.loc[len(sims)] = list(combo) + list(simDict.values())
 
         # Save
+        if not os.path.exists(outputDir):
+            os.makedirs(outputDir)
         sims.to_csv(os.path.join(outputDir, f"{simMatType}_layer{layer}.csv"))
 
     return sims
@@ -935,6 +937,8 @@ if __name__ == "__main__":
                         simMat,
                     )
                 else:
+                    if os.path.exists(args.output_dir):
+                        os.makedirs(args.output_dir)
                     np.save(
                         os.path.join(
                             args.output_dir, f"simMat_l{layer}_{simFun}.npy"
