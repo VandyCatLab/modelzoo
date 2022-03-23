@@ -571,7 +571,8 @@ if __name__ == "__main__":
                     "../outputs/masterOutput/models/", args.output_group
                 )
             )
-            os.makedirs(modelDir)
+            if not os.path.exists(modelDir):
+                os.makedirs(modelDir)
             print(
                 f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
             )
