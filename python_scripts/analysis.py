@@ -829,6 +829,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    np.seed(2022)
     # Now do analysis
     if args.analysis == "correspondence":
         print("Performing correspondence analysis.", flush=True)
