@@ -933,15 +933,15 @@ if __name__ == "__main__":
 
                 if args.output_dir is None:
                     np.save(
-                        f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun}.npy",
+                        f"../outputs/masterOutput/similarities/simMat_l{layer}_{simName}.npy",
                         simMat,
                     )
                 else:
-                    if os.path.exists(args.output_dir):
+                    if not os.path.exists(args.output_dir):
                         os.makedirs(args.output_dir)
                     np.save(
                         os.path.join(
-                            args.output_dir, f"simMat_l{layer}_{simFun}.npy"
+                            args.output_dir, f"simMat_l{layer}_{simName}.npy"
                         ),
                         simMat,
                     )
