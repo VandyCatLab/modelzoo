@@ -680,10 +680,10 @@ def get_unstruct_model_sims(
             if noise is not None:
                 rep1 = rep1 + np.random.normal(
                     0, noise * np.std(rep1), size=rep1.shape
-                )
+                ).astype("float32")
                 rep2 = rep2 + np.random.normal(
                     0, noise * np.std(rep2), size=rep2.shape
-                )
+                ).astype("float32")
 
             # Get similarities
             simDict = multi_analysis(
@@ -728,7 +728,7 @@ def get_seed_model_sims(
         if noise is not None:
             rep1 = rep1 + np.random.normal(
                 0, noise * np.std(rep1), size=rep1.shape
-            )
+            ).astype("float32")
         rep1 = preprocFun(rep1)
         for j, jRow in modelSeeds.iterrows():
             if i > j:  # Only do triangle
@@ -744,7 +744,7 @@ def get_seed_model_sims(
             if noise is not None:
                 rep2 = rep2 + np.random.normal(
                     0, noise * np.std(rep2), size=rep2.shape
-                )
+                ).astype("float32")
             rep2 = preprocFun(rep2)
 
             # Do similarity calculation
