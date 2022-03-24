@@ -6,6 +6,7 @@ tests/gpu_variance/with_hash/outputs/*
 *.h5
 *.sif
 outputs/
+logs/
 *.png
 *.svg
 
