@@ -382,7 +382,7 @@ if __name__ == "__main__":
         help="npy file path for the labels of the dataset to use for anlaysis.",
     )
     parser.add_argument(
-        "--models_dir",
+        "--model_dir",
         type=str,
         default="../outputs/masterOutput/models",
         help="directory for all of the models",
