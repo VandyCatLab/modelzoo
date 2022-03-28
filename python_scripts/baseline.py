@@ -472,7 +472,7 @@ if __name__ == "__main__":
 
             outPath = os.path.join(
                 basePath,
-                f"{modelName[0:-3]}l{layer}-{args.analysis}{'-v'+str(args.version_slice) if args.version_slice is not None else ''}.csv",
+                f"{modelName.split('.')[0]}l{layer}-{args.analysis}{'-v'+str(args.version_slice) if args.version_slice is not None else ''}.csv",
             )
 
             if not os.path.exists(outPath):
