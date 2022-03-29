@@ -230,7 +230,7 @@ def parametricAblation(
     simFuns=None,
     analysisNames=None,
     outputIdx=-2,
-    nPermutes=1000
+    nPermutes=1000,
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -504,7 +504,7 @@ if __name__ == "__main__":
         parametricNoise(
             maxNoise=4.0,
             step=0.01,
-            permutations=100,
+            permutations=args.permutes,
             seed=args.seed,
             nImgs=args.nImgs,
             outputPath=args.outputPath,
@@ -512,7 +512,6 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
-            permutations=args.permutes
         )
     elif args.analysis == "simulations":
         if args.dataset == "cifar10":
@@ -574,7 +573,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
-            nPermutes=args.permutes
+            nPermutes=args.permutes,
         )
     elif args.analysis == "sizeRatio":
         sizeRatioTest(
@@ -585,7 +584,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
-            permutations=args.permutes
+            permutations=args.permutes,
         )
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
