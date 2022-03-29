@@ -108,6 +108,7 @@ def sizeRatioTest(
     simFuns=None,
     analysisNames=None,
     outputIdx=-2,
+    nPermutes=1000,
 ):
     # load dataset
     if imgset is None:
@@ -133,12 +134,11 @@ def sizeRatioTest(
 
     nMax = imgset.shape[0]
     ratiosRange = np.arange(0.05, 2, 0.05)
-    nPermute = 100
 
     for ratio in ratiosRange:
         print(f"Analyzing img:samples ratio: {ratio}")
         repShape = (nMax, int(nMax * ratio))
-        for permute in range(nPermute):
+        for permute in range(nPermutes):
             if permute % 100 == 0:
                 print(f"Permutation at {permute}")
 
@@ -230,6 +230,7 @@ def parametricAblation(
     simFuns=None,
     analysisNames=None,
     outputIdx=-2,
+    nPermutes=1000
 ):
     modelPath = "../outputs/masterOutput/models/w0s0.pb"
     print("Loading model")
@@ -257,7 +258,6 @@ def parametricAblation(
     repSD = np.std(rep_flat)
 
     colNames = analysisNames + ["Neurons"]
-    nPermutes = 1000
 
     permuteData = pd.DataFrame(columns=colNames)
     if outputPath is None:
@@ -490,6 +490,12 @@ if __name__ == "__main__":
         default=-2,
         help="index of layer to output from",
     )
+    parser.add_argument(
+        "--permutes",
+        type=int,
+        default=1000,
+        help="number of permutations to do",
+    )
     args = parser.parse_args()
 
     preprocFuns, simFuns, analysisNames = analysis.get_funcs(args.simSet)
@@ -506,6 +512,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
+            permutations=args.permutes
         )
     elif args.analysis == "simulations":
         if args.dataset == "cifar10":
@@ -531,6 +538,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
+            nPermutes=args.permutes,
         )
     elif args.analysis == "sanity":
         if args.dataset == "cifar10":
@@ -556,6 +564,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
+            nPermutes=args.permutes,
         )
     elif args.analysis == "ablate":
         parametricAblation(
@@ -565,6 +574,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
+            nPermutes=args.permutes
         )
     elif args.analysis == "sizeRatio":
         sizeRatioTest(
@@ -575,6 +585,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
+            permutations=args.permutes
         )
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
