@@ -89,7 +89,11 @@ def permuteTest(
 
             rep = np.random.choice(rep_flat, size=repShape, replace=False)
             repCut = np.copy(rep)
-            repCut[:, np.random.choice(rep.shape[1])] = 0
+            nFeatures = rep.shape[1]
+            toCut = int(np.round(nFeatures * 0.1))
+            repCut[
+                :, np.random.choice(nFeatures, size=toCut, replace=False)
+            ] = 0
 
             sims = analysis.multi_analysis(
                 rep, repCut, preprocFuns, simFuns, names=analysisNames
