@@ -107,7 +107,7 @@ def yield_transforms(
 
         print(f" - Yielding {versions} versions.")
         for v in tf.range(versions):
-            if slice is not None and not slice == v:
+            if slice is not None and not slice == v.numpy():
                 continue
             print(f"Translating {v} pixels.", flush=True)
 
