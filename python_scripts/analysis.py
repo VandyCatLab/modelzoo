@@ -669,6 +669,7 @@ def get_unstruct_model_sims(
     # Loop through layers and combinations
     for layer in layers:
         for combo in combos:
+            print("Comparing models:", combo[0], combo[1])
             # Get reps
             rep1 = np.load(
                 os.path.join(repDir, combo[0], combo[0] + "l" + layer + ".npy")
