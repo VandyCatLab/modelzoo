@@ -610,6 +610,6 @@ if __name__ == "__main__":
 
         outPath = os.path.join(
             basePath,
-            f"{modelName[0:-3]}-dropout-{','.join([str(idx) for idx in layerIdx])}.csv",
+            f"{modelName.split('.')[0]}-dropout-{','.join([str(idx) for idx in layerIdx])}.csv",
         )
         data.to_csv(outPath, index=False)
