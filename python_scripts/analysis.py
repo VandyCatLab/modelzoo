@@ -489,13 +489,6 @@ def get_model_from_args(args, return_model=True, modelType="seed"):
 
 
 def get_funcs(method="all"):
-    assert method in [
-        "all",
-        "rsa",
-        "cs",
-        "good",
-    ], "Invalid similarity functions"
-
     if method == "all":
         preprocFuns = [
             preprocess_peaRsaNumba,
@@ -538,6 +531,32 @@ def get_funcs(method="all"):
         preprocFuns = [preprocess_eucRsaNumba, preprocess_ckaNumba]
         simFuns = [do_rsaNumba, do_linearCKANumba]
         analysisNames = ["eucRsa", "cka"]
+    else:
+        methods = method.splt("-")
+        preprocFuns = []
+        simFuns = []
+        analysisNames = []
+        for string in methods:
+            if string == "peaRsa":
+                preprocFuns.append(preprocess_peaRsaNumba)
+                simFuns.append(do_rsaNumba)
+                analysisNames.append("peaRsa")
+            elif string == "eucRsa":
+                preprocFuns.append(preprocess_eucRsaNumba)
+                simFuns.append(do_rsaNumba)
+                analysisNames.append("eucRsa")
+            elif string == "speRsa":
+                preprocFuns.append(preprocess_speRsaNumba)
+                simFuns.append(do_rsaNumba)
+                analysisNames.append("speRsa")
+            elif string == "svcca":
+                preprocFuns.append(preprocess_svcca)
+                simFuns.append(do_svcca)
+                analysisNames.append("svcca")
+            elif string == "cka":
+                preprocFuns.append(preprocess_ckaNumba)
+                simFuns.append(do_linearCKANumba)
+                analysisNames.append("cka")
 
     return preprocFuns, simFuns, analysisNames
 
@@ -809,7 +828,6 @@ if __name__ == "__main__":
         "--simSet",
         type=str,
         default="all",
-        choices=["all", "rsa", "cs", "good"],
         help="which set of similarity functions to use",
     )
     parser.add_argument(

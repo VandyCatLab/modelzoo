@@ -414,7 +414,6 @@ if __name__ == "__main__":
         type=str,
         default="all",
         help="which similarity functions to use",
-        choices=["all", "rsa", "cs", "good"],
     )
     args = parser.parse_args()
 
