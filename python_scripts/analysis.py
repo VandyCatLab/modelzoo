@@ -532,7 +532,7 @@ def get_funcs(method="all"):
         simFuns = [do_rsaNumba, do_linearCKANumba]
         analysisNames = ["eucRsa", "cka"]
     else:
-        methods = method.splt("-")
+        methods = method.split("-")
         preprocFuns = []
         simFuns = []
         analysisNames = []
