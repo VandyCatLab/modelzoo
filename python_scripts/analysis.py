@@ -504,7 +504,7 @@ def get_funcs(method="all"):
             do_svcca,
             do_linearCKANumba,
         ]
-        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+        analysisNames = ["peaRsa", "eucRsa", "speRsa", "cca", "cka"]
     elif method == "rsa":
         preprocFuns = [
             preprocess_peaRsaNumba,
@@ -549,10 +549,10 @@ def get_funcs(method="all"):
                 preprocFuns.append(preprocess_speRsaNumba)
                 simFuns.append(do_rsaNumba)
                 analysisNames.append("speRsa")
-            elif string == "svcca":
+            elif string == "cca":
                 preprocFuns.append(preprocess_svcca)
                 simFuns.append(do_svcca)
-                analysisNames.append("svcca")
+                analysisNames.append("cca")
             elif string == "cka":
                 preprocFuns.append(preprocess_ckaNumba)
                 simFuns.append(do_linearCKANumba)
