@@ -98,10 +98,10 @@ def make_train_data(
             newTrain = np.concatenate((newTrain, x_train[newIndices]))
             newLabels = np.concatenate((newLabels, y_train[newIndices]))
 
-    # Shuffle the new data and assign back
-    shuffleIndices = np.random.permutation(newTrain.shape[0])
-    x_train = newTrain[shuffleIndices]
-    y_train = newLabels[shuffleIndices]
+        # Shuffle the new data and assign back
+        shuffleIndices = np.random.permutation(newTrain.shape[0])
+        x_train = newTrain[shuffleIndices]
+        y_train = newLabels[shuffleIndices]
 
     # Convert to one hot vector
     y_train = tf.keras.utils.to_categorical(y_train, 10)
