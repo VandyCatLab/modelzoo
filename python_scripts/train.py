@@ -488,9 +488,9 @@ if __name__ == "__main__":
         trainData, testData = datasets.make_train_data(
             shuffle_seed=shuffleSeed, augment=True
         )
-        x_predict, y_predict = datasets.make_predict_data(
-            testData[0], testData[1]
-        )
+        x_predict = np.array([x for x, _ in testData.as_numpy_iterator()])
+        y_predict = np.array([y for _, y in testData.as_numpy_iterator()])
+        x_predict, y_predict = datasets.make_predict_data(x_predict, y_predict)
 
         # Create model
         model = krieg_all_cnn_c(seed=weightSeed)
