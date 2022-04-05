@@ -441,6 +441,12 @@ if __name__ == "__main__":
         help="group directory to place intermediate representations and completed models",
         default=None,
     )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        help="directory to place model files",
+        default="../outputs/masterOutput/models",
+    )
     args = parser.parse_args()
 
     # Make GPU training deterministic
@@ -491,11 +497,33 @@ if __name__ == "__main__":
 
         # Set flag to true if converges to local min
         abort = False
-        trajCallback = Trajectory_Callback(
-            modelName=f"w{weightSeed}s{shuffleSeed}",
-            actDir="../outputs/masterOutput/representations",
-            predictData=x_predict,
+
+        # Create paths
+        outPath = (
+            os.path.join(
+                args.output_dir, f"w{str(weightSeed)}s{str(shuffleSeed)}"
+            )
+            if args.output_group is None
+            else os.path.join(
+                args.output_dir,
+                args.output_group,
+                f"w{str(weightSeed)}s{str(shuffleSeed)}",
+            )
         )
+        # Make directory if needed
+        if not os.path.exists(os.path.dirname(outPath)):
+            print(f"Making directory: {os.path.dirname(outPath)}")
+            os.makedirs(os.path.dirname(outPath))
+
+        # Create model checkpoints
+        checkpointer = tf.keras.callbacks.ModelCheckpoint(
+            filepath=os.path.join(outPath, "checkpoints"),
+            monitor="val_accuracy",
+            verbose=1,
+            save_weights_only=True,
+            save_freq="epoch",
+        )
+
         history = model.fit(
             trainData,
             epochs=350,
@@ -503,7 +531,7 @@ if __name__ == "__main__":
             validation_data=testData.prefetch(
                 tf.data.experimental.AUTOTUNE
             ).batch(128),
-            callbacks=[LR_Callback, trajCallback],
+            callbacks=[LR_Callback, checkpointer],
         )
 
         if not abort:
@@ -512,11 +540,9 @@ if __name__ == "__main__":
             )
             save_model(
                 model,
-                "../outputs/masterOutput/models/w"
-                + str(weightSeed)
-                + "s"
-                + str(shuffleSeed)
-                + ".pb",
+                os.path.join(
+                    outPath, f"w{str(weightSeed)}s{str(shuffleSeed)}.pb"
+                ),
             )
         else:
             print(
@@ -546,13 +572,33 @@ if __name__ == "__main__":
                 "../outputs/masterOutput/representations/", args.output_group
             )
         )
+
+        # Create paths
+        outPath = (
+            os.path.join(args.output_dir, f"model{str(args.model_index)}")
+            if args.output_group is None
+            else os.path.join(
+                args.output_dir,
+                args.output_group,
+                f"model{str(args.model_index)}",
+            )
+        )
+        # Make directory if needed
+        if not os.path.exists(os.path.dirname(outPath)):
+            print(f"Making directory: {os.path.dirname(outPath)}")
+            os.makedirs(os.path.dirname(outPath))
+
+        # Create model checkpoints
+        checkpointer = tf.keras.callbacks.ModelCheckpoint(
+            filepath=os.path.join(outPath, "checkpoints"),
+            monitor="val_accuracy",
+            verbose=1,
+            save_weights_only=True,
+            save_freq="epoch",
+        )
+
         # Set flag to true if converges to local min
         abort = False
-        trajCallback = Trajectory_Callback(
-            modelName=f"model{args.model_index}",
-            actDir=trajDir,
-            predictData=x_predict,
-        )
         history = model.fit(
             trainData,
             epochs=350,
@@ -560,25 +606,16 @@ if __name__ == "__main__":
             validation_data=testData.prefetch(
                 tf.data.experimental.AUTOTUNE
             ).batch(128),
-            callbacks=[LR_Callback, trajCallback],
+            callbacks=[LR_Callback, checkpointer],
         )
 
         if not abort:
-            modelDir = (
-                "../outputs/masterOutput/models/itemDiff"
-                if args.output_group is None
-                else os.path.join(
-                    "../outputs/masterOutput/models/", args.output_group
-                )
-            )
-            if not os.path.exists(modelDir):
-                os.makedirs(modelDir)
             print(
                 f'Saving, final validation acc: {history.history["val_accuracy"][-1]}'
             )
             save_model(
                 model,
-                os.path.join(modelDir, f"model{str(args.model_index)}.pb"),
+                os.path.join(outPath, f"model{str(args.model_index)}.pb"),
             )
         else:
             print(
