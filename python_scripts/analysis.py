@@ -240,8 +240,8 @@ def do_rsaNumba(rdm1, rdm2):
         rdm1_flat[0, n] = rdm1[i, j]
         rdm2_flat[0, n] = rdm2[i, j]
 
-    # Return spearman coefficient
-    return nb_spearman(rdm1_flat, rdm2_flat)[0, 1]
+    # Return pearson coefficient
+    return nb_cor(rdm1_flat, rdm2_flat)[0, 1]
 
 
 def do_svcca(acts1, acts2):
