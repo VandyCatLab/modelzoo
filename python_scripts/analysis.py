@@ -855,21 +855,7 @@ if __name__ == "__main__":
     if args.analysis == "correspondence":
         print("Performing correspondence analysis.", flush=True)
 
-        preprocFuns = [
-            preprocess_peaRsaNumba,
-            preprocess_eucRsaNumba,
-            preprocess_speRsaNumba,
-            preprocess_svcca,
-            preprocess_ckaNumba,
-        ]
-        simFuns = [
-            do_rsaNumba,
-            do_rsaNumba,
-            do_rsaNumba,
-            do_svcca,
-            do_linearCKANumba,
-        ]
-        analysisNames = ["peaRsa", "eucRsa", "speRsa", "svcca", "cka"]
+        preprocFuns, simFuns, analysisNames = get_funcs(args.simSet)
 
         # Get model
         _, modelName, _ = get_model_from_args(args, return_model=False)
