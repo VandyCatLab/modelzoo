@@ -587,7 +587,7 @@ if __name__ == "__main__":
             simFuns=simFuns,
             analysisNames=analysisNames,
             outputIdx=args.outputIdx,
-            permutations=args.permutes,
+            nPermutes=args.permutes,
         )
     else:
         raise ValueError(f"Unknown analysis: {args.analysis}")
