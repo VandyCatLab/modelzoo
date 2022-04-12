@@ -579,10 +579,15 @@ if __name__ == "__main__":
             nPermutes=args.permutes,
         )
     elif args.analysis == "sizeRatio":
+        if args.dataset == "cifar10":
+            dataset = "../outputs/masterOutput/dataset.npy"
+        elif args.dataset == "imagenet":
+            dataset = "../outputs/masterOutput/bigDataset.npy"
+
         sizeRatioTest(
             nImgs=args.nImgs,
             outputPath=args.outputPath,
-            imgset=args.dataset,
+            imgset=dataset,
             preprocFuns=preprocFuns,
             simFuns=simFuns,
             analysisNames=analysisNames,
