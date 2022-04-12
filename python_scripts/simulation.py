@@ -582,7 +582,7 @@ if __name__ == "__main__":
         sizeRatioTest(
             nImgs=args.nImgs,
             outputPath=args.outputPath,
-            imgset=args.imgset,
+            imgset=args.dataset,
             preprocFuns=preprocFuns,
             simFuns=simFuns,
             analysisNames=analysisNames,
