@@ -863,7 +863,7 @@ if __name__ == "__main__":
 
         # List model representations and make combinations
         reps = glob.glob(args.reps_dir + "/*")
-        reps = [rep.split("/")[-1] for rep in reps]
+        reps = [rep.split("/")[-1] for rep in reps if "catDiff" not in rep or "itemDiff" not in rep]
         repCombos = list(itertools.combinations(reps, 2))
         repCombos = [x for x in repCombos if x[0] == modelName]
 
