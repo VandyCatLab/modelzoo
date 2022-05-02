@@ -709,6 +709,7 @@ def get_unstruct_model_sims(
             simDict = multi_analysis(
                 rep1, rep2, preprocFuns, simFuns, names=simNames, verbose=False
             )
+            print(simDict)
 
             # Add to dataframe
             sims.loc[len(sims)] = list(combo) + list(simDict.values())
@@ -863,7 +864,9 @@ if __name__ == "__main__":
 
         # List model representations and make combinations
         reps = glob.glob(args.reps_dir + "/*")
-        reps = [rep.split("/")[-1] for rep in reps if "w" in rep and "s" in rep]
+        reps = [
+            rep.split("/")[-1] for rep in reps if "w" in rep and "s" in rep
+        ]
         repCombos = list(itertools.combinations(reps, 2))
         repCombos = [x for x in repCombos if x[0] == modelName]
 
