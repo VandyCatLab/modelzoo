@@ -515,9 +515,14 @@ if __name__ == "__main__":
             print(f"Making directory: {os.path.dirname(outPath)}")
             os.makedirs(os.path.dirname(outPath))
 
+        checkpointDir = os.path.join(outPath, "checkpoints")
+        if not os.path.exists(checkpointDir):
+            print(f"Making directory: {checkpointDir}")
+            os.makedirs(checkpointDir)
+
         # Create model checkpoints
         checkpointer = tf.keras.callbacks.ModelCheckpoint(
-            filepath=os.path.join(outPath, "checkpoints"),
+            filepath=os.path.join(checkpointDir, "{epoch:02d}.hdf5"),
             monitor="val_accuracy",
             verbose=1,
             save_weights_only=True,
