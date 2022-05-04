@@ -683,7 +683,12 @@ def get_unstruct_model_sims(
     for layer in layers:
         # Create dataframe for model similarities
         sims = pd.DataFrame(columns=["model1", "model2"] + simNames)
+        counter = 0
         for combo in itertools.combinations(models, 2):
+            if counter < 20:
+                counter += 1
+            else:
+                continue
             print("Comparing models:", combo[0], combo[1])
             # Get reps
             rep1 = np.load(
