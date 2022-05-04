@@ -679,14 +679,11 @@ def get_unstruct_model_sims(
     # Strip model directories
     models = [model.split("/")[-1] for model in models]
 
-    # Get combinations
-    combos = itertools.combinations(models, 2)
-
     # Loop through layers and combinations
     for layer in layers:
         # Create dataframe for model similarities
         sims = pd.DataFrame(columns=["model1", "model2"] + simNames)
-        for combo in combos:
+        for combo in itertools.combinations(models, 2):
             print("Comparing models:", combo[0], combo[1])
             # Get reps
             rep1 = np.load(
