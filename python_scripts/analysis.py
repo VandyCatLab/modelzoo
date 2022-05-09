@@ -281,6 +281,7 @@ def do_linearCKANumba(acts1, acts2):
     """
     Pre: acts must be shape (datapoints, neurons)
     """
+    raise DeprecationWarning("Use do_linearCKANumba2 instead.")
     n = acts1.shape[0]
     centerMatrix = np.eye(n) - (np.ones((n, n)) / n)
     centerMatrix = centerMatrix.astype(nb.float32)
@@ -296,6 +297,20 @@ def do_linearCKANumba(acts1, acts2):
     bot = (botLeft * botRight) ** (1 / 2)
 
     return top / bot
+
+
+@nb.jit(nopython=True)
+def do_linearCKANumba2(acts1, acts2):
+    """
+    Pre: acts must be shape (datapoints, neurons)
+    """
+
+    def _frobNorm(x):
+        return np.sum(np.absolute(x) ** 2) ** (1 / 2)
+
+    sim = _frobNorm(acts1.T @ acts2) ** 2
+    normalization = _frobNorm(acts1.T @ acts1) * _frobNorm(acts2.T @ acts2)
+    return 1 - (sim / normalization)
 
 
 def correspondence_test(
@@ -502,7 +517,7 @@ def get_funcs(method="all"):
             do_rsaNumba,
             do_rsaNumba,
             do_svcca,
-            do_linearCKANumba,
+            do_linearCKANumba2,
         ]
         analysisNames = ["peaRsa", "eucRsa", "speRsa", "cca", "cka"]
     elif method == "rsa":
@@ -524,12 +539,12 @@ def get_funcs(method="all"):
         ]
         simFuns = [
             do_svcca,
-            do_linearCKANumba,
+            do_linearCKANumba2,
         ]
         analysisNames = ["svcca", "cka"]
     elif method == "good":
         preprocFuns = [preprocess_eucRsaNumba, preprocess_ckaNumba]
-        simFuns = [do_rsaNumba, do_linearCKANumba]
+        simFuns = [do_rsaNumba, do_linearCKANumba2]
         analysisNames = ["eucRsa", "cka"]
     else:
         methods = method.split("-")
@@ -555,7 +570,7 @@ def get_funcs(method="all"):
                 analysisNames.append("cca")
             elif string == "cka":
                 preprocFuns.append(preprocess_ckaNumba)
-                simFuns.append(do_linearCKANumba)
+                simFuns.append(do_linearCKANumba2)
                 analysisNames.append("cka")
 
     return preprocFuns, simFuns, analysisNames
@@ -967,23 +982,20 @@ if __name__ == "__main__":
             args.noise,
         )
     else:
-        import analysisOld as old
+        x = np.random.rand(1000, 10).astype("float32")
+        y = np.random.rand(1000, 10).astype("float32")
 
-        print("No analysis argument, treating as main.")
-        repFile = "../outputs/masterOutput/representations/w0s0/w0s0l9.npy"
-        rep1 = np.load(repFile)
+        def lin_cka_dist(A, B):
+            """
+            Computes Linear CKA distance bewteen representations A and B
+            """
+            similarity = np.linalg.norm(B @ A.T, ord="fro") ** 2
+            normalization = np.linalg.norm(
+                A @ A.T, ord="fro"
+            ) * np.linalg.norm(B @ B.T, ord="fro")
+            return 1 - similarity / normalization
 
-        repFile = "../outputs/masterOutput/representations/w0s1/w0s1l9.npy"
-        rep2 = np.load(repFile)
-
-        rdm1 = preprocess_ckaNumba(rep1)
-        rdm2 = preprocess_ckaNumba(rep2)
-
-        sim = do_linearCKANumba(rdm1, rdm2)
-
-        rdm1Old = old.preprocess_ckaNumba(rep1)
-        rdm2Old = old.preprocess_ckaNumba(rep2)
-
-        simOld = old.do_linearCKANumba(rdm1Old, rdm2Old)
-
-        print(sim)
+        print(f"Original: {lin_cka_dist(x.T, y.T)}")
+        print(f"My original implementation: {do_linearCKANumba(x, y)}")
+        print(f"My implementation numba: {do_linearCKANumba2(x, y)}")
+        print(f"My implementation: {do_linearCKA2(x, y)}")
