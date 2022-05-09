@@ -882,7 +882,10 @@ if __name__ == "__main__":
         repCombos = [x for x in repCombos if x[0] == modelName]
 
         # Prepare dataframes
-        fileName = f"../outputs/masterOutput/correspondence/{modelName}Correspondence.csv"
+        if args.output_dir is not None:
+            fileName = f"{args.output_dir}/{modelName}Correspondence.csv"
+        else:
+            fileName = f"../outputs/masterOutput/correspondence/{modelName}Correspondence.csv"
         if os.path.exists(fileName):
             # Load existing dataframe
             winners = pd.read_csv(fileName, index_col=0)
