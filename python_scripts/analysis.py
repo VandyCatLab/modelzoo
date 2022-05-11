@@ -310,7 +310,7 @@ def do_linearCKANumba2(acts1, acts2):
 
     sim = _frobNorm(acts1.T @ acts2) ** 2
     normalization = _frobNorm(acts1.T @ acts1) * _frobNorm(acts2.T @ acts2)
-    return 1 - (sim / normalization)
+    return sim / normalization
 
 
 def correspondence_test(
@@ -985,8 +985,13 @@ if __name__ == "__main__":
             args.noise,
         )
     else:
-        x = np.random.rand(1000, 10).astype("float32")
-        y = np.random.rand(1000, 10).astype("float32")
+        # x = np.random.rand(1000, 10).astype("float32")
+        # y = np.random.rand(1000, 10).astype("float32")
+
+        x = np.load("../outputs/masterOutput/representations/w0s0/w0s0l0.npy")
+        y = np.load("../outputs/masterOutput/representations/w1s1/w1s1l0.npy")
+        x = preprocess_ckaNumba(x)
+        y = preprocess_ckaNumba(y)
 
         def lin_cka_dist(A, B):
             """
@@ -996,9 +1001,8 @@ if __name__ == "__main__":
             normalization = np.linalg.norm(
                 A @ A.T, ord="fro"
             ) * np.linalg.norm(B @ B.T, ord="fro")
-            return 1 - similarity / normalization
+            return similarity / normalization
 
         print(f"Original: {lin_cka_dist(x.T, y.T)}")
-        print(f"My original implementation: {do_linearCKANumba(x, y)}")
+        # print(f"My original implementation: {do_linearCKANumba(x, y)}")
         print(f"My implementation numba: {do_linearCKANumba2(x, y)}")
-        print(f"My implementation: {do_linearCKA2(x, y)}")
