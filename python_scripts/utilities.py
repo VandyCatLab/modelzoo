@@ -1,22 +1,28 @@
 import glob
+from operator import index
 import pandas as pd
 import os
 import itertools
 import numpy as np
 import scipy.stats as stats
 import json
+import glob
 
 
 def compile_correspondence(path, models_path):
     """
     Return dataframe of the correspondence data from path.
     """
-    files = glob.glob(os.path.join(path, "*"))
+    files = glob.glob(os.path.join(path, "*.csv"))
 
     # Compile data
     df = pd.DataFrame()
     for file in files:
         tmp = pd.read_csv(file, index_col=0)
+        # Remove rows that aren't the correct models
+        tmp = tmp.loc[tmp.model2.apply(lambda x: "w" in x and "s" in x)]
+        # Save over old file
+        tmp.to_csv(file)
         layerCol = list(range(11)) * int(len(tmp) / 11)
         tmp["layer"] = layerCol
         df = pd.concat((df, tmp))
@@ -73,7 +79,7 @@ def compile_augment(path, augment, layer):
     Return the data of certain type of baseline augment from path at a given
     layer.
     """
-    files = glob.glob(os.path.join(path, f"*l{layer}-{augment}.csv"))
+    files = glob.glob(os.path.join(path, f"*l{layer}-{augment}*.csv"))
     df = pd.DataFrame()
     for file in files:
         tmp = pd.read_csv(file)
@@ -82,29 +88,39 @@ def compile_augment(path, augment, layer):
 
     if augment == "color":
         df["version"] = (df["version"] - 25) * (3 / 50)
+    elif "translate" in augment:
+        metricNames = [
+            name for name in df.columns if not name in ["version", "layer"]
+        ]
+        # Remove directions from metricNames
+        metricNames = [name.split("-")[0] for name in metricNames]
+        # Keep only unique names
+        metricNames = list(np.unique(metricNames))
+
+        # For each metric, average all directions
+        for metric in metricNames:
+            # Get columns with the metric
+            cols = [name for name in df.columns if metric in name]
+            # Get average of all directions
+            df[metric] = df[cols].mean(axis=1)
 
     return df
 
 
-def compile_baseline_dict(path, tests, layers):
+def compile_baseline_dict(path, tests, layers, metrics):
     """
     Return a dictionary of the results from the list baseline tests, grouped
     by test then layer then metrics for d3 plotting.
     """
-    metrics = {
-        "rsa": "do_rsaNumba",
-        "cca": "do_svcca",
-        "cka": "do_linearCKANumba",
-    }
     data = {test: {} for test in tests}
     for testKey in data.keys():
         layerData = {f"layer{layer}": {} for layer in layers}
-        metricData = {metricKey: [] for metricKey in metrics.keys()}
+        metricData = {metricKey: [] for metricKey in metrics}
         if testKey == "dropout":  # This is dropout
             df = compile_dropout(path)
             versions = df["dropRate"].unique()
             for layerKey in layerData.keys():
-                for metricKey, metric in metrics.items():
+                for metric in metrics:
                     for version in versions:
                         tmpData = df[metric].loc[
                             (df["dropRate"] == version)
@@ -123,12 +139,12 @@ def compile_baseline_dict(path, tests, layers):
                         )
 
                         # Save data of a metric
-                        metricData[metricKey] += [
+                        metricData[metric] += [
                             {
                                 "test": testKey,
                                 "layer": layerKey,
                                 "version": version,
-                                "metric": metricKey,
+                                "metric": metric,
                                 "mean": mean,
                                 "ciLow": ciLow,
                                 "ciHigh": ciHigh,
@@ -144,7 +160,7 @@ def compile_baseline_dict(path, tests, layers):
                 df = compile_augment(path, testKey, int(layerKey[5:]))
                 versions = df["version"].unique()
 
-                for metricKey, metric in metrics.items():
+                for metric in metrics:
                     if testKey == "translate":  # Translation test
                         directions = ["left", "right", "up", "down"]
                         dirKeys = [
@@ -166,12 +182,12 @@ def compile_baseline_dict(path, tests, layers):
                         )
 
                         # Save data of a metric
-                        metricData[metricKey] += [
+                        metricData[metric] += [
                             {
                                 "test": testKey,
                                 "layer": layerKey,
                                 "version": version,
-                                "metric": metricKey,
+                                "metric": metric,
                                 "mean": mean,
                                 "ciLow": ciLow,
                                 "ciHigh": ciHigh,
@@ -182,7 +198,7 @@ def compile_baseline_dict(path, tests, layers):
                             testKey == "translate"
                         ):  # Add directions for translation
                             for i, dirCol in enumerate(dirKeys):
-                                metricData[metricKey][-1][
+                                metricData[metric][-1][
                                     directions[i]
                                 ] = np.mean(
                                     df[dirCol].loc[df["version"] == version]
@@ -342,13 +358,78 @@ def compile_noise_sim(simDir):
     return df
 
 
-if __name__ == "__main__":
-    layers = [3, 7, 11]
-    # path = "../outputs/masterOutput/baseline/cinic/"
-    # df = compile_dropout(path, layers)
-    # df.to_csv(f"../outputs/masterOutput/baseline/compiled/dropout-cinic.csv")
+def compile_training_traj(trajDir, pattern):
+    """
+    Return the compiled model training trajectories from the logs in trajDir
+    matching the pattern.
+    """
+    # Get list of log files
+    logFiles = glob.glob(os.path.join(trajDir, pattern))
 
-    # path = "../outputs/masterOutput/baseline/cinic/"
+    # Loop through log files
+    df = pd.DataFrame(columns=["model", "epoch", "valAcc", "log"])
+    for file in logFiles:
+        # Open log file
+        with open(file, "r") as f:
+            # Read log file
+            log = f.readlines()
+        # Filter lines with validation accuracy
+        log = [line for line in log if "val_accuracy" in line]
+
+        # Just grab validation accuracy
+        valAcc = [
+            float(line.split(":")[-1].replace("\n", "").strip())
+            for line in log
+        ]
+
+        # Get model name
+        model = file.split("/")[-1].split(".")[0]
+
+        # Get epochs
+        epochs = range(len(valAcc))
+
+        # Add to dataframe
+        df = df.append(
+            pd.DataFrame(
+                {
+                    "model": model,
+                    "epoch": epochs,
+                    "valAcc": valAcc,
+                    "log": file.split("/")[-1],
+                }
+            )
+        )
+
+    return df
+
+
+if __name__ == "__main__":
+    # layers = [2, 6, 10]
+    # path = "../outputs/masterOutput/baseline/catDiff_max1-100"
+    # df = compile_dropout(path, layers)
+    # df.to_csv(
+    #     f"../outputs/masterOutput/baseline/compiled/dropout-catDiff_max1-100.csv"
+    # )
+
+    # path = "../outputs/masterOutput/baseline/catDiff_max1-100/"
+    # augments = ["translate", "reflect", "zoom"]
+
+    # for augment in augments:
+    #     df = pd.DataFrame()
+    #     for layer in layers:
+    #         tmp = compile_augment(path, augment, layer)
+    #         df = pd.concat((df, tmp))
+    #     df.to_csv(
+    #         f"../outputs/masterOutput/baseline/compiled/{augment}-catDiff_max1-100.csv"
+    #     )
+
+    # path = "../outputs/masterOutput/baseline/kriegset"
+    # df = compile_dropout(path, layers)
+    # df.to_csv(
+    #     f"../outputs/masterOutput/baseline/compiled/dropout-kriegset.csv"
+    # )
+
+    # path = "../outputs/masterOutput/baseline/kriegset"
     # augments = ["translate", "reflect", "noise", "color", "zoom"]
 
     # for augment in augments:
@@ -357,7 +438,7 @@ if __name__ == "__main__":
     #         tmp = compile_augment(path, augment, layer)
     #         df = pd.concat((df, tmp))
     #     df.to_csv(
-    #         f"../outputs/masterOutput/baseline/compiled/{augment}-cinic.csv"
+    #         f"../outputs/masterOutput/baseline/compiled/{augment}-kriegset.csv"
     #     )
 
     path = "../outputs/masterOutput/correspondence/"
@@ -365,13 +446,32 @@ if __name__ == "__main__":
     results, missing = compile_correspondence(path, models_path)
     missing = correspondence_missing_optimizer(missing)
     results.to_csv(f"../outputs/masterOutput/correspondence.csv")
+    missing
 
-    # path = "../outputs/masterOutput/baseline/"
-    # tests = ["color", "translate", "zoom", "reflect", "dropout"]
-    # layers = [3, 7, 11]
-    # data = compile_baseline_dict(path, tests, layers)
-    # with open(os.path.join(path, "compiled", "baseline.json"), "w") as outfile:
-    #     json.dump(data, outfile)
+    path = "../outputs/masterOutput/correspondence/cka2/"
+    models_path = "../outputs/masterOutput/models/"
+    resultsCKA2, missing = compile_correspondence(path, models_path)
+    missing = correspondence_missing_optimizer(missing)
+    # Replace cka column with cka2 results
+    results.drop(columns="cka", inplace=True)
+    results[["cka"]] = resultsCKA2.cka
+    results.to_csv(f"../outputs/masterOutput/correspondence.csv")
+    missing
+
+    # modelType = "seedDiff"
+    # path = f"../outputs/masterOutput/baseline/{modelType}"
+    # augments = ["reflect", "translate-v5.0"]
+    # layers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    # for augment in augments:
+    #     df = pd.DataFrame()
+    #     for layer in layers:
+    #         tmp = compile_augment(path, augment, layer)
+    #         # Add layer column
+    #         tmp["layer"] = layer
+    #         df = pd.concat((df, tmp))
+    #     df.to_csv(
+    #         f"../outputs/masterOutput/baseline/compiled/{augment}-{modelType}.csv"
+    #     )
 
     # path = "../outputs/masterOutput/baseline/cinic/"
     # augments = ["color", "translate", "zoom", "reflect", "noise", "drop"]
@@ -394,9 +494,76 @@ if __name__ == "__main__":
     # )
 
     # Compile hub sims
-    # df = compile_hub_sims("../outputs/masterOutput/hubReps/hubSims")
-    # df.to_csv("../outputs/masterOutput/hubSims.csv")
+    # df = compile_hub_sims("../outputs/masterOutput/hubReps/hubSims/novset")
+    # df.to_csv("../outputs/masterOutput/hubSimsNovset.csv")
 
     # Compile noise sims
     # df = compile_noise_sim("../outputs/masterOutput/simulation")
     # df.to_csv("../outputs/masterOutput/bigNoiseSim.csv")
+
+    # Compile trajectory
+    # df = compile_training_traj(
+    #     "../logs/master/training", "train_itemDiff_max3_*"
+    # )
+    # df.to_csv(
+    #     "../outputs/masterOutput/trainingTraj_itemDiff_max3.csv", index=False
+    # )
+
+    # Convert similarity matrix numpy format to csv
+    # simFuns = ["eucRsa", "cka"]
+    # layers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+    # modelSeeds = pd.read_csv("../outputs/masterOutput/modelSeeds.csv")
+    # for layer in layers:
+    #     # load similarity matrices into dictionary
+    #     sims = {}
+    #     for simFun in simFuns:
+    #         sims[simFun] = np.load(
+    #             f"../outputs/masterOutput/similarities/simMat_l{layer}_{simFun}.npy"
+    #         )
+
+    #     df = pd.DataFrame()
+    #     # Read only triangle
+    #     for i in range(sims[simFuns[0]].shape[0]):
+    #         for j in range(0, i):
+    #             simDict = {fun: [sim[i, j]] for fun, sim in sims.items()}
+    #             df = df.append(
+    #                 pd.DataFrame(
+    #                     {
+    #                         "model1": f"w{modelSeeds.weight[i]}s{modelSeeds.shuffle[i]}",
+    #                         "model2": f"w{modelSeeds.weight[j]}s{modelSeeds.shuffle[j]}",
+    #                         **simDict,
+    #                     }
+    #                 ),
+    #             )
+
+    #     df.to_csv('../outputs/masterOutput/similarities/seedDiff_layer{}.csv'.format(layer))
+
+    # # Compile model similarities
+    # modelTypes = ["seedDiff", "itemDiff_max10", "catDiff_max1-10"]
+
+    # # Combine all the csvs for each model type into a single csv
+    # for modelType in modelTypes:
+    #     # List of csvs to combine
+    #     csvs = glob.glob(
+    #         f"../outputs/masterOutput/similarities/{modelType}_layer*.csv"
+    #     )
+
+    #     # Combine csvs
+    #     df = pd.DataFrame()
+    #     for csv in csvs:
+    #         tmp = pd.read_csv(csv, index_col=0)
+    #         # Get layer number from csv name
+    #         layer = csv.split("layer")[-1].split(".")[0]
+
+    #         # Add layer to df
+    #         tmp["layer"] = layer
+
+    #         # Combine with df
+    #         df = pd.concat([df, tmp])
+
+    #     # Save csv
+    #     df.to_csv(
+    #         f"../outputs/masterOutput/similarities/{modelType}_allLayers.csv",
+    #         index=False,
+    #     )

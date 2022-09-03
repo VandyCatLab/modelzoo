@@ -20,15 +20,15 @@
         "trainingSet": "coco"
     },
     "experts/bit/r50x1/in21k/matter": {
-        "url": "https://tfhub.dev/google/x1/in21k/matter/1",
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/matter/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/tree": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/tree/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector": {
@@ -60,7 +60,7 @@
     "experts/bit/r50x1/in21k/part": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/part/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector": {
@@ -100,7 +100,7 @@
     "experts/bit/r50x1/in21k/whole": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/whole/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/resnet_v1_152/feature_vector": {
@@ -114,7 +114,7 @@
     "experts/bit/r50x1/in21k/consumer_goods": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/consumer_goods/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector": {
@@ -146,7 +146,7 @@
     "experts/bit/r50x1/in21k/artifact": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/artifact/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/resnet_v1_101/feature_vector": {
@@ -160,7 +160,7 @@
     "experts/bit/r50x1/in21k/flower": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/flower/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_075_96/feature_vector": {
@@ -187,7 +187,7 @@
     "experts/bit/r50x1/in21k/structure": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/structure/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector": {
@@ -227,13 +227,13 @@
     "experts/bit/r50x1/in21k/abstraction": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/abstraction/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/plant": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/plant/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_075_160/feature_vector": {
@@ -252,7 +252,7 @@
     "experts/bit/r50x1/in21k/object": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/object/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet21k_b1/feature_vector": {
@@ -300,7 +300,7 @@
     "experts/bit/r50x1/in21k/conveyance": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/conveyance/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/efficientnet_v2_imagenet1k_b2/feature_vector": {
@@ -366,7 +366,7 @@
     "experts/bit/r50x1/in21k/animal": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/animal/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_100_128/feature_vector": {
@@ -411,19 +411,19 @@
     "experts/bit/r50x1/in21k/instrument": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/instrument/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/food": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/food/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "experts/bit/r50x1/in21k/arthropod": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/arthropod/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_035_96/feature_vector": {
@@ -455,7 +455,7 @@
     "experts/bit/r50x1/in21k/spermatophyte": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/spermatophyte/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/mobilenet_v2_050_192/feature_vector": {
@@ -474,7 +474,7 @@
     "experts/bit/r50x1/in21k/vehicle": {
         "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/vehicle/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet21k"
     },
     "imagenet/nasnet_large/feature_vector": {
@@ -593,7 +593,7 @@
     "bit/s-r50x1": {
         "url": "https://tfhub.dev/google/bit/s-r50x1/1",
         "numFeatures": 2048,
-        "type": "resnet-v2",
+        "type": "resnet50-v2",
         "trainingSet": "imagenet"
     },
     "imagenet/mobilenet_v3_small_075_224/feature_vector": {
