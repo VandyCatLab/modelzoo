@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jstat@latest/dist/jstat.min.js"></script>
+</head>
+
+<body>
+    <script>
+        const outerPadding = 10;
+        const innerPadding = 5;
+
+        const trajWidth = 400;
+        const trajHeight = 300;
+
+        const totalHeight = outerPadding * 2 + trajHeight;
+        const totalWidth = outerPadding * 2 + trajWidth;
+
+        let svg = d3.select("body")
+            .append("svg")
+            .attr("width", totalWidth)
+            .attr("height", totalHeight);
+
+        const trajData = d3.csv('../outputs/masterOutput/trainingTraj.csv').then(
+            (d) => {
+                const maxEpoch = 250;
+
+                let data = d.map(d => {
+                    if (d.epoch < maxEpoch) {
+                        return {
+                            model: 'w' + d.weightSeed + "s" + d.shuffleSeed,
+                            epoch: +d.epoch,
+                            valAcc: +d.valAcc
+                        }
+                    }
+
+                }).filter(e => e != null)
+
+                const trajPadding = 20
+
+                // Add trajectory plot group
+                trajPlot = svg.append('g')
+                    .attr('transform', 'translate(' + trajPadding + ', ' + trajPadding + ')')
+
+                // Build plot axes
+                let xAxis = d3.scaleLinear()
+                    // .domain([-5, d3.max(data.map(d => d.epoch))])
+                    .domain([-5, maxEpoch])
+                    .range([0 + trajPadding, trajWidth - trajPadding]);
+
+                let yAxis = d3.scaleLinear()
+                    .domain([0, 1])
+                    .range([trajHeight - trajPadding, 0 + trajPadding])
+
+                trajPlot.append('g')
+                    .attr('transform', 'translate(0, ' + (trajHeight - trajPadding) + ')')
+                    .call(d3.axisBottom(xAxis))
+                trajPlot.append('g')
+                    .attr('transform', 'translate(' + trajPadding + ',0)')
+                    .call(d3.axisLeft(yAxis))
+
+                // Build mean data
+                let epochData = Array.from(d3.group(data, d => d.epoch));
+                epochData = epochData.map(d => { return d[1].map(x => x.valAcc) })
+                let meanValAcc = epochData.map(d => d3.median(d))
+                let confInt = epochData.map(d => jStat.normalci(d3.median(d), .05, d))
+                //let confInt = epochData.map(d => { return [d3.mean(d) + jStat.stdev(d), d3.mean(d) - jStat.stdev(d)] })
+                epochData = d3.zip(meanValAcc, confInt).map((d, i) => { return { epoch: i, mean: d[0], ci: d[1] } })
+
+                // Build nest individual data
+                let lineData = Array.from(d3.group(data, d => d.model));
+
+                // Add individual lines
+                let modelLines = trajPlot.append('g')
+                    .selectAll('empty')
+                    .data(lineData).enter()
+
+                modelLines.append('path')
+                    .datum(d => d[1])
+                    .attr('stroke', '#e0e0e0')
+                    .attr('fill', 'none')
+                    .attr('stroke-width', 1)
+                    .attr('opacity', 0.5)
+                    .attr('d', d3.line()
+                        .x(d => xAxis(d.epoch))
+                        .y(d => yAxis(d.valAcc)))
+
+                // Add CI
+                let ciLine = trajPlot.append('path')
+                    .datum(epochData)
+                    .attr("fill", "black")
+                    .attr('opacity', 0.5)
+                    .attr('stroke', 'none')
+                    .attr('d', d3.area()
+                        .x(d => xAxis(d.epoch))
+                        .y0(d => yAxis(d.ci[0]))
+                        .y1(d => yAxis(d.ci[1]))
+                    )
+
+                // Add mean data
+                let meanLine = trajPlot.append('path')
+                    .datum(epochData)
+                    //.attr('transform', 'translate(' + trajPadding + ', 0)')
+                    .attr('fill', 'none')
+                    .attr('stroke', 'black')
+                    .attr('stroke-width', 2)
+                    .attr('d', d3.line()
+                        .x(d => xAxis(d.epoch))
+                        .y(d => yAxis(d.mean))
+                    )
+            }
+        )
+
+    </script>
+
+</body>
+
+</html>

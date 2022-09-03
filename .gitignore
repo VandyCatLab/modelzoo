@@ -6,9 +6,19 @@ tests/gpu_variance/with_hash/outputs/*
 *.h5
 *.sif
 outputs/
+logs/
+*.png
+*.svg
+
 # Unnecessary
 **/__pycache__/
 *.ipynb_checkpoints
+.idea/
+.vscode
 
 # Not your code
 imported_code/
+venv/
+
+# Others
+notebooks/masterSanbox.py
