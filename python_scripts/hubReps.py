@@ -34,11 +34,16 @@ def get_reps(model, dataset, info, batch_size):
         numImgs += len(batch)
         res = model.predict(batch)
 
+
         if "outputIdx" in info.keys():
             # Save representations
-            reps[i * batch_size : (i + 1) * batch_size] = res[
-                :, info["outputIdx"]
-            ]
+
+            if res[info["outputIdx"]].shape[0] == batch_size:
+                reps[i * batch_size : (i + 1) * batch_size] = res[
+                 info["outputIdx"]]
+            else:
+                reps[i * batch_size: i * batch_size + len(res[info["outputIdx"]])] = res[info["outputIdx"]]
+
         else:
             # Save representations
             if res.shape[0] == batch_size:
@@ -147,9 +152,9 @@ if __name__ == "__main__":
             flush=True,
         )
         if args.rep_name is not None:
-            fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
+            fileName = f"../hubreps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
         else:
-            fileName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
+            fileName = f"../hubreps/{modelName.replace('/', '-')}-Reps.npy"
         if os.path.exists(fileName):
             print(f"Already completed, skipping.")
         else:
@@ -197,7 +202,7 @@ if __name__ == "__main__":
         )
 
         # Add analysis group
-        basePath = "../outputs/masterOutput/hubReps/hubSims/"
+        basePath = "../hubReps/hubSims/"
         if args.group is not None:
             basePath += args.group + "/"
         if not os.path.exists(basePath):
@@ -209,9 +214,9 @@ if __name__ == "__main__":
         else:
             # Load representations
             if args.rep_name is not None:
-                modelRepsName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
+                modelRepsName = f"../hubReps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
             else:
-                modelRepsName = f"../outputs/masterOutput/hubReps/{modelName.replace('/', '-')}-Reps.npy"
+                modelRepsName = f"../hubReps/{modelName.replace('/', '-')}-Reps.npy"
             reps = np.load(modelRepsName)
 
             # If representations is not flat, average pool it
@@ -254,9 +259,9 @@ if __name__ == "__main__":
 
                 # Load hub model representations
                 if args.rep_name is not None:
-                    pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-{args.rep_name}Reps.npy"
+                    pairModelRepsName = f"../hubReps/{pairModel.replace('/', '-')}-{args.rep_name}Reps.npy"
                 else:
-                    pairModelRepsName = f"../outputs/masterOutput/hubReps/{pairModel.replace('/', '-')}-Reps.npy"
+                    pairModelRepsName = f"../hubReps/{pairModel.replace('/', '-')}-Reps.npy"
                 pairReps = np.load(pairModelRepsName)
 
                 # If representations is not flat, average pool it
@@ -290,3 +295,4 @@ if __name__ == "__main__":
                 f"Saving similarities [{datetime.datetime.now()}]", flush=True
             )
             simDf.to_csv(fileName)
+
