@@ -3,151 +3,183 @@
     "function": "tf.keras.applications.MobileNetV3Large()",
     "origin": "keras",
     "type": "MobilenetV3",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "MobilenetV3small": {
     "function": "tf.keras.applications.MobileNetV3Small()",
     "origin": "keras",
     "type": "MobilenetV3",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "convnext_base": {
     "function": "tf.keras.applications.convnext.ConvNeXtBase()",
     "origin": "keras",
     "type": "convnext",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet21k"
   },
   "convnext_large": {
     "function": "tf.keras.applications.convnext.ConvNeXtLarge()",
     "origin": "keras",
     "type": "convnext",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet21k"
   },
   "convnext_small": {
     "function": "tf.keras.applications.convnext.ConvNeXtSmall()",
     "origin": "keras",
     "type": "convnext",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet1k"
   },
   "convnext_tiny": {
     "function": "tf.keras.applications.convnext.ConvNeXtTiny()",
     "origin": "keras",
     "type": "convnext",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet1k"
   },
   "convnext_xlarge": {
     "function": "tf.keras.applications.convnext.ConvNeXtXLarge()",
     "origin": "keras",
     "type": "convnext",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet21k"
   },
   "densenet121": {
     "function": "tf.keras.applications.densenet.DenseNet121()",
     "origin": "keras",
     "type": "densenet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "densenet169": {
     "function": "tf.keras.applications.densenet.DenseNet169()",
     "origin": "keras",
     "type": "densenet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "densenet201": {
     "function": "tf.keras.applications.densenet.DenseNet201()",
     "origin": "keras",
     "type": "densenet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetb0": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB0()",
     "origin": "keras",
     "type": "efficientnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetb1": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB1()",
     "origin": "keras",
     "type": "efficientnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetb2": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB2()",
     "origin": "keras",
     "type": "efficientnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetb3": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB3()",
     "origin": "keras",
     "type": "efficientnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetb4": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB4()",
     "origin": "keras",
     "type": "efficientnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetb5": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB5()",
     "origin": "keras",
     "type": "efficientnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetb6": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB6()",
     "origin": "keras",
     "type": "efficientnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
+  },
+  "efficientnetb7": {
+    "function": "tf.keras.applications.efficientnet.EfficientNetB7()",
+    "origin": "keras",
+    "type": "efficientnet",
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetv2-b0": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B0()",
     "origin": "keras",
     "type": "efficientnetv2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetv2-b1": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B1()",
     "origin": "keras",
     "type": "efficientnetv2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetv2-b2": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B2()",
     "origin": "keras",
     "type": "efficientnetv2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetv2-b3": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B3()",
     "origin": "keras",
     "type": "efficientnetv2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetv2-l": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2L()",
     "origin": "keras",
     "type": "efficientnetv2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetv2-m": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2M()",
     "origin": "keras",
     "type": "efficientnetv2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "efficientnetv2-s": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2S()",
     "origin": "keras",
     "type": "efficientnetv2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "inception_resnet_v2": {
     "function": "tf.keras.applications.inception_resnet_v2.InceptionResNetV2()",
     "origin": "keras",
     "type": "inception_resnet_v2",
     "parameters": "default",
+    "trainingSet": "imagenet",
     "shape": [
             299,
             299,
@@ -159,276 +191,320 @@
     "origin": "keras",
     "type": "inception_v3",
     "parameters": "default",
+    "trainingSet": "imagenet",
     "shape": [
             299,
             299,
             3
         ]
-
   },
   "mobilenet": {
     "function": "tf.keras.applications.mobilenet.MobileNet()",
     "origin": "keras",
     "type": "mobilenet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "mobilenet_v2": {
     "function": "tf.keras.applications.mobilenet_v2.MobileNetV2()",
     "origin": "keras",
     "type": "mobilenet_v2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "NASNet_large": {
     "function": "tf.keras.applications.nasnet.NASNetLarge()",
     "origin": "keras",
     "type": "nasnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "NASNet_mobile": {
     "function": "tf.keras.applications.nasnet.NASNetMobile()",
     "origin": "keras",
     "type": "nasnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx002": {
     "function": "tf.keras.applications.regnet.RegNetX002()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx004": {
     "function": "tf.keras.applications.regnet.RegNetX004()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx006": {
     "function": "tf.keras.applications.regnet.RegNetX006()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx008": {
     "function": "tf.keras.applications.regnet.RegNetX008()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx016": {
     "function": "tf.keras.applications.regnet.RegNetX016()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx032": {
     "function": "tf.keras.applications.regnet.RegNetX032()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx040": {
     "function": "tf.keras.applications.regnet.RegNetX040()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx064": {
     "function": "tf.keras.applications.regnet.RegNetX064()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx080": {
     "function": "tf.keras.applications.regnet.RegNetX080()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx120": {
     "function": "tf.keras.applications.regnet.RegNetX120()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx160": {
     "function": "tf.keras.applications.regnet.RegNetX160()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnetx320": {
     "function": "tf.keras.applications.regnet.RegNetX320()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety002": {
     "function": "tf.keras.applications.regnet.RegNetY002()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety004": {
     "function": "tf.keras.applications.regnet.RegNetY004()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety006": {
     "function": "tf.keras.applications.regnet.RegNetY006()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety008": {
     "function": "tf.keras.applications.regnet.RegNetY008()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety016": {
     "function": "tf.keras.applications.regnet.RegNetY016()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety032": {
     "function": "tf.keras.applications.regnet.RegNetY032()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety040": {
     "function": "tf.keras.applications.regnet.RegNetY040()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety064": {
     "function": "tf.keras.applications.regnet.RegNetY064()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety080": {
     "function": "tf.keras.applications.regnet.RegNetY080()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety120": {
     "function": "tf.keras.applications.regnet.RegNetY120()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety160": {
     "function": "tf.keras.applications.regnet.RegNetY160()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "regnety320": {
     "function": "tf.keras.applications.regnet.RegNetY320()",
     "origin": "keras",
     "type": "regnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet101": {
     "function": "tf.keras.applications.resnet.ResNet101()",
     "origin": "keras",
     "type": "resnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet152": {
     "function": "tf.keras.applications.resnet.ResNet152()",
     "origin": "keras",
     "type": "resnet",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet50": {
     "function": "tf.keras.applications.resnet50.ResNet50()",
     "origin": "keras",
     "type": "resnet50",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet-rs-101": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS101()",
     "origin": "keras",
     "type": "resnet_rs",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet-rs-152": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS152()",
     "origin": "keras",
     "type": "resnet_rs",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet-rs-200": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS200()",
     "origin": "keras",
     "type": "resnet_rs",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet-rs-270": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS270()",
     "origin": "keras",
     "type": "resnet_rs",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet-rs-350": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS350()",
     "origin": "keras",
     "type": "resnet_rs",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet-rs-420": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS420()",
     "origin": "keras",
     "type": "resnet_rs",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet-rs-50": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS50()",
     "origin": "keras",
     "type": "resnet_rs",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet101v2": {
     "function": "tf.keras.applications.resnet_v2.ResNet101V2()",
     "origin": "keras",
     "type": "resnet_v2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet152v2": {
     "function": "tf.keras.applications.resnet_v2.ResNet152V2()",
     "origin": "keras",
     "type": "resnet_v2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "resnet50v2": {
     "function": "tf.keras.applications.resnet_v2.ResNet50V2()",
     "origin": "keras",
     "type": "resnet_v2",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "vgg16": {
     "function": "tf.keras.applications.vgg16.VGG16()",
     "origin": "keras",
     "type": "vgg16",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "vgg19": {
     "function": "tf.keras.applications.vgg19.VGG19()",
     "origin": "keras",
     "type": "vgg19",
-    "parameters": "default"
+    "parameters": "default",
+    "trainingSet": "imagenet"
   },
   "xception": {
     "function": "tf.keras.applications.xception.Xception()",
     "origin": "keras",
     "type": "xception",
     "parameters": "default",
+    "trainingSet": "imagenet",
     "shape": [
             299,
             299,
