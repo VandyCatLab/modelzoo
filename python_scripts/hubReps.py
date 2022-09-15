@@ -107,7 +107,8 @@ if __name__ == "__main__":
         "-f",
         type=str,
         help=".json file with the hub model info",
-        default="./hubModels.json",
+        choices=["./hubModels.json","./hubModels_keras.json"],
+        default="./hubModels.json"
     )
     parser.add_argument(
         "--feature_limit",
@@ -158,12 +159,19 @@ if __name__ == "__main__":
         if os.path.exists(fileName):
             print(f"Already completed, skipping.")
         else:
-            # Create model
+            # Creating models
             info = hubModels[modelName]
             shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
-            inp = tf.keras.Input(shape=shape)
-            out = hub.KerasLayer(info["url"])(inp)
-            model = tf.keras.Model(inputs=inp, outputs=out)
+            if args.models_file == "./hubModels.json":
+                # Create model from tfhub
+                inp = tf.keras.Input(shape=shape)
+                out = hub.KerasLayer(info["url"])(inp)
+                model = tf.keras.Model(inputs=inp, outputs=out)
+
+            if args.models_file == "./hubModels_keras.json":
+                # Create model from keras function
+                function = hubModels[modelName]['function']
+                model = eval(function)
 
             # Create dataset
             preprocFun = datasets.preproc(
