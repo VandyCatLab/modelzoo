@@ -11,7 +11,7 @@ import itertools
 from tensorflow.python.ops.gen_array_ops import parallel_concat
 
 
-sys.path.append("../imported_code/svcca")
+sys.path.append("../python_scripts/svcca")
 import cca_core, pwcca
 
 """
