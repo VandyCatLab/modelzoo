@@ -20,6 +20,7 @@ def get_reps(model, dataset, info, batch_size):
     if "outputIdx" in info.keys():
         # Get output size of model
         output_size = model.output_shape[info["outputIdx"]][1:]
+
     else:
         # Get output size of model
         output_size = model.output_shape[1:]
@@ -162,18 +163,25 @@ if __name__ == "__main__":
             # Creating models
             info = hubModels[modelName]
             shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
+
             if args.models_file == "./hubModels.json":
                 # Create model from tfhub
                 inp = tf.keras.Input(shape=shape)
                 out = hub.KerasLayer(info["url"])(inp)
                 model = tf.keras.Model(inputs=inp, outputs=out)
 
-            if args.models_file == "./hubModels_keras.json":
+            elif args.models_file == "./hubModels_keras.json":
                 # Create model from keras function
                 function = hubModels[modelName]['function']
-                model = eval(function)
+                model_full = eval(function)
+                inp = model_full.input
+                layerName = model_full.layers[int(hubModels[modelName]['layerIdx'])].name
+                out = model_full.get_layer(layerName).output
+                model = tf.keras.Model(inputs=inp, outputs=out)
+            else:
+                raise ValueError(f"Unknown models file {args.models_file}")
 
-            # Create dataset
+            #Create dataset
             preprocFun = datasets.preproc(
                 **hubModels[modelName],
                 labels=False,
