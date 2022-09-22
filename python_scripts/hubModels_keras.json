@@ -1,6 +1,7 @@
 {
   "MobilenetV3large": {
     "function": "tf.keras.applications.MobileNetV3Large()",
+    "layerIdx": "-3",
     "origin": "keras",
     "type": "MobilenetV3",
     "parameters": "default",
@@ -8,6 +9,7 @@
   },
   "MobilenetV3small": {
     "function": "tf.keras.applications.MobileNetV3Small()",
+    "layerIdx": "-3",
     "origin": "keras",
     "type": "MobilenetV3",
     "parameters": "default",
@@ -15,6 +17,7 @@
   },
   "convnext_base": {
     "function": "tf.keras.applications.convnext.ConvNeXtBase()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "convnext",
     "parameters": "default",
@@ -22,6 +25,7 @@
   },
   "convnext_large": {
     "function": "tf.keras.applications.convnext.ConvNeXtLarge()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "convnext",
     "parameters": "default",
@@ -29,6 +33,7 @@
   },
   "convnext_small": {
     "function": "tf.keras.applications.convnext.ConvNeXtSmall()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "convnext",
     "parameters": "default",
@@ -36,6 +41,7 @@
   },
   "convnext_tiny": {
     "function": "tf.keras.applications.convnext.ConvNeXtTiny()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "convnext",
     "parameters": "default",
@@ -43,6 +49,7 @@
   },
   "convnext_xlarge": {
     "function": "tf.keras.applications.convnext.ConvNeXtXLarge()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "convnext",
     "parameters": "default",
@@ -50,6 +57,8 @@
   },
   "densenet121": {
     "function": "tf.keras.applications.densenet.DenseNet121()",
+    "preFun": "tf.keras.applications.densenet.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "densenet",
     "parameters": "default",
@@ -57,6 +66,8 @@
   },
   "densenet169": {
     "function": "tf.keras.applications.densenet.DenseNet169()",
+    "preFun": "tf.keras.applications.densenet.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "densenet",
     "parameters": "default",
@@ -64,6 +75,8 @@
   },
   "densenet201": {
     "function": "tf.keras.applications.densenet.DenseNet201()",
+    "preFun": "tf.keras.applications.densenet.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "densenet",
     "parameters": "default",
@@ -71,6 +84,7 @@
   },
   "efficientnetb0": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB0()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -78,6 +92,7 @@
   },
   "efficientnetb1": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB1()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -85,6 +100,7 @@
   },
   "efficientnetb2": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB2()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -92,6 +108,7 @@
   },
   "efficientnetb3": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB3()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -99,6 +116,7 @@
   },
   "efficientnetb4": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB4()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -106,6 +124,7 @@
   },
   "efficientnetb5": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB5()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -113,6 +132,7 @@
   },
   "efficientnetb6": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB6()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -120,6 +140,7 @@
   },
   "efficientnetb7": {
     "function": "tf.keras.applications.efficientnet.EfficientNetB7()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnet",
     "parameters": "default",
@@ -127,6 +148,7 @@
   },
   "efficientnetv2-b0": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B0()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnetv2",
     "parameters": "default",
@@ -134,6 +156,7 @@
   },
   "efficientnetv2-b1": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B1()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnetv2",
     "parameters": "default",
@@ -141,6 +164,7 @@
   },
   "efficientnetv2-b2": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B2()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnetv2",
     "parameters": "default",
@@ -148,6 +172,7 @@
   },
   "efficientnetv2-b3": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2B3()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnetv2",
     "parameters": "default",
@@ -155,6 +180,7 @@
   },
   "efficientnetv2-l": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2L()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnetv2",
     "parameters": "default",
@@ -162,6 +188,7 @@
   },
   "efficientnetv2-m": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2M()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnetv2",
     "parameters": "default",
@@ -169,6 +196,7 @@
   },
   "efficientnetv2-s": {
     "function": "tf.keras.applications.efficientnet_v2.EfficientNetV2S()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "efficientnetv2",
     "parameters": "default",
@@ -176,6 +204,8 @@
   },
   "inception_resnet_v2": {
     "function": "tf.keras.applications.inception_resnet_v2.InceptionResNetV2()",
+    "preFun": "tf.keras.applications.inception_resnet_v2.preprocess_input",
+    "layerIdx": "-5",
     "origin": "keras",
     "type": "inception_resnet_v2",
     "parameters": "default",
@@ -188,6 +218,8 @@
   },
   "inception_v3": {
     "function": "tf.keras.applications.inception_v3.InceptionV3()",
+    "preFun": "tf.keras.applications.inception_v3.preprocess_input",
+    "layerIdx": "-14",
     "origin": "keras",
     "type": "inception_v3",
     "parameters": "default",
@@ -200,6 +232,8 @@
   },
   "mobilenet": {
     "function": "tf.keras.applications.mobilenet.MobileNet()",
+    "preFun": "tf.keras.applications.mobilenet.preprocess_input",
+    "layerIdx": "-3",
     "origin": "keras",
     "type": "mobilenet",
     "parameters": "default",
@@ -207,6 +241,8 @@
   },
   "mobilenet_v2": {
     "function": "tf.keras.applications.mobilenet_v2.MobileNetV2()",
+    "preFun": "tf.keras.applications.mobilenet_v2.preprocess_input",
+    "layerIdx": "-3",
     "origin": "keras",
     "type": "mobilenet_v2",
     "parameters": "default",
@@ -214,6 +250,8 @@
   },
   "NASNet_large": {
     "function": "tf.keras.applications.nasnet.NASNetLarge()",
+    "preFun": "tf.keras.applications.nasnet.preprocess_input",
+    "layerIdx": "-18",
     "origin": "keras",
     "type": "nasnet",
     "parameters": "default",
@@ -221,6 +259,8 @@
   },
   "NASNet_mobile": {
     "function": "tf.keras.applications.nasnet.NASNetMobile()",
+    "preFun": "tf.keras.applications.nasnet.preprocess_input",
+    "layerIdx": "-18",
     "origin": "keras",
     "type": "nasnet",
     "parameters": "default",
@@ -228,6 +268,7 @@
   },
   "regnetx002": {
     "function": "tf.keras.applications.regnet.RegNetX002()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -235,6 +276,7 @@
   },
   "regnetx004": {
     "function": "tf.keras.applications.regnet.RegNetX004()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -242,6 +284,7 @@
   },
   "regnetx006": {
     "function": "tf.keras.applications.regnet.RegNetX006()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -249,6 +292,7 @@
   },
   "regnetx008": {
     "function": "tf.keras.applications.regnet.RegNetX008()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -256,6 +300,7 @@
   },
   "regnetx016": {
     "function": "tf.keras.applications.regnet.RegNetX016()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -263,6 +308,7 @@
   },
   "regnetx032": {
     "function": "tf.keras.applications.regnet.RegNetX032()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -270,6 +316,7 @@
   },
   "regnetx040": {
     "function": "tf.keras.applications.regnet.RegNetX040()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -277,6 +324,7 @@
   },
   "regnetx064": {
     "function": "tf.keras.applications.regnet.RegNetX064()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -284,6 +332,7 @@
   },
   "regnetx080": {
     "function": "tf.keras.applications.regnet.RegNetX080()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -291,6 +340,7 @@
   },
   "regnetx120": {
     "function": "tf.keras.applications.regnet.RegNetX120()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -298,6 +348,7 @@
   },
   "regnetx160": {
     "function": "tf.keras.applications.regnet.RegNetX160()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -305,6 +356,7 @@
   },
   "regnetx320": {
     "function": "tf.keras.applications.regnet.RegNetX320()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -312,6 +364,7 @@
   },
   "regnety002": {
     "function": "tf.keras.applications.regnet.RegNetY002()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -319,6 +372,7 @@
   },
   "regnety004": {
     "function": "tf.keras.applications.regnet.RegNetY004()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -326,6 +380,7 @@
   },
   "regnety006": {
     "function": "tf.keras.applications.regnet.RegNetY006()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -333,6 +388,7 @@
   },
   "regnety008": {
     "function": "tf.keras.applications.regnet.RegNetY008()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -340,6 +396,7 @@
   },
   "regnety016": {
     "function": "tf.keras.applications.regnet.RegNetY016()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -347,6 +404,7 @@
   },
   "regnety032": {
     "function": "tf.keras.applications.regnet.RegNetY032()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -354,6 +412,7 @@
   },
   "regnety040": {
     "function": "tf.keras.applications.regnet.RegNetY040()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -361,6 +420,7 @@
   },
   "regnety064": {
     "function": "tf.keras.applications.regnet.RegNetY064()",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -368,6 +428,7 @@
   },
   "regnety080": {
     "function": "tf.keras.applications.regnet.RegNetY080()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -375,6 +436,7 @@
   },
   "regnety120": {
     "function": "tf.keras.applications.regnet.RegNetY120()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -382,6 +444,7 @@
   },
   "regnety160": {
     "function": "tf.keras.applications.regnet.RegNetY160()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -389,6 +452,7 @@
   },
   "regnety320": {
     "function": "tf.keras.applications.regnet.RegNetY320()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "regnet",
     "parameters": "default",
@@ -396,6 +460,8 @@
   },
   "resnet101": {
     "function": "tf.keras.applications.resnet.ResNet101()",
+    "preFun": "tf.keras.applications.resnet.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "resnet",
     "parameters": "default",
@@ -403,6 +469,8 @@
   },
   "resnet152": {
     "function": "tf.keras.applications.resnet.ResNet152()",
+    "preFun": "tf.keras.applications.resnet.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "resnet",
     "parameters": "default",
@@ -410,6 +478,8 @@
   },
   "resnet50": {
     "function": "tf.keras.applications.resnet50.ResNet50()",
+    "preFun": "tf.keras.applications.resnet.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "resnet50",
     "parameters": "default",
@@ -417,6 +487,7 @@
   },
   "resnet-rs-101": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS101()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "resnet_rs",
     "parameters": "default",
@@ -424,6 +495,7 @@
   },
   "resnet-rs-152": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS152()",
+    "layerIdx": "-7",
     "origin": "keras",
     "type": "resnet_rs",
     "parameters": "default",
@@ -431,6 +503,7 @@
   },
   "resnet-rs-200": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS200()",
+    "layerIdx": "-8",
     "origin": "keras",
     "type": "resnet_rs",
     "parameters": "default",
@@ -438,6 +511,7 @@
   },
   "resnet-rs-270": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS270()",
+    "layerIdx": "-8",
     "origin": "keras",
     "type": "resnet_rs",
     "parameters": "default",
@@ -445,6 +519,7 @@
   },
   "resnet-rs-350": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS350()",
+    "layerIdx": "-8",
     "origin": "keras",
     "type": "resnet_rs",
     "parameters": "default",
@@ -452,6 +527,7 @@
   },
   "resnet-rs-420": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS420()",
+    "layerIdx": "-8",
     "origin": "keras",
     "type": "resnet_rs",
     "parameters": "default",
@@ -459,6 +535,7 @@
   },
   "resnet-rs-50": {
     "function": "tf.keras.applications.resnet_rs.ResNetRS50()",
+    "layerIdx": "-8",
     "origin": "keras",
     "type": "resnet_rs",
     "parameters": "default",
@@ -466,6 +543,8 @@
   },
   "resnet101v2": {
     "function": "tf.keras.applications.resnet_v2.ResNet101V2()",
+    "preFun": "tf.keras.applications.resnet_v2.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "resnet_v2",
     "parameters": "default",
@@ -473,6 +552,8 @@
   },
   "resnet152v2": {
     "function": "tf.keras.applications.resnet_v2.ResNet152V2()",
+    "preFun": "tf.keras.applications.resnet_v2.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "resnet_v2",
     "parameters": "default",
@@ -480,6 +561,8 @@
   },
   "resnet50v2": {
     "function": "tf.keras.applications.resnet_v2.ResNet50V2()",
+    "preFun": "tf.keras.applications.resnet_v2.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "resnet_v2",
     "parameters": "default",
@@ -487,6 +570,8 @@
   },
   "vgg16": {
     "function": "tf.keras.applications.vgg16.VGG16()",
+    "preFun": "tf.keras.applications.vgg16.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "vgg16",
     "parameters": "default",
@@ -494,6 +579,8 @@
   },
   "vgg19": {
     "function": "tf.keras.applications.vgg19.VGG19()",
+    "preFun": "tf.keras.applications.vgg19.preprocess_input",
+    "layerIdx": "-6",
     "origin": "keras",
     "type": "vgg19",
     "parameters": "default",
@@ -501,6 +588,8 @@
   },
   "xception": {
     "function": "tf.keras.applications.xception.Xception()",
+    "preFun": "tf.keras.applications.xception.preprocess_input",
+    "layerIdx": "-5",
     "origin": "keras",
     "type": "xception",
     "parameters": "default",
