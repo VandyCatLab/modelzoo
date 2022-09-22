@@ -250,7 +250,12 @@ def get_flat_dataset(data_dir, preprocFun=None, batch_size=64):
     fits in memory.
     """
     files = os.listdir(data_dir)
-    imgs = np.empty([len(files)] + list(preprocFun.shape))
+    # Checks for type 'function'
+    # Cannot use isinstance() here as 'function' is not recognized as a valid type
+    if str(type(preprocFun)) == "<class 'function'>":
+        imgs = np.empty([len(files)] + list(preprocFun.shape))
+    else:
+        imgs = np.empty([len(files)] + list(preprocFun.shape))
 
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
@@ -274,26 +279,32 @@ class preproc:
         numCat=None,
         scale=None,
         offset=None,
-        fun=None,
+        preFun=None,
+        origin=None,
         **kwargs,
     ):
+        self.origin = origin
         self.shape = shape
         self.dtype = dtype
-        self.fun = fun
+        self.preFun = preFun
         self.scale = scale
         self.offset = offset
         self.numCat = numCat
         self.labels = labels
 
-    def __call__(self, img, label=None):
+    def __call__(self, img, label=None,):
         # Rescale then cast to correct datatype
         img = tf.keras.preprocessing.image.smart_resize(img, self.shape[:2])
         img = tf.reshape(img, self.shape)
         img = tf.cast(img, self.dtype)
 
         # Apply override function
-        if self.fun is not None:
-            img = self.fun(img)
+        if self.preFun is not None:
+            if self.origin is not None:
+                proc = self.preFun + "(img)"
+                img = eval(proc)
+            else:
+                img = self.preFun(img)
 
         # Rescale
         if self.scale is not None and self.offset is not None:
