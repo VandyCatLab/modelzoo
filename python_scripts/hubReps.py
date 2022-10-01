@@ -8,7 +8,7 @@ import analysis
 import itertools
 import pandas as pd
 import datetime
-
+import pretrainedmodels
 
 def get_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
@@ -56,6 +56,14 @@ def get_reps(model, dataset, info, batch_size):
     reps = reps[:numImgs]
     return reps
 
+def get_keras_model(hubModels):
+    function = hubModels[modelName]['function']
+    model_full = eval(function)
+    inp = model_full.input
+    layerName = model_full.layers[int(hubModels[modelName]['layerIdx'])].name
+    out = model_full.get_layer(layerName).output
+    model = tf.keras.Model(inputs=inp, outputs=out)
+    return model, model_full
 
 if __name__ == "__main__":
     import argparse
@@ -69,7 +77,7 @@ if __name__ == "__main__":
         type=str,
         required=True,
         help="analysis to perform",
-        choices=["reps", "similarity"],
+        choices=["reps", "similarity", "test_model"],
     )
     parser.add_argument(
         "--model",
@@ -126,7 +134,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--dataset",
         type=str,
-        help="name of the dataset to use",
+        help="name of the dataset to use, use 'test' for testing a model",
     )
     parser.add_argument(
         "--group", "-g", type=str, help="analysis group to store together"
@@ -172,12 +180,7 @@ if __name__ == "__main__":
 
             elif args.models_file == "./hubModels_keras.json":
                 # Create model from keras function
-                function = hubModels[modelName]['function']
-                model_full = eval(function)
-                inp = model_full.input
-                layerName = model_full.layers[int(hubModels[modelName]['layerIdx'])].name
-                out = model_full.get_layer(layerName).output
-                model = tf.keras.Model(inputs=inp, outputs=out)
+                model = get_keras_model(hubModels)[0]
             else:
                 raise ValueError(f"Unknown models file {args.models_file}")
 
@@ -312,3 +315,33 @@ if __name__ == "__main__":
             )
             simDf.to_csv(fileName)
 
+    elif args.analysis == "test_model":
+        print(
+            f"==== Working on testing model: {modelName} [{datetime.datetime.now()}] ====",
+            flush=True,
+        )
+        preprocFun = datasets.preproc(
+            **hubModels[modelName],
+            labels=False,
+        )
+        if args.dataset == "novset" or "kreigset":
+            dataset = datasets.get_flat_dataset(
+                args.data_dir, preprocFun, args.batch_size
+            )
+            model, model_full = get_keras_model(hubModels)
+            predictions = []
+            if args.models_file == "./hubModels_keras.json":
+                model_full = get_keras_model(hubModels)[1]
+                pred_func = "tf.keras.applications." + hubModels[modelName]['type'] + ".decode_predictions(preds, top=5)"
+                predictions = []
+                for i, batch in enumerate(dataset):
+                    preds = model_full.predict(batch)
+                    decode_function = 0
+                    predictions.append(eval(pred_func))
+
+                print('\n'.join(map(str,predictions[0])))
+            else:
+                raise ValueError(f"models file unsupported for testing {args.dataset}")
+
+
+ 
