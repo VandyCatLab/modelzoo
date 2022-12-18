@@ -1,5 +1,6 @@
 import datasets
 import tensorflow as tf
+import tensorflow.core
 import tensorflow_hub as hub
 import json
 import numpy as np
@@ -8,7 +9,10 @@ import analysis
 import itertools
 import pandas as pd
 import datetime
-import pretrainedmodels
+import torch
+from torchvision import transforms
+import cv2
+from torchvision.models.feature_extraction import create_feature_extractor
 
 def get_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
@@ -24,9 +28,13 @@ def get_reps(model, dataset, info, batch_size):
     else:
         # Get output size of model
         output_size = model.output_shape[1:]
+        print("output size = ")
+        print(output_size)
+        print(model.output_shape)
 
     # Create empty array to store representations
     reps = np.zeros((nBatches * batch_size, *output_size), dtype="float32")
+
     numImgs = 0
     for i, batch in enumerate(dataset):
         print(
@@ -54,6 +62,71 @@ def get_reps(model, dataset, info, batch_size):
 
     # Remove empty rows
     reps = reps[:numImgs]
+    print(reps.shape)
+    return reps
+
+
+def get_pytorch_reps(model, dataset, info, batch_size):
+    """Manual batching to avoid memory problems."""
+    # Num batches
+    nBatches = len(dataset)
+
+    #dataset = torch.utils.data.TensorDataset(dataset)
+    x = info["shape"]
+    x.insert(0, 1)
+    print(x)
+    temp_data = torch.rand(x)
+    a = info["outputLayer"][1]
+    b = info["outputLayer"][0]
+    return_nodes = {
+        a: b
+    }
+    print(return_nodes)
+    model_int = create_feature_extractor(model, return_nodes=return_nodes)  # dict(layer4 = 'layer4.2.conv2'))
+    intermediate_outputs = model_int(temp_data)
+    intermediate = intermediate_outputs[b]
+
+
+    if "outputIdx" in info.keys():
+        # Get output size of model
+        output_size = tuple(intermediate.shape)
+
+    else:
+        # Get output size of model
+        output_size = tuple(intermediate.shape)
+        print(output_size)
+    # Create empty array to store representations
+    reps = np.zeros((nBatches * batch_size, *output_size[1:]), dtype="float32")
+
+    numImgs = 0
+    for i, batch in enumerate(dataset):
+        print(
+            f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True
+        )
+        batch = batch.float()
+        numImgs += len(batch)
+        res_full = model_int(batch)
+        res_data = res_full[b]
+        res = res_data.detach().numpy()
+        if "outputIdx" in info.keys():
+            # Save representations
+
+            if res[info["outputIdx"]].shape[0] == batch_size:
+                reps[i * batch_size: (i + 1) * batch_size] = res[
+                    info["outputIdx"]]
+            else:
+                reps[i * batch_size: i * batch_size + len(res[info["outputIdx"]])] = res[info["outputIdx"]]
+
+        else:
+            # Save representations
+            if res.shape[0] == batch_size:
+                reps[i * batch_size: (i + 1) * batch_size] = res
+            else:
+                reps[i * batch_size: i * batch_size + len(res)] = res
+
+    # Remove empty rows
+    reps = reps[:numImgs]
+    print(reps.shape)
     return reps
 
 def get_keras_model(hubModels):
@@ -64,6 +137,11 @@ def get_keras_model(hubModels):
     out = model_full.get_layer(layerName).output
     model = tf.keras.Model(inputs=inp, outputs=out)
     return model, model_full
+
+def get_pytorch_hub_model(hubModels):
+    function = hubModels[modelName]['function']
+    model = eval("torch.hub.load" + function)
+    return model
 
 if __name__ == "__main__":
     import argparse
@@ -116,7 +194,7 @@ if __name__ == "__main__":
         "-f",
         type=str,
         help=".json file with the hub model info",
-        choices=["./hubModels.json","./hubModels_keras.json"],
+        choices=["./hubModels.json","./hubModels_keras.json","./hubModels_pytorch.json"],
         default="./hubModels.json"
     )
     parser.add_argument(
@@ -181,39 +259,54 @@ if __name__ == "__main__":
             elif args.models_file == "./hubModels_keras.json":
                 # Create model from keras function
                 model = get_keras_model(hubModels)[0]
+
+            elif args.models_file == "./hubModels_pytorch.json":
+                # Create model from pytorch hub
+                model = get_pytorch_hub_model(hubModels)
             else:
                 raise ValueError(f"Unknown models file {args.models_file}")
 
-            #Create dataset
-            preprocFun = datasets.preproc(
-                **hubModels[modelName],
-                labels=False,
-            )
+            if args.models_file != "./hubModels_pytorch.json":
+                preprocFun = datasets.preproc(
+                    **hubModels[modelName],
+                    labels=False,
+                )
 
-            if args.dataset == "imagenet":
-                dataset = datasets.get_imagenet_set(
-                    preprocFun,
-                    args.batch_size,
-                    args.data_dir,
-                    slice=args.slice,
+                if args.dataset == "imagenet":
+                    dataset = datasets.get_imagenet_set(
+                        preprocFun,
+                        args.batch_size,
+                        args.data_dir,
+                        slice=args.slice,
+                    )
+                elif args.dataset == "novset":
+                    dataset = datasets.get_flat_dataset(
+                        args.data_dir, preprocFun, args.batch_size
+                    )
+                elif args.dataset == "kriegset":
+                    dataset = datasets.get_flat_dataset(
+                        args.data_dir, preprocFun, args.batch_size
+                    )
+                else:
+                    raise ValueError(f"Unknown dataset {args.dataset}")
+
+                reps = get_reps(
+                    model, dataset, hubModels[modelName], args.batch_size
                 )
-            elif args.dataset == "novset":
-                dataset = datasets.get_flat_dataset(
-                    args.data_dir, preprocFun, args.batch_size
-                )
-            elif args.dataset == "kriegset":
-                dataset = datasets.get_flat_dataset(
-                    args.data_dir, preprocFun, args.batch_size
-                )
+
             else:
-                raise ValueError(f"Unknown dataset {args.dataset}")
+                # using pytorch model
+                dataset = datasets.get_pytorch_dataset(
+                    args.data_dir, info, args.batch_size
+                )
 
-            reps = get_reps(
-                model, dataset, hubModels[modelName], args.batch_size
-            )
+                reps = get_pytorch_reps(
+                    model, dataset, hubModels[modelName], args.batch_size
+                )
 
             np.save(fileName, reps)
             print(f"Saved {fileName}", flush=True)
+
     elif args.analysis == "similarity":
         print(
             f"==== Working on similarities for model: {modelName} [{datetime.datetime.now()}] ====",
@@ -320,28 +413,42 @@ if __name__ == "__main__":
             f"==== Working on testing model: {modelName} [{datetime.datetime.now()}] ====",
             flush=True,
         )
-        preprocFun = datasets.preproc(
-            **hubModels[modelName],
-            labels=False,
-        )
+
         if args.dataset == "novset" or "kreigset":
-            dataset = datasets.get_flat_dataset(
-                args.data_dir, preprocFun, args.batch_size
-            )
-            model, model_full = get_keras_model(hubModels)
+
             predictions = []
             if args.models_file == "./hubModels_keras.json":
+                preprocFun = datasets.preproc(
+                    **hubModels[modelName],
+                    labels=False,
+                )
+                dataset = datasets.get_flat_dataset(
+                    args.data_dir, preprocFun, args.batch_size
+                )
                 model_full = get_keras_model(hubModels)[1]
                 pred_func = "tf.keras.applications." + hubModels[modelName]['type'] + ".decode_predictions(preds, top=5)"
                 predictions = []
                 for i, batch in enumerate(dataset):
                     preds = model_full.predict(batch)
-                    decode_function = 0
                     predictions.append(eval(pred_func))
 
                 print('\n'.join(map(str,predictions[0])))
+            elif args.models_file == "./hubModels_pytorch.json":
+                dataset = datasets.get_pytorch_dataset(
+                    args.data_dir, hubModels[modelName], args.batch_size
+                )
+                model = get_pytorch_hub_model(hubModels)
+                with torch.no_grad():
+                    info = hubModels[modelName]
+                    for i, batch in enumerate(dataset):
+                        if "outputIdx" in info.keys():
+                            output = model(batch)
+                        else:
+                            output = model(batch)
+                tensor = torch.round(output[0])
+                cv2.imwrite(tensor, "tensorImage.png")
+
             else:
                 raise ValueError(f"models file unsupported for testing {args.dataset}")
 
 
- 

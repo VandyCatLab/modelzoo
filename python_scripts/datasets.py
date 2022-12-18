@@ -6,10 +6,13 @@ import tensorflow_addons as tfa
 from tensorflow.keras.datasets import cifar10
 import tensorflow_datasets as tfds
 import PIL
+from PIL import Image
 import random
 import pandas as pd
 import shutil
-
+import torch
+from torch.utils.data import Dataset
+from torchvision import transforms
 
 # Get training information
 (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
@@ -243,6 +246,29 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
 
     return dataset
 
+def get_pytorch_dataset(data_dir, info, bat_size=64):
+    """
+    Return a dataset where all images are from data_dir and uses torchvision preprocessing.
+    Assumes that it all fits in memory.
+    """
+    files = os.listdir(data_dir)
+
+    imgs = np.empty([len(files)] + list(info.shape))
+    for i, file in enumerate(files):
+        img = PIL.Image.open(os.path.join(data_dir, file))
+        # m, s used for default when normalize values not given
+        m, s = np.mean(img, axis=(0, 1)), np.std(img, axis=(0, 1))
+
+        py_pre = "transforms.Compose(" + info["trans_params"] + ")"
+        py_preproc = eval(py_pre)
+        img = py_preproc(img)
+        img = img.unsqueeze(0)
+        imgs[i] = img
+
+    imgs = torch.utils.data.DataLoader(imgs, batch_size=bat_size)
+
+    return imgs
+
 
 def get_flat_dataset(data_dir, preprocFun=None, batch_size=64):
     """
@@ -250,23 +276,21 @@ def get_flat_dataset(data_dir, preprocFun=None, batch_size=64):
     fits in memory.
     """
     files = os.listdir(data_dir)
-    # Checks for type 'function'
-    # Cannot use isinstance() here as 'function' is not recognized as a valid type
-    if str(type(preprocFun)) == "<class 'function'>":
-        imgs = np.empty([len(files)] + list(preprocFun.shape))
-    else:
-        imgs = np.empty([len(files)] + list(preprocFun.shape))
 
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
+        imgs = np.empty([len(files)] + list(preprocFun.shape))
         img = np.array(img)
+
         if preprocFun is not None:
             img = preprocFun(img)
+
         imgs[i] = img
 
     imgs = tf.data.Dataset.from_tensor_slices(imgs)
     imgs = imgs.batch(batch_size)
     imgs = imgs.prefetch(tf.data.AUTOTUNE)
+
     return imgs
 
 
@@ -281,9 +305,11 @@ class preproc:
         offset=None,
         preFun=None,
         origin=None,
+        trans_params=None,
         **kwargs,
     ):
         self.origin = origin
+        self.trans_params = trans_params
         self.shape = shape
         self.dtype = dtype
         self.preFun = preFun
@@ -300,7 +326,7 @@ class preproc:
 
         # Apply override function
         if self.preFun is not None:
-            if self.origin is not None:
+            if self.origin == "keras":
                 proc = self.preFun + "(img)"
                 img = eval(proc)
             else:

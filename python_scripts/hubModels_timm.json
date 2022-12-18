@@ -1,0 +1,237 @@
+{
+    "adv_inception_v3": {
+        "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-weights/adv_inception_v3-9e27bd63.pth",
+        "num_classes": 1000,
+        "input_size": [
+            3,
+            299,
+            299
+        ],
+        "pool_size": [
+            8,
+            8
+        ],
+        "crop_pct": 0.875,
+        "interpolation": "bicubic",
+        "mean": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "std": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "first_conv": "Conv2d_1a_3x3.conv",
+        "classifier": "fc",
+        "has_aux": false,
+        "label_offset": 1,
+        "architecture": "adv_inception_v3",
+        "num_params": 21785568,
+        "num_layers": 193
+    },
+    "bat_resnext26ts": {
+        "url": "https://github.com/rwightman/pytorch-image-models/releases/download/v0.1-attn-weights/bat_resnext26ts_256-fa6fd595.pth",
+        "num_classes": 1000,
+        "input_size": [
+            3,
+            256,
+            256
+        ],
+        "pool_size": [
+            8,
+            8
+        ],
+        "crop_pct": 0.9,
+        "interpolation": "bicubic",
+        "mean": [
+            0.485,
+            0.456,
+            0.406
+        ],
+        "std": [
+            0.229,
+            0.224,
+            0.225
+        ],
+        "first_conv": "stem.conv1.conv",
+        "classifier": "head.fc",
+        "min_input_size": [
+            3,
+            256,
+            256
+        ],
+        "architecture": "bat_resnext26ts",
+        "num_params": 8682200,
+        "num_layers": 255
+    },
+    "beit_base_patch16_224": {
+        "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_base_patch16_224_pt22k_ft22kto1k.pth",
+        "num_classes": 1000,
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "pool_size": null,
+        "crop_pct": 0.9,
+        "interpolation": "bicubic",
+        "fixed_input_size": true,
+        "mean": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "std": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "first_conv": "patch_embed.proj",
+        "classifier": "head",
+        "architecture": "beit_base_patch16_224",
+        "num_params": 85761984,
+        "num_layers": 150
+    },
+    "beit_base_patch16_224_in22k": {
+        "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_base_patch16_224_pt22k_ft22k.pth",
+        "num_classes": 21841,
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "pool_size": null,
+        "crop_pct": 0.9,
+        "interpolation": "bicubic",
+        "fixed_input_size": true,
+        "mean": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "std": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "first_conv": "patch_embed.proj",
+        "classifier": "head",
+        "architecture": "beit_base_patch16_224_in22k",
+        "num_params": 85761984,
+        "num_layers": 150
+    },
+    "beit_base_patch16_384": {
+        "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_base_patch16_384_pt22k_ft22kto1k.pth",
+        "num_classes": 1000,
+        "input_size": [
+            3,
+            384,
+            384
+        ],
+        "pool_size": null,
+        "crop_pct": 1.0,
+        "interpolation": "bicubic",
+        "fixed_input_size": true,
+        "mean": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "std": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "first_conv": "patch_embed.proj",
+        "classifier": "head",
+        "architecture": "beit_base_patch16_384",
+        "num_params": 85975104,
+        "num_layers": 150
+    },
+    "beit_large_patch16_224": {
+        "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_large_patch16_224_pt22k_ft22kto1k.pth",
+        "num_classes": 1000,
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "pool_size": null,
+        "crop_pct": 0.9,
+        "interpolation": "bicubic",
+        "fixed_input_size": true,
+        "mean": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "std": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "first_conv": "patch_embed.proj",
+        "classifier": "head",
+        "architecture": "beit_large_patch16_224",
+        "num_params": 303405568,
+        "num_layers": 294
+    },
+    "beit_large_patch16_224_in22k": {
+        "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_large_patch16_224_pt22k_ft22k.pth",
+        "num_classes": 21841,
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "pool_size": null,
+        "crop_pct": 0.9,
+        "interpolation": "bicubic",
+        "fixed_input_size": true,
+        "mean": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "std": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "first_conv": "patch_embed.proj",
+        "classifier": "head",
+        "architecture": "beit_large_patch16_224_in22k",
+        "num_params": 303405568,
+        "num_layers": 294
+    },
+    "beit_large_patch16_384": {
+        "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_large_patch16_384_pt22k_ft22kto1k.pth",
+        "num_classes": 1000,
+        "input_size": [
+            3,
+            384,
+            384
+        ],
+        "pool_size": null,
+        "crop_pct": 1.0,
+        "interpolation": "bicubic",
+        "fixed_input_size": true,
+        "mean": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "std": [
+            0.5,
+            0.5,
+            0.5
+        ],
+        "first_conv": "patch_embed.proj",
+        "classifier": "head",
+        "architecture": "beit_large_patch16_384",
+        "num_params": 303973888,
+        "num_layers": 294
+    }
+}
