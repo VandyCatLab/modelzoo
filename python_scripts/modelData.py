@@ -22,7 +22,7 @@ def revise_names(names):
     idx = 0
     new_names = model_names
     unused_list = ['vgg', 'tf_efficientnet', 'efficientnet', 'densenet', 'mobilenet', 'resnet', 'tf_mobilenet',
-                   'convnext']
+                   'convnext', 'deit3_medium_patch16_224_in21ft1k', 'pvt_v2_b5', 'vit_giant_patch14_224_clip_laion2b', 'xcit_medium_24_p16_224_dist']
     for i in new_names:
         n = 0
         while n <= (len(unused_list) - 1):
@@ -228,7 +228,9 @@ if __name__ == "__main__":
         else:
             if args.models_file == "./hubModels_timm.json":
                 model_names = timm.list_models(pretrained=True)
-                new_model_names = revise_names()
+                new_model_names = revise_names(model_names)
+                new_model_names = revise_names(new_model_names)
+                new_model_names = revise_names(new_model_names)
                 n = 0
                 for i in new_model_names:
                     print("Working on " + i + f" (Index {n})")
