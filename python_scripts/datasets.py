@@ -259,11 +259,21 @@ def get_pytorch_dataset(data_dir, info, bat_size=64):
         # m, s used for default when normalize values not given
         m, s = np.mean(img, axis=(0, 1)), np.std(img, axis=(0, 1))
 
-        py_pre = "transforms.Compose(" + info["trans_params"] + ")"
-        py_preproc = eval(py_pre)
-        img = py_preproc(img)
-        img = img.unsqueeze(0)
-        imgs[i] = img
+        # using 'Compose' for general pytorch
+        if info["trans_params"]:
+            py_pre = "transforms.Compose(" + info["trans_params"] + ")"
+            py_preproc = eval(py_pre)
+            img = py_preproc(img)
+            img = img.unsqueeze(0)
+            imgs[i] = img
+
+        # using preprocessing function for transformers
+        elif info["trans_preproc"]:
+            pypre = "transformers." + info["trans_preproc"] + ".from_pretrained(" + info["path"] + ")"
+            py_preproc = eval(py_pre)
+            img = py_preproc(img)
+            img = img.unsqueeze(0)
+            imgs[i] = img
 
     imgs = torch.utils.data.DataLoader(imgs, batch_size=bat_size)
 
