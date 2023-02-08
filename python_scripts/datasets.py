@@ -259,7 +259,7 @@ def get_pytorch_dataset(data_dir, info, bat_size=64):
         # m, s used for default when normalize values not given
         m, s = np.mean(img, axis=(0, 1)), np.std(img, axis=(0, 1))
 
-        # using 'Compose' for general pytorch models
+        # using 'Compose' for general pytorch model
         if info["trans_params"]:
             py_pre = "transforms.Compose(" + info["trans_params"] + ")"
             py_preproc = eval(py_pre)
