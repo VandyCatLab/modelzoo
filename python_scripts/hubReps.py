@@ -13,6 +13,7 @@ import torch
 from torchvision import transforms
 import cv2
 from torchvision.models.feature_extraction import create_feature_extractor
+import transformers
 
 def get_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
@@ -263,10 +264,15 @@ if __name__ == "__main__":
             elif args.models_file == "./hubModels_pytorch.json":
                 # Create model from pytorch hub
                 model = get_pytorch_hub_model(hubModels)
+
+            elif args.models_file == "./hubModels_transformers.json":
+                # Create model from transformers package
+                model, trans_preproc = get_transformer(info["pretrain_func"], info["preproc_func"])
+
             else:
                 raise ValueError(f"Unknown models file {args.models_file}")
 
-            if args.models_file != "./hubModels_pytorch.json":
+            if args.models_file == "./hubModels.json" or args.models_file == "./hubModels_keras.json":
                 preprocFun = datasets.preproc(
                     **hubModels[modelName],
                     labels=False,
@@ -294,7 +300,11 @@ if __name__ == "__main__":
                     model, dataset, hubModels[modelName], args.batch_size
                 )
 
-            else:
+            elif args.models_file == "./hubModels_pytorch.json" \
+                    or args.models_file == "./hubModels_pretrainedmodels.json" \
+                    or args.models_file == "./hubModels_timm.json" \
+                    or args.models_file == "./hubModels_transformers.json":
+
                 # using pytorch model
                 dataset = datasets.get_pytorch_dataset(
                     args.data_dir, info, args.batch_size
@@ -303,9 +313,12 @@ if __name__ == "__main__":
                 reps = get_pytorch_reps(
                     model, dataset, hubModels[modelName], args.batch_size
                 )
+            else:
+                raise ValueError(f"Unknown models file {args.models_file}")
 
             np.save(fileName, reps)
             print(f"Saved {fileName}", flush=True)
+
 
     elif args.analysis == "similarity":
         print(
