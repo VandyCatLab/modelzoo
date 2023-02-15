@@ -13,6 +13,7 @@ import shutil
 import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
+import timm
 
 # Get training information
 (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
@@ -246,21 +247,24 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
 
     return dataset
 
-def get_pytorch_dataset(data_dir, info, bat_size=64):
+def get_pytorch_dataset(data_dir, info, model, bat_size=64,):
     """
     Return a dataset where all images are from data_dir and uses torchvision preprocessing.
     Assumes that it all fits in memory.
     """
     files = os.listdir(data_dir)
+    if 'shape' in info:
+        imgs = np.empty([len(files)] + list(info.shape))
+    elif 'input_size' in info:
+        imgs = np.empty([len(files)] + list(info['input_size']))
 
-    imgs = np.empty([len(files)] + list(info.shape))
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
         # m, s used for default when normalize values not given
         m, s = np.mean(img, axis=(0, 1)), np.std(img, axis=(0, 1))
 
         # using 'Compose' for general pytorch models
-        if info["trans_params"]:
+        if "trans_params" in info:
             py_pre = "transforms.Compose(" + info["trans_params"] + ")"
             py_preproc = eval(py_pre)
             img = py_preproc(img)
@@ -268,11 +272,17 @@ def get_pytorch_dataset(data_dir, info, bat_size=64):
             imgs[i] = img
 
         # using preprocessing function for transformers
-        elif info["trans_preproc"]:
+        elif "trans_preproc" in info:
             pypre = "transformers." + info["trans_preproc"] + ".from_pretrained(" + info["path"] + ")"
             py_preproc = eval(py_pre)
             img = py_preproc(img)
             img = img.unsqueeze(0)
+            imgs[i] = img
+
+        else:
+            config = timm.data.resolve_data_config({}, model=model)
+            transform = timm.data.transforms_factory.create_transform(**config)
+            img = transform(img).unsqueeze(0)
             imgs[i] = img
 
     imgs = torch.utils.data.DataLoader(imgs, batch_size=bat_size)

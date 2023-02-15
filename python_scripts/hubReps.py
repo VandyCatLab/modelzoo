@@ -14,6 +14,7 @@ from torchvision import transforms
 import cv2
 from torchvision.models.feature_extraction import create_feature_extractor
 import transformers
+import timm
 
 def get_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
@@ -71,21 +72,27 @@ def get_pytorch_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
     # Num batches
     nBatches = len(dataset)
-
+    b = None
     #dataset = torch.utils.data.TensorDataset(dataset)
-    x = info["shape"]
+    if 'shape' in info:
+        x = info["shape"]
+    elif 'input_size' in info:
+        x = info["input_size"]
     x.insert(0, 1)
-    print(x)
     temp_data = torch.rand(x)
-    a = info["outputLayer"][1]
-    b = info["outputLayer"][0]
-    return_nodes = {
-        a: b
-    }
-    print(return_nodes)
-    model_int = create_feature_extractor(model, return_nodes=return_nodes)  # dict(layer4 = 'layer4.2.conv2'))
-    intermediate_outputs = model_int(temp_data)
-    intermediate = intermediate_outputs[b]
+    if 'outputLayer' in info:
+        a = info["outputLayer"][1]
+        b = info["outputLayer"][0]
+        return_nodes = {
+            a: b
+        }
+        print(return_nodes)
+        model_int = create_feature_extractor(model, return_nodes=return_nodes)  # dict(layer4 = 'layer4.2.conv2'))
+        intermediate_outputs = model_int(temp_data)
+        intermediate = intermediate_outputs[b]
+    else:
+        model_int = model
+        intermediate = model_int(temp_data)
 
 
     if "outputIdx" in info.keys():
@@ -107,7 +114,10 @@ def get_pytorch_reps(model, dataset, info, batch_size):
         batch = batch.float()
         numImgs += len(batch)
         res_full = model_int(batch)
-        res_data = res_full[b]
+        if b != None:
+            res_data = res_full[b]
+        else:
+            res_data = res_full
         res = res_data.detach().numpy()
         if "outputIdx" in info.keys():
             # Save representations
@@ -139,9 +149,14 @@ def get_keras_model(hubModels):
     model = tf.keras.Model(inputs=inp, outputs=out)
     return model, model_full
 
-def get_pytorch_hub_model(hubModels):
-    function = hubModels[modelName]['function']
-    model = eval("torch.hub.load" + function)
+def get_pytorch_model(hubModels):
+    if args.models_file == "./hubModels_timm.json":
+        print(modelName)
+        print(hubModels[modelName])
+        model = timm.create_model(modelName, pretrained=True, num_classes=0)
+    else:
+        function = hubModels[modelName]['function']
+        model = eval("torch.hub.load" + function)
     return model
 
 if __name__ == "__main__":
@@ -195,7 +210,6 @@ if __name__ == "__main__":
         "-f",
         type=str,
         help=".json file with the hub model info",
-        choices=["./hubModels.json","./hubModels_keras.json","./hubModels_pytorch.json"],
         default="./hubModels.json"
     )
     parser.add_argument(
@@ -261,9 +275,9 @@ if __name__ == "__main__":
                 # Create model from keras function
                 model = get_keras_model(hubModels)[0]
 
-            elif args.models_file == "./hubModels_pytorch.json":
+            elif (args.models_file == "./hubModels_pytorch.json") or (args.models_file == "./hubModels_timm.json"):
                 # Create model from pytorch hub
-                model = get_pytorch_hub_model(hubModels)
+                model = get_pytorch_model(hubModels)
 
             elif args.models_file == "./hubModels_transformers.json":
                 # Create model from transformers package
@@ -307,7 +321,7 @@ if __name__ == "__main__":
 
                 # using pytorch model
                 dataset = datasets.get_pytorch_dataset(
-                    args.data_dir, info, args.batch_size
+                    args.data_dir, info, model, args.batch_size
                 )
 
                 reps = get_pytorch_reps(
@@ -450,7 +464,7 @@ if __name__ == "__main__":
                 dataset = datasets.get_pytorch_dataset(
                     args.data_dir, hubModels[modelName], args.batch_size
                 )
-                model = get_pytorch_hub_model(hubModels)
+                model = get_pytorch_model(hubModels)
                 with torch.no_grad():
                     info = hubModels[modelName]
                     for i, batch in enumerate(dataset):
