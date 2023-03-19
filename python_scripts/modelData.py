@@ -16,6 +16,7 @@ import torchvision
 from torchvision.models.feature_extraction import create_feature_extractor
 import timm
 import pretrainedmodels
+import transformers
 
 
 def revise_names(names):
@@ -75,6 +76,23 @@ def get_model(name):
         import ssl
         ssl._create_default_https_context = ssl._create_unverified_context
 
+    elif args.models_file == "./hubModels_transformers.json":
+
+        function = name['func']
+        model_full = eval('transformers.' + function + f'.from_pretrained("{name_i}")')
+        x = name["shape"] if "shape" in name else [224, 224, 3]
+        x.insert(0, 1)
+        temp_data = torch.rand(x)
+        if len(name["outputLayer"]) > 1:
+            a = name["outputLayer"][1]
+            b = name["outputLayer"][0]
+            return_nodes = {
+                a: b
+            }
+        else:
+            return_nodes = name["outputLayer"]
+        model = model_full #create_feature_extractor(model_full, return_nodes=return_nodes)
+
     else:
         shape = name["shape"] if "shape" in name else [224, 224, 3]
         # Create model from tfhub
@@ -104,7 +122,10 @@ def get_children(model: torch.nn.Module):
 
 
 def get_model_data(model, get_weights=False):
-    if args.models_file == "./hubModels_pytorch.json" or args.models_file == "./hubModels_timm.json":
+    if args.models_file == "./hubModels_pytorch.json" \
+            or args.models_file == "./hubModels_timm.json" \
+            or args.models_file == "./hubModels_transformers.json":
+
         num_layers = len(get_children(model))
         for param in model.parameters():
             param.requires_grad = False
@@ -176,7 +197,6 @@ if __name__ == "__main__":
         "-f",
         type=str,
         help=".json file with the hub model info",
-        choices=["./hubModels.json", "./hubModels_keras.json", "./hubModels_pytorch.json","./hubModels_timm.json", "./hubModels_pretrainedmodels.json"],
         default="./hubModels.json"
     )
     parser.add_argument(
