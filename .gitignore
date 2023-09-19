@@ -22,3 +22,5 @@ venv/
 
 # Others
 notebooks/masterSanbox.py
+
+torch/
