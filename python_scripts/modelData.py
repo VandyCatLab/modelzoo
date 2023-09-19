@@ -79,19 +79,9 @@ def get_model(name):
     elif args.models_file == "./hubModels_transformers.json":
 
         function = name['func']
-        model_full = eval('transformers.' + function + f'.from_pretrained("{name_i}")')
-        x = name["shape"] if "shape" in name else [224, 224, 3]
-        x.insert(0, 1)
-        temp_data = torch.rand(x)
-        if len(name["outputLayer"]) > 1:
-            a = name["outputLayer"][1]
-            b = name["outputLayer"][0]
-            return_nodes = {
-                a: b
-            }
-        else:
-            return_nodes = name["outputLayer"]
-        model = model_full #create_feature_extractor(model_full, return_nodes=return_nodes)
+        extractor_func = name['extractor_func']
+        model = eval('transformers.' + function + f'.from_pretrained("{name_i}")')
+        model_de = eval('transformers.' + extractor_func + f'.from_pretrained("{name_i}")')
 
     else:
         shape = name["shape"] if "shape" in name else [224, 224, 3]
@@ -207,6 +197,14 @@ if __name__ == "__main__":
         choices=["yes", "no"],
         default="no"
     )
+    parser.add_argument(
+        "--need_model",
+        "-nm",
+        type=str,
+        help="indicates ned to load up model",
+        choices=["yes", "no"],
+        default="no"
+    )
 
     args = parser.parse_args()
 
@@ -222,22 +220,32 @@ if __name__ == "__main__":
                 name_i = modelNames[idx]
                 print("Working on " + name_i + f" (Index {idx})")
                 name = hubModels[name_i]
-                if (("num_params" not in name) or ("num_layers" not in name)) and ("defunct" not in name):
-                    model = get_model(name)
-                    num_params, num_layers, model_weights = get_model_data(model)
-                    if "num_params" not in name:
-                        params_str = str(num_params)
-                        new_data = {"num_params": params_str}
-                        write_json(new_data)
-                    else:
-                        print(f"{name_i} already has data, skipping.")
+                if (("num_params" not in name) or ("num_layers" not in name) or ("orign" not in name)) and ("defunct" not in name):
+                    if args.need_model is "yes":
+                        model = get_model(name)
+                        num_params, num_layers, model_weights = get_model_data(model)
+                        if "num_params" not in name:
+                            params_str = str(num_params)
+                            new_data = {"num_params": params_str}
+                            write_json(new_data)
+                        else:
+                            print(f"{name_i} already has data, skipping.")
 
-                    if "num_layers" not in name:
-                        layers_str = str(num_layers)
-                        new_data = {"num_layers": layers_str}
-                        write_json(new_data)
-                    else:
-                        print(f"{name_i} already has data, skipping.")
+                        if "num_layers" not in name:
+                            layers_str = str(num_layers)
+                            new_data = {"num_layers": layers_str}
+                            write_json(new_data)
+                        else:
+                            print(f"{name_i} already has data, skipping.")
+
+                    if "origin" not in name:
+                        if args.models_file == "./hubModels.json":
+                            new_data = {"origin": "tenorflowHub"}
+                            write_json(new_data)
+                        if args.models_file == "./hubModels_pytorch.json":
+                            new_data = {"origin": "pytorch"}
+                            write_json(new_data)
+
 
                 else:
                     print(f"{name_i} already has data, skipping.")

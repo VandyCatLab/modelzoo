@@ -68,30 +68,34 @@ def get_reps(model, dataset, info, batch_size):
     return reps
 
 
-def get_pytorch_reps(model, dataset, info, batch_size):
+def get_pytorch_reps(model, data_set, info, batch_size):
     """Manual batching to avoid memory problems."""
     # Num batches
-    nBatches = len(dataset)
+    nBatches = len(data_set)
     b = None
     #dataset = torch.utils.data.TensorDataset(dataset)
     if 'shape' in info:
         x = info["shape"]
     elif 'input_size' in info:
         x = info["input_size"]
-    x.insert(0, 1)
+    if len(x) < 4:
+        x.insert(0, 1)
     temp_data = torch.rand(x)
     if 'outputLayer' in info:
-        a = info["outputLayer"][1]
-        b = info["outputLayer"][0]
-        return_nodes = {
-            a: b
-        }
-        print(return_nodes)
+        if len(info["outputLayer"]) > 1:
+            a = info["outputLayer"][1]
+            b = info["outputLayer"][0]
+            return_nodes = {
+                a: b
+            }
+        else:
+            return_nodes = info["outputLayer"]
         model_int = create_feature_extractor(model, return_nodes=return_nodes)  # dict(layer4 = 'layer4.2.conv2'))
         intermediate_outputs = model_int(temp_data)
         intermediate = intermediate_outputs[b]
     else:
         model_int = model
+        #print(f'\n\n\n{temp_data.shape}')
         intermediate = model_int(temp_data)
 
 
@@ -102,17 +106,17 @@ def get_pytorch_reps(model, dataset, info, batch_size):
     else:
         # Get output size of model
         output_size = tuple(intermediate.shape)
-        print(output_size)
     # Create empty array to store representations
     reps = np.zeros((nBatches * batch_size, *output_size[1:]), dtype="float32")
 
     numImgs = 0
-    for i, batch in enumerate(dataset):
+    for i, batch in enumerate(data_set):
         print(
             f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True
         )
         batch = batch.float()
         numImgs += len(batch)
+        #print(f'\n\n\n{batch.shape}')
         res_full = model_int(batch)
         if b != None:
             res_data = res_full[b]
@@ -137,10 +141,9 @@ def get_pytorch_reps(model, dataset, info, batch_size):
 
     # Remove empty rows
     reps = reps[:numImgs]
-    print(reps.shape)
     return reps
 
-def get_keras_model(hubModels):
+def get_keras_model(hubModels, modelName):
     function = hubModels[modelName]['function']
     model_full = eval(function)
     inp = model_full.input
@@ -149,11 +152,28 @@ def get_keras_model(hubModels):
     model = tf.keras.Model(inputs=inp, outputs=out)
     return model, model_full
 
-def get_pytorch_model(hubModels):
-    if args.models_file == "./hubModels_timm.json":
-        print(modelName)
-        print(hubModels[modelName])
+def get_pytorch_model(hubModels, modelFile, modelName):
+    if modelFile == "./hubModels_timm.json":
+        #print(modelName)
+        #print(hubModels[modelName])
         model = timm.create_model(modelName, pretrained=True, num_classes=0)
+
+    elif modelFile == "./hubModels_transformers.json":
+        function = hubModels[modelName]['func']
+        model_full = eval('transformers.' + function + f'.from_pretrained("{modelName}")')
+        x = hubModels[modelName]["shape"] if "shape" in hubModels[modelName] else [224, 224, 3]
+        x.insert(0, 1)
+        temp_data = torch.rand(x)
+        if len(hubModels[modelName]["outputLayer"]) > 1:
+            a = hubModels[modelName]["outputLayer"][1]
+            b = hubModels[modelName]["outputLayer"][0]
+            return_nodes = {
+                a: b
+            }
+        else:
+            return_nodes = hubModels[modelName]["outputLayer"]
+        model = model_full
+
     else:
         function = hubModels[modelName]['function']
         model = eval("torch.hub.load" + function)
@@ -254,8 +274,17 @@ if __name__ == "__main__":
             f"==== Working on model: {modelName} [{datetime.datetime.now()}] ====",
             flush=True,
         )
+        if args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_timm.json':
+            args.models_file = "./hubModels_timm.json"
+        elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_keras.json':
+            args.models_file = "./hubModels_keras.json"
+        elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels.json':
+            args.models_file = "./hubModels.json"
+        elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_pytorch.json':
+            args.models_file = "./hubModels_pytorch.json"
+
         if args.rep_name is not None:
-            fileName = f"../hubreps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
+            fileName = f"../hubreps/{args.rep_name}/{modelName.replace('/', '-')}-Reps.npy"
         else:
             fileName = f"../hubreps/{modelName.replace('/', '-')}-Reps.npy"
         if os.path.exists(fileName):
@@ -270,19 +299,14 @@ if __name__ == "__main__":
                 inp = tf.keras.Input(shape=shape)
                 out = hub.KerasLayer(info["url"])(inp)
                 model = tf.keras.Model(inputs=inp, outputs=out)
-
             elif args.models_file == "./hubModels_keras.json":
                 # Create model from keras function
-                model = get_keras_model(hubModels)[0]
-
-            elif (args.models_file == "./hubModels_pytorch.json") or (args.models_file == "./hubModels_timm.json"):
+                model = get_keras_model(hubModels, modelName)[0]
+            elif (args.models_file == "./hubModels_pytorch.json") or \
+                (args.models_file == "./hubModels_timm.json") or \
+                (args.models_file == "./hubModels_transformers.json"):
                 # Create model from pytorch hub
-                model = get_pytorch_model(hubModels)
-
-            elif args.models_file == "./hubModels_transformers.json":
-                # Create model from transformers package
-                model, trans_preproc = get_transformer(info["pretrain_func"], info["preproc_func"])
-
+                model = get_pytorch_model(hubModels, args.models_file, modelName)
             else:
                 raise ValueError(f"Unknown models file {args.models_file}")
 
@@ -321,7 +345,7 @@ if __name__ == "__main__":
 
                 # using pytorch model
                 dataset = datasets.get_pytorch_dataset(
-                    args.data_dir, info, model, args.batch_size
+                    args.data_dir, info, model, args.batch_size, modelName
                 )
 
                 reps = get_pytorch_reps(
@@ -452,7 +476,7 @@ if __name__ == "__main__":
                 dataset = datasets.get_flat_dataset(
                     args.data_dir, preprocFun, args.batch_size
                 )
-                model_full = get_keras_model(hubModels)[1]
+                model_full = get_keras_model(hubModels, modelName)[1]
                 pred_func = "tf.keras.applications." + hubModels[modelName]['type'] + ".decode_predictions(preds, top=5)"
                 predictions = []
                 for i, batch in enumerate(dataset):
@@ -464,7 +488,7 @@ if __name__ == "__main__":
                 dataset = datasets.get_pytorch_dataset(
                     args.data_dir, hubModels[modelName], args.batch_size
                 )
-                model = get_pytorch_model(hubModels)
+                model = get_pytorch_model(hubModels, args.models_file, modelName)
                 with torch.no_grad():
                     info = hubModels[modelName]
                     for i, batch in enumerate(dataset):

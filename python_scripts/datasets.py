@@ -247,14 +247,15 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
 
     return dataset
 
-def get_pytorch_dataset(data_dir, info, model, bat_size=64,):
+def get_pytorch_dataset(data_dir, info, model, bat_size=64, modelName = None):
     """
     Return a dataset where all images are from data_dir and uses torchvision preprocessing.
     Assumes that it all fits in memory.
     """
+
     files = os.listdir(data_dir)
     if 'shape' in info:
-        imgs = np.empty([len(files)] + list(info.shape))
+        imgs = np.empty([len(files)] + list(info['shape']))
     elif 'input_size' in info:
         imgs = np.empty([len(files)] + list(info['input_size']))
 
@@ -272,11 +273,12 @@ def get_pytorch_dataset(data_dir, info, model, bat_size=64,):
             imgs[i] = img
 
         # using preprocessing function for transformers
-        elif "trans_preproc" in info:
-            pypre = "transformers." + info["trans_preproc"] + ".from_pretrained(" + info["path"] + ")"
-            py_preproc = eval(py_pre)
-            img = py_preproc(img)
-            img = img.unsqueeze(0)
+        elif "preproc_func" in info:
+            if info["preproc_func"] != "None":
+                pypre = "transformers." + info["preproc_func"] + ".from_pretrained(" + modelName + ")"
+                py_preproc = eval(py_pre)
+                img = py_preproc(img)
+                img = img.unsqueeze(0)
             imgs[i] = img
 
         else:
@@ -286,7 +288,6 @@ def get_pytorch_dataset(data_dir, info, model, bat_size=64,):
             imgs[i] = img
 
     imgs = torch.utils.data.DataLoader(imgs, batch_size=bat_size)
-
     return imgs
 
 
