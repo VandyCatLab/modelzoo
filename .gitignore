@@ -24,3 +24,6 @@ venv/
 notebooks/masterSanbox.py
 
 torch/
+
+python_scripts/svcca
+python_scripts/pretrained-models.pytorch
