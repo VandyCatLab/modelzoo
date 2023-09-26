@@ -8,7 +8,7 @@
 #SBATCH --mem=64G
 #SBATCH --time=6:00:00
 #SBATCH --array=0-1
-#SBATCH --output=../logs/master/hubReps/hubRep_%a.out 
+#SBATCH --output=../logs/master/hubReps/hubRep_%a.out
 #SBATCH --mail-user=jason.k.chow@vanderbilt.edu
 #SBATCH --mail-type=FAIL
 

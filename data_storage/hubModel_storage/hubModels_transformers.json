@@ -1,0 +1,560 @@
+{
+    "google/vit-base-patch16-224": {
+        "backbone": "vit",
+        "type": "vit",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "imagenet21k",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "extractor_func": "AutoFeatureExtractor",
+        "outputLayer": [
+            "layernorm"
+        ],
+        "input_size": [
+            400,
+            400,
+            3
+        ],
+        "num_params": "86567656",
+        "num_layers": "148"
+    },
+    "nateraw/vit-age-classifier": {
+        "backbone": "vit",
+        "type": "vit",
+        "parameters": "default",
+        "task": "image classification expert",
+        "trainingSet": "imagenet",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "extractor_func": "AutoFeatureExtractor",
+        "outputLayer": [
+            "layernorm"
+        ],
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "num_params": "85805577",
+        "num_layers": "148"
+    },
+    "julien-c/hotdog-not-hotdog": {
+        "backbone": "vit",
+        "type": "vit",
+        "parameters": "default",
+        "task": "image classification expert",
+        "trainingSet": "imagenet",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "extractor_func": "AutoFeatureExtractor",
+        "outputLayer": [
+            "layernorm"
+        ],
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "num_params": "85800194",
+        "num_layers": "148"
+    },
+    "SriramSridhar78/sriram-car-classifier": {
+        "backbone": "vit",
+        "type": "vit",
+        "parameters": "default",
+        "task": "image classification expert",
+        "trainingSet": "imagenet",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "extractor_func": "AutoFeatureExtractor",
+        "outputLayer": [
+            "layernorm"
+        ],
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "num_params": "85949380",
+        "num_layers": "148"
+    },
+    "google/vit-base-patch16-224-in21k": {
+        "backbone": "vit",
+        "type": "vit",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "imagenet",
+        "func": "ViTModel",
+        "preproc_func": "None",
+        "extractor_func": "AutoFeatureExtractor",
+        "outputLayer": [
+            "layernorm"
+        ],
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "num_params": "86389248",
+        "num_layers": "149"
+    },
+    "aaraki/vit-base-patch16-224-in21k-finetuned-cifar10": {
+        "backbone": "vit",
+        "type": "vit",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "imagenet",
+        "func": "ViTModel",
+        "preproc_func": "None",
+        "outputLayer": [
+            "layernorm"
+        ],
+        "input_size": [
+            3,
+            224,
+            224
+        ],
+        "num_params": "86389248",
+        "num_layers": "149"
+    },
+    "facebook/detr-resnet-50": {
+        "backbone": "resnet",
+        "type": "detr",
+        "parameters": "default",
+        "task": "object detection",
+        "trainingSet": "coco",
+        "func": "AutoModelForObjectDetection",
+        "preproc_func": "None",
+        "outputLayer": [
+            "final_layer_norm",
+            "5"
+        ],
+        "input_size": [
+            3,
+            800,
+            800
+        ],
+        "num_params": "41532448",
+        "num_layers": "334"
+    },
+    "facebook/detr-resnet-101": {
+        "backbone": "resnet",
+        "type": "detr",
+        "parameters": "default",
+        "task": "object detection",
+        "trainingSet": "coco",
+        "func": "AutoModelForObjectDetection",
+        "preproc_func": "None",
+        "outputLayer": [
+            "final_layer_norm",
+            "5"
+        ],
+        "input_size": [
+            3,
+            800,
+            800
+        ],
+        "num_params": "60472352",
+        "num_layers": "521"
+    },
+    "facebook/detr-resnet-101-dc5": {
+        "backbone": "resnet",
+        "type": "detr",
+        "parameters": "default",
+        "task": "object detection",
+        "trainingSet": "coco",
+        "func": "AutoModelForObjectDetection",
+        "preproc_func": "None",
+        "outputLayer": [
+            "final_layer_norm",
+            "5"
+        ],
+        "num_params": "60472352",
+        "num_layers": "521"
+    },
+    "facebook/detr-resnet-101-panoptic": {
+        "backbone": "resnet",
+        "type": "detr",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "coco panoptic",
+        "func": "AutoModelForImageSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "final_layer_norm",
+            "5"
+        ],
+        "num_params": "61846872",
+        "num_layers": "538"
+    },
+    "facebook/detr-resnet-50-dc5-panoptic": {
+        "backbone": "resnet",
+        "type": "detr",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "coco panoptic",
+        "func": "AutoModelForImageSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "final_layer_norm",
+            "5"
+        ],
+        "num_params": "42906968",
+        "num_layers": "351"
+    },
+    "facebook/detr-resnet-50-dc5": {
+        "backbone": "resnet",
+        "type": "detr",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "coco",
+        "func": "AutoModelForObjectDetection",
+        "preproc_func": "None",
+        "outputLayer": [
+            "final_layer_norm",
+            "5"
+        ],
+        "num_params": "41532448",
+        "num_layers": "334"
+    },
+    "facebook/detr-resnet-50-panoptic": {
+        "backbone": "resnet",
+        "type": "detr",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "coco panoptic",
+        "func": "AutoModelForImageSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "final_layer_norm",
+            "5"
+        ],
+        "num_params": "42906968",
+        "num_layers": "351"
+    },
+    "nvidia/segformer-b0-finetuned-ade-512-512": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "image segmentation",
+        "trainingSet": "ade20k",
+        "func": "SegformerForSemanticSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "3752694",
+        "num_layers": "145"
+    },
+    "nvidia/mit-b0": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "ade20k",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "3576392",
+        "num_layers": "137"
+    },
+    "nvidia/mit-b1": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "ade20k",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "13664424",
+        "num_layers": "137"
+    },
+    "nvidia/mit-b2": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "ade20k",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "24709288",
+        "num_layers": "263"
+    },
+    "nvidia/mit-b3": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "ade20k",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "44585128",
+        "num_layers": "455"
+    },
+    "nvidia/mit-b4": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "ade20k",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "61355688",
+        "num_layers": "663"
+    },
+    "nvidia/mit-b5": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "image classification",
+        "trainingSet": "ade20k",
+        "func": "AutoModelForImageClassification",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "81956008",
+        "num_layers": "839"
+    },
+    "nvidia/segformer-b0-finetuned-cityscapes-1024-1024": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "semantic segmentation",
+        "trainingSet": "CityScapes",
+        "func": "SegformerForSemanticSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "3719027",
+        "num_layers": "145"
+    },
+    "nvidia/segformer-b1-finetuned-cityscapes-1024-1024": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "semantic segmentation",
+        "trainingSet": "CityScapes",
+        "func": "SegformerForSemanticSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "13682131",
+        "num_layers": "145"
+    },
+    "nvidia/segformer-b2-finetuned-cityscapes-1024-1024": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "semantic segmentation",
+        "trainingSet": "CityScapes",
+        "func": "SegformerForSemanticSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "27361235",
+        "num_layers": "271"
+    },
+    "nvidia/segformer-b3-finetuned-cityscapes-1024-1024": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "semantic segmentation",
+        "trainingSet": "CityScapes",
+        "func": "SegformerForSemanticSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "47237075",
+        "num_layers": "463"
+    },
+    "nvidia/segformer-b4-finetuned-cityscapes-1024-1024": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "semantic segmentation",
+        "trainingSet": "CityScapes",
+        "func": "SegformerForSemanticSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "64007635",
+        "num_layers": "671"
+    },
+    "nvidia/segformer-b5-finetuned-cityscapes-1024-1024": {
+        "backbone": "segformer",
+        "type": "segformer",
+        "parameters": "default",
+        "task": "semantic segmentation",
+        "trainingSet": "CityScapes",
+        "func": "SegformerForSemanticSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "3",
+            "layer_norm"
+        ],
+        "num_params": "84607955",
+        "num_layers": "847"
+    },
+    "facebook/maskformer-swin-large-ade": {
+        "backbone": "swin",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "instance segmentation",
+        "trainingSet": "ade20k",
+        "func": "MaskFormerForInstanceSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "layer_norm"
+        ],
+        "num_params": "211578699",
+        "num_layers": "443"
+    },
+    "facebook/maskformer-swin-large-coco": {
+        "backbone": "swin",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "instance segmentation",
+        "trainingSet": "coco",
+        "func": "MaskFormerForInstanceSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "layer_norm"
+        ],
+        "num_params": "211574330",
+        "num_layers": "443"
+    },
+    "facebook/maskformer-swin-small-ade": {
+        "backbone": "swin",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "instance segmentation",
+        "trainingSet": "ade20k",
+        "func": "MaskFormerForInstanceSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "layer_norm"
+        ],
+        "num_params": "63076449",
+        "num_layers": "443"
+    },
+    "facebook/maskformer-swin-small-coco": {
+        "backbone": "swin",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "instance segmentation",
+        "trainingSet": "coco",
+        "func": "MaskFormerForInstanceSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "layer_norm"
+        ],
+        "num_params": "63072080",
+        "num_layers": "443"
+    },
+    "facebook/maskformer-swin-base-ade": {
+        "backbone": "swin",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "instance segmentation",
+        "trainingSet": "ade20k",
+        "func": "MaskFormerForInstanceSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "layer_norm"
+        ],
+        "num_params": "101831439",
+        "num_layers": "443"
+    },
+    "facebook/maskformer-swin-base-coco": {
+        "backbone": "swin",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "instance segmentation",
+        "trainingSet": "coco",
+        "func": "MaskFormerForInstanceSegmentation",
+        "preproc_func": "None",
+        "outputLayer": [
+            "layer_norm"
+        ],
+        "num_params": "101827070",
+        "num_layers": "443"
+    },
+    "shi-labs/oneformer_ade20k_dinat_large": {
+        "backbone": "dinat",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "universal segmentation",
+        "trainingSet": "ade20k",
+        "func": "OneFormerForUniversalSegmentation",
+        "preproc_func": "AutoProcessor",
+        "outputLayer": [
+            "output",
+            "4"
+        ],
+        "num_params": "223219882",
+        "num_layers": "652"
+    },
+    "shi-labs/oneformer_coco_dinat_large": {
+        "backbone": "dinat",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "universal segmentation",
+        "trainingSet": "Cityscapes",
+        "func": "OneFormerForUniversalSegmentation",
+        "preproc_func": "AutoProcessor",
+        "outputLayer": [
+            "output",
+            "4"
+        ],
+        "num_params": "223189913",
+        "num_layers": "652"
+    },
+    "shi-labs/oneformer_cityscapes_dinat_large": {
+        "backbone": "dinat",
+        "type": "maskformer",
+        "parameters": "default",
+        "task": "universal segmentation",
+        "trainingSet": "Cityscapes",
+        "func": "OneFormerForUniversalSegmentation",
+        "preproc_func": "AutoProcessor",
+        "outputLayer": [
+            "output",
+            "4"
+        ],
+        "num_params": "222985479",
+        "num_layers": "652"
+    }
+}

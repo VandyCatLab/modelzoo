@@ -15,15 +15,33 @@ logs/
 *.ipynb_checkpoints
 .idea/
 .vscode
-
+Backup/
+corr_test/
+correspondences/
+data_storage/standalone
+data_storage/*.csv
+hmIT_stimuli&RDMs/
+hubReps/
+logs/
+modelnetVenv/
+New_Models/
+notebooks/
+novset/
+novset_lr/
+offsite/
+pretrained/
+src/
+stimuli/
+test_images/
+tests/
+.DS_Store
+Install Certificates.command
 # Not your code
 imported_code/
 venv/
 
 # Others
 notebooks/masterSanbox.py
-
 torch/
-
 python_scripts/svcca
 python_scripts/pretrained-models.pytorch

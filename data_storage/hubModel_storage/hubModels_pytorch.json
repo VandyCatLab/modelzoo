@@ -1,0 +1,115 @@
+{
+    "brain-segmentation-pytorch": {
+        "function": "('mateuszbuda/brain-segmentation-pytorch', 'unet', in_channels=3, out_channels=1, init_features=32, pretrained=True)",
+        "trans_params": "[transforms.Resize((256, 256),Image.BILINEAR),transforms.ToTensor(),transforms.Normalize(mean=m, std=s),]",
+        "outputLayer": [
+            "bottleneck",
+            "bottleneck.bottleneckrelu2"
+        ],
+        "generative": "True",
+        "origin": "pytorch hub",
+        "type": "U-Net",
+        "parameters": "default",
+        "trainingSet": "https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation",
+        "shape": [
+            3,
+            256,
+            256
+        ],
+        "task": "u-net augmentation",
+        "num_params": "4714208",
+        "num_layers": "34"
+    },
+    "nts-net": {
+        "function": "('nicolalandro/ntsnet-cub200', 'ntsnet', pretrained=True,**{'topN': 6, 'device':'cpu', 'num_classes': 200})",
+        "trans_params": "[transforms.Resize((600, 600), Image.BILINEAR),transforms.CenterCrop((448, 448)),transforms.ToTensor(),transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),]",
+        "outputLayer": "concat_net",
+        "origin": "pytorch hub",
+        "type": "ntsnet",
+        "parameters": "default",
+        "trainingSet": "CUB200 2011",
+        "shape": [
+            3,
+            448,
+            448
+        ]
+    },
+    "fbresnet152": {
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "bninception": {
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "resnext101_32x4d": {
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "inceptionv4": {
+        "shape": [
+            3,
+            229,
+            229
+        ],
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "inceptionresnetv2": {
+        "shape": [
+            3,
+            229,
+            229
+        ],
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "alexnet": {
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "densenet121": {
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "densenet169": {
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "densenet201": {
+        "shape": [
+            3,
+            229,
+            229
+        ],
+        "origin": "pretrainedmodels",
+        "parameters": "default",
+        "task": "categorization reproduction",
+        "trainingSet": "imagenet"
+    },
+    "unet_carvana": {
+        "function": "('milesial/Pytorch-UNet', 'unet_carvana', pretrained=True, scale=1.0)",
+        "layerIdx": "-2",
+        "origin": "pytorch",
+        "type": "U-Net",
+        "parameters": "default",
+        "trainingSet": "https://www.kaggle.com/competitions/carvana-image-masking-challenge/data",
+        "task": "u-net augmentation"
+    }
+}

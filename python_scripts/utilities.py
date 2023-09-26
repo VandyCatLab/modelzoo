@@ -240,7 +240,7 @@ def compile_augment_accuracy(path, aug):
         tmp = pd.read_csv(file)
         df = pd.concat((df, tmp))
 
-    if augment == "color":
+    if aug == "color":
         df["version"] = (df["version"] - 25) * (3 / 50)
 
     return df

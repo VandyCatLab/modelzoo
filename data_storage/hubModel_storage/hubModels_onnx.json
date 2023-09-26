@@ -1,0 +1,24 @@
+{
+  "MobilenetV3large": {
+    "function": "tf.keras.applications.MobileNetV3Large()",
+    "layerIdx": "-2",
+    "origin": "keras",
+    "type": "MobilenetV3",
+    "parameters": "default",
+    "trainingSet": "imagenet"
+  },
+   "xception": {
+    "function": "tf.keras.applications.xception.Xception()",
+    "preFun": "tf.keras.applications.xception.preprocess_input",
+    "layerIdx": "-2",
+    "origin": "keras",
+    "type": "xception",
+    "parameters": "default",
+    "trainingSet": "imagenet",
+    "shape": [
+            299,
+            299,
+            3
+        ]
+  }
+}
