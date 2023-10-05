@@ -1,33 +1,14 @@
-from asyncore import file_wrapper
 import datasets
 import tensorflow as tf
-import tensorflow.core
 import tensorflow_hub as hub
 import json
 import numpy as np
 import os
-import analysis
-import itertools
-import pandas as pd
-from datetime import datetime
-import torch
-from torchvision import transforms
-import cv2
 from torchvision.models.feature_extraction import create_feature_extractor
-import transformers
-import random
-import tensorflow_addons as tfa
-import tensorflow_datasets as tfds
-import PIL
 from PIL import Image
-import shutil
-from torch.utils.data import Dataset
-import timm
 import hubReps
-import analysis
 import csv
 import math
-import random
 from itertools import chain
 
 
@@ -36,6 +17,32 @@ from itertools import chain
 # standalone, the 3 tasks
 # standalone repository, archive link to paper in review, describes the 3 tasks
 # not doing the matching task anymore for humans, hard for human data
+
+
+def apply_noise_nonzero(array, noise_factor=0.01):
+    
+    non_zero_count = np.count_nonzero(array)
+    noise = np.random.normal(loc=0, scale=noise_factor * non_zero_count, size=array.shape)
+    noisy_array = array + noise
+    
+    return noisy_array
+
+
+def apply_noise_size(array, noise_factor=0.01):
+    
+    array_size = np.size(array)
+    noise = np.random.normal(loc=0, scale=noise_factor * array_size, size=array.shape)
+    noisy_array = array + noise
+    
+    return noisy_array
+
+
+def apply_uniform_noise(array, noise_level=0.01):
+   
+    noise = np.random.normal(loc=0, scale=noise_level, size=array.shape)
+    noisy_array = array + noise
+    
+    return noisy_array
 
 
 def image_list(data_dir):
@@ -93,41 +100,45 @@ def learning_exemplar(image_names, reps, csv_file, data_dir):
     print(f'\n\n\nUsing Model: {args.model_name}\n-------------\n\
 Euc Learning Exemplar Correct: {euc_correct_total} / {num_total}\n')
     '''''
-    return [euc_correct_total, num_total, answer_set]
+    percent_corr = euc_correct_total / num_total
+    
+    return [euc_correct_total, num_total, percent_corr, answer_set]
 
 def many_oddball(image_names, reps, csv_file, data_dir):
     image_sets = image_sets_maker(csv_file, image_names, reps, 'odd')
     euc_correct_total = 0
     num_total = 0
     answer_set = []
-    for set in image_sets:
-        euc_min = min([set[-4], set[-3], set[-2]])
-        if euc_min == set[-4]:
+    for sett in image_sets:
+        euc_min = min([sett[-4], sett[-3], sett[-2]])
+        if euc_min == sett[-4]:
             choice = 3
-        elif euc_min == set[-3]:
+        elif euc_min == sett[-3]:
             choice = 2
-        elif euc_min == set[-2]:
+        elif euc_min == sett[-2]:
             choice = 1
         else:
             raise ValueError('Best Distance not found among image_sets')
         # [row_idx, image1_idx, image2_idx, image3_idx,
         #  image1_name, image2_name, image3_name,
         #  euc_dist_1_2, euc_dist_1_3, euc_dist_2_3, CorrRes]
-        if (int(set[-1]) == choice):
+        if (int(sett[-1]) == choice):
             answer = 'correct'
             euc_correct_total += 1
         else:
             answer = 'incorrect'
 
         #print(f'{int(set[-1])} || {choice} || {answer}')
-        answer_set.append([answer, int(set[-1]), choice])
+        answer_set.append([answer, int(sett[-1]), choice, [*sett]])
         num_total +=1
     '''''
     print(f'\n\n\nUsing Model: {args.model_name}\n-------------\n\
 Euc Many Oddball Correct: {euc_correct_total} / {num_total}\n')
     '''''
    
-    return [euc_correct_total, num_total, answer_set]
+    percent_corr = euc_correct_total / num_total
+    
+    return [euc_correct_total, num_total, percent_corr, answer_set]
 
 # look for object with biggest distance from the other two
 # is that different than taking min??
@@ -175,7 +186,9 @@ def three_ACF(image_names, reps, csv_file, data_dir):
     print(f'\n\n\nUsing Model: {args.model_name}\n-------------\n\
 Euc 3ACF Correct: {euc_correct_total} / {num_total}\n')
 
-    return [euc_correct_total, num_total, answer_set]
+    percent_corr = euc_correct_total / num_total
+
+    return [euc_correct_total, num_total, percent_corr, answer_set]
     
 
 
@@ -407,7 +420,7 @@ def find_model(fileList, modelName):
 
 
 def get_model(modelName, modelFile, hubModels):
-    if modelFile == "./hubModels.json":
+    if modelFile == "../data_storage/hubModel_storage/hubModels.json":
         # Creating models
         info = hubModels[modelName]
         shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
@@ -415,13 +428,13 @@ def get_model(modelName, modelFile, hubModels):
         inp = tf.keras.Input(shape=shape)
         out = hub.KerasLayer(info["url"])(inp)
         model = tf.keras.Model(inputs=inp, outputs=out)
-    elif modelFile == "./hubModels_keras.json":
+    elif modelFile == "../data_storage/hubModel_storage/hubModels_keras.json":
         # Create model from keras function
         model = hubReps.get_keras_model(hubModels, modelName)[0]
-    elif (modelFile == "./hubModels_pytorch.json") or \
-        (modelFile == "./hubModels_timm.json") or \
-        (modelFile == "./hubModels_transformers.json") or \
-        (modelFile == "./hubModels_pretrainedmodels.json"):
+    elif (modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json") or \
+        (modelFile == "../data_storage/hubModel_storage/hubModels_timm.json") or \
+        (modelFile == "../data_storage/hubModel_storage/hubModels_transformers.json") or \
+        (modelFile == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json"):
         # Create model from pytorch hub
         model = hubReps.get_pytorch_model(hubModels, modelFile, modelName)
     else:
@@ -431,17 +444,17 @@ def get_model(modelName, modelFile, hubModels):
 
 
 def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64):
-    if modelFile == "./hubModels.json" or modelFile == "./hubModels_keras.json":
+    if modelFile == "../data_storage/hubModel_storage/hubModels.json" or modelFile == "../data_storage/hubModel_storage/hubModels_keras.json":
         preprocFun = datasets.preproc(
             **modelData,
             labels=False,
         )
         dataset = datasets.get_flat_dataset(data_dir, preprocFun, batch_size=64)
 
-    elif modelFile == "./hubModels_pytorch.json" \
-            or modelFile == "./hubModels_pretrainedmodels.json" \
-            or modelFile == "./hubModels_timm.json" \
-            or modelFile == "./hubModels_transformers.json":
+    elif modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json" \
+            or modelFile == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json" \
+            or modelFile == "../data_storage/hubModel_storage/hubModels_timm.json" \
+            or modelFile == "../data_storage/hubModel_storage/hubModels_transformers.json":
 
         # using pytorch model
 
@@ -457,15 +470,15 @@ def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64)
 
 def get_reps(modelFile, model, dataset, modelData, batch_size=64):
     
-    if modelFile == "./hubModels.json" or modelFile == "./hubModels_keras.json":
+    if modelFile == "../data_storage/hubModel_storage/hubModels.json" or modelFile == "../data_storage/hubModel_storage/hubModels_keras.json":
         reps = hubReps.get_reps(
             model, dataset, modelData, batch_size
         )
 
-    elif modelFile == "./hubModels_pytorch.json" \
-            or modelFile == "./hubModels_pretrainedmodels.json" \
-            or modelFile == "./hubModels_timm.json" \
-            or modelFile == "./hubModels_transformers.json":
+    elif modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json" \
+            or modelFile == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json" \
+            or modelFile == "../data_storage/hubModel_storage/hubModels_timm.json" \
+            or modelFile == "../data_storage/hubModel_storage/hubModels_transformers.json":
         
         reps = hubReps.get_pytorch_reps(
             model, dataset, modelData, batch_size
@@ -477,7 +490,7 @@ def get_reps(modelFile, model, dataset, modelData, batch_size=64):
 
 if __name__ == "__main__":
     import argparse
-    print('\n\n\n\n\n\n\nnew multi_hu_rep used\n\n\n\n\n\n\n')
+    print('\n\n/////////////////////////////////////')
     os.environ['TORCH_HOME'] = '/data/brustdm/modelnet/torch'
 
     parser = argparse.ArgumentParser(
@@ -576,15 +589,14 @@ if __name__ == "__main__":
             print('idx:', args.index)
             results = []
             model_list = []
-            for model_file in args.model_files:
-                with open('../python_scripts/hubModels_timm.json', "r") as f:
-                    hubModels = json.loads(f.read())
-                    model_list.append([*hubModels])
+            # need to change this pronto!!!!
+            #idplease = 0
+           # for model_file in list(args.model_files.split(", ")):
+            with open("../data_storage/hubModel_storage/hubModels_timm.json", "r") as f:
+                hubModels = json.loads(f.read())
+                model_list.append([*hubModels])
             # model_list = ['crossvit_tiny_240']
             model_list = list(chain(*model_list))
-            problems = ['cait_s24_384']
-            for problem in problems:
-                model_list.remove(problem)
             model_name = model_list[args.index]
             print('\nUsing:', model_name)
             if 5 == 5:
@@ -605,7 +617,7 @@ if __name__ == "__main__":
                     results.append(same_diff(image_names, reps,
                                              '../data_storage/ziggerins_trials_full.csv'))
                 elif args.test == 'threeACF':
-                    three_path = '../data_storage/3ACF_results_new.npy'
+                    three_path = '../data_storage/threeACF_results_new.npy'
                     if os.path.exists(three_path):
                         results_full = np.load(three_path,
                                                allow_pickle=True)
@@ -614,7 +626,7 @@ if __name__ == "__main__":
 
                     if model_name not in results_full:
                         print(f'New Addition for 3ACF: {model_name}')
-                        results.append(model_name)
+                        #results.append(model_name)
                         ddir = '../data_storage/standalone/3AFCMatching/stimuli_altered'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
                         image_names = image_list(ddir)
@@ -626,6 +638,7 @@ if __name__ == "__main__":
                                                    allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
+                            print("Using new file for 3ACF")
                             results_full = results
                         np.save(three_path, results_full)
                     else:
@@ -639,18 +652,19 @@ if __name__ == "__main__":
                         results_full = []
                     if model_name not in list(results_full):
                         print(f'New Addition for ManyOdd: {model_name}')
-                        results.append(model_name)
+                        #results.append(model_name)
                         ddir = '../data_storage/standalone/ManyObjectsOddball/stimuli'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
                         image_names = image_list(ddir)
-                        results.append(many_oddball(image_names, reps,
+                        results.append([model_name, many_oddball(image_names, reps,
                                                     '../data_storage/many_oddball_trials.csv',
-                                                    ddir))
+                                                    ddir)])
                         if os.path.exists(odd_path):
                             results_full = np.load(odd_path,
                                                    allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
+                            print("Using new file for 3ACF")
                             results_full = results
                         np.save(odd_path, results_full)
                     else:
@@ -665,18 +679,18 @@ if __name__ == "__main__":
                         results_full = []
                     if model_name not in results_full:
                         print(f'New Addition for lr: {model_name}')
-                        results.append(model_name)
                         ddir = '../novset_lr'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
                         image_names = image_list(ddir)
-                        results.append(learning_exemplar(image_names, reps,
+                        results.append([model_name, learning_exemplar(image_names, reps,
                                                          '../data_storage/learning_exemplar_trials.csv',
-                                                         ddir))
+                                                         ddir)])
                         if os.path.exists(learn_path):
                             results_full = np.load(learn_path,
                                                    allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
+                            print("Using new file for 3ACF")
                             results_full = results
                         np.save(learn_path, results_full)
                         #print(*results, sep='\n')

@@ -1,6 +1,6 @@
 import datasets
 import tensorflow as tf
-import tensorflow.core
+#import tensorflow.core
 import tensorflow_hub as hub
 import json
 import numpy as np
@@ -10,10 +10,10 @@ import itertools
 import pandas as pd
 import datetime
 import torch
-from torchvision import transforms
+#from torchvision import transforms
 import cv2
 from torchvision.models.feature_extraction import create_feature_extractor
-import transformers
+#import transformers
 import timm
 
 def get_reps(model, dataset, info, batch_size):
@@ -153,12 +153,12 @@ def get_keras_model(hubModels, modelName):
     return model, model_full
 
 def get_pytorch_model(hubModels, modelFile, modelName):
-    if modelFile == "./hubModels_timm.json":
+    if modelFile == "../data_storage/hubModel_storage/hubModels_timm.json":
         #print(modelName)
         #print(hubModels[modelName])
         model = timm.create_model(modelName, pretrained=True, num_classes=0)
 
-    elif modelFile == "./hubModels_transformers.json":
+    elif modelFile == "../data_storage/hubModel_storage/hubModels_transformers.json":
         function = hubModels[modelName]['func']
         model_full = eval('transformers.' + function + f'.from_pretrained("{modelName}")')
         x = hubModels[modelName]["shape"] if "shape" in hubModels[modelName] else [224, 224, 3]
@@ -230,7 +230,7 @@ if __name__ == "__main__":
         "-f",
         type=str,
         help=".json file with the hub model info",
-        default="./hubModels.json"
+        default="../data_storage/hubModel_storage/hubModels.json"
     )
     parser.add_argument(
         "--feature_limit",
@@ -275,13 +275,13 @@ if __name__ == "__main__":
             flush=True,
         )
         if args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_timm.json':
-            args.models_file = "./hubModels_timm.json"
+            args.models_file = "../data_storage/hubModel_storage/hubModels_timm.json"
         elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_keras.json':
-            args.models_file = "./hubModels_keras.json"
+            args.models_file = "../data_storage/hubModel_storage/hubModels_keras.json"
         elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels.json':
-            args.models_file = "./hubModels.json"
+            args.models_file = "../data_storage/hubModel_storage/hubModels.json"
         elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_pytorch.json':
-            args.models_file = "./hubModels_pytorch.json"
+            args.models_file = "../data_storage/hubModel_storage/hubModels_pytorch.json"
 
         if args.rep_name is not None:
             fileName = f"../hubreps/{args.rep_name}/{modelName.replace('/', '-')}-Reps.npy"
@@ -294,23 +294,23 @@ if __name__ == "__main__":
             info = hubModels[modelName]
             shape = info["shape"] if "shape" in info.keys() else [224, 224, 3]
 
-            if args.models_file == "./hubModels.json":
+            if args.models_file == "../data_storage/hubModel_storage/hubModels.json":
                 # Create model from tfhub
                 inp = tf.keras.Input(shape=shape)
                 out = hub.KerasLayer(info["url"])(inp)
                 model = tf.keras.Model(inputs=inp, outputs=out)
-            elif args.models_file == "./hubModels_keras.json":
+            elif args.models_file == "../data_storage/hubModel_storage/hubModels_keras.json":
                 # Create model from keras function
                 model = get_keras_model(hubModels, modelName)[0]
-            elif (args.models_file == "./hubModels_pytorch.json") or \
-                (args.models_file == "./hubModels_timm.json") or \
-                (args.models_file == "./hubModels_transformers.json"):
+            elif (args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json") or \
+                (args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json") or \
+                (args.models_file == "../data_storage/hubModel_storage/hubModels_transformers.json"):
                 # Create model from pytorch hub
                 model = get_pytorch_model(hubModels, args.models_file, modelName)
             else:
                 raise ValueError(f"Unknown models file {args.models_file}")
 
-            if args.models_file == "./hubModels.json" or args.models_file == "./hubModels_keras.json":
+            if args.models_file == "../data_storage/hubModel_storage/hubModels.json" or args.models_file == "../data_storage/hubModel_storage/hubModels_keras.json":
                 preprocFun = datasets.preproc(
                     **hubModels[modelName],
                     labels=False,
@@ -338,10 +338,10 @@ if __name__ == "__main__":
                     model, dataset, hubModels[modelName], args.batch_size
                 )
 
-            elif args.models_file == "./hubModels_pytorch.json" \
-                    or args.models_file == "./hubModels_pretrainedmodels.json" \
-                    or args.models_file == "./hubModels_timm.json" \
-                    or args.models_file == "./hubModels_transformers.json":
+            elif args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json" \
+                    or args.models_file == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json" \
+                    or args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json" \
+                    or args.models_file == "../data_storage/hubModel_storage/hubModels_transformers.json":
 
                 # using pytorch model
                 dataset = datasets.get_pytorch_dataset(
@@ -468,7 +468,7 @@ if __name__ == "__main__":
         if args.dataset == "novset" or "kreigset":
 
             predictions = []
-            if args.models_file == "./hubModels_keras.json":
+            if args.models_file == "../data_storage/hubModel_storage/hubModels_keras.json":
                 preprocFun = datasets.preproc(
                     **hubModels[modelName],
                     labels=False,
@@ -484,7 +484,7 @@ if __name__ == "__main__":
                     predictions.append(eval(pred_func))
 
                 print('\n'.join(map(str,predictions[0])))
-            elif args.models_file == "./hubModels_pytorch.json":
+            elif args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json":
                 dataset = datasets.get_pytorch_dataset(
                     args.data_dir, hubModels[modelName], args.batch_size
                 )

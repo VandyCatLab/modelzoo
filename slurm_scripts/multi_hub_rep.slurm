@@ -14,34 +14,28 @@
 
 # Timing
 
-
-
 date
 
-n=0;s
-while [[ $n -lt 784 ]];
-do python3 ../python_scripts/multi_hub_rep_new.py -t many_odd --reps True -i $n;
+n=0;
+while [[ $n -lt 785 ]];
+do python3 ../python_scripts/multi_hub_rep.py -t threeACF --reps True -i $n;
 n=$((n+1));
 done
 
 date
 
-date
-
-n=0;s
-while [[ $n -lt 784 ]];
-do python3 ../python_scripts/multi_hub_rep_new.py -t threeACF --reps True -i $n;
+n=0;
+while [[ $n -lt 785 ]];
+do python3 ../python_scripts/multi_hub_rep.py -t many_odd --reps True -i $n;
 n=$((n+1));
 done
 
 date
 
-date
-
-n=0;s
-while [[ $n -lt 784 ]];
-do python3 ../python_scripts/multi_hub_rep_new.py -t learn_exemp --reps True -i $n;
+n=0;
+while [[ $n -lt 785 ]];
+do python3 ../python_scripts/multi_hub_rep.py -t learn_exemp --reps True -i $n;
 n=$((n+1));
 done
 
-date
+
