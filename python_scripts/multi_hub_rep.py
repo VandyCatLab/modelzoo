@@ -10,6 +10,7 @@ import hubReps
 import csv
 import math
 from itertools import chain
+from csv_data_maker import make_csv_normal
 
 
 # get basics working, threshhld, does it work for multiple models
@@ -19,6 +20,7 @@ from itertools import chain
 # not doing the matching task anymore for humans, hard for human data
 
 
+#truncated, just use logical indexing to find all zeros and make them 0 again
 def apply_noise_nonzero(array, noise_factor=0.01):
     
     non_zero_count = np.count_nonzero(array)
@@ -62,7 +64,7 @@ def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
     return get_reps(modelFile, model, dataset, modelData, args.batch_size)
 
 
-def learning_exemplar(image_names, reps, csv_file, data_dir):
+def learning_exemplar(model_name, image_names, reps, csv_file, data_dir):
     
     # do simple deterministic, reps might just be faulty enough??
     # add noise (have to tune noise level)
@@ -102,34 +104,35 @@ Euc Learning Exemplar Correct: {euc_correct_total} / {num_total}\n')
     '''''
     percent_corr = euc_correct_total / num_total
     
-    return [euc_correct_total, num_total, percent_corr, answer_set]
+    return [model_name, euc_correct_total, num_total, percent_corr, answer_set, image_sets]
 
-def many_oddball(image_names, reps, csv_file, data_dir):
+
+def many_oddball(model_name, image_names, reps, csv_file, data_dir):
     image_sets = image_sets_maker(csv_file, image_names, reps, 'odd')
     euc_correct_total = 0
     num_total = 0
     answer_set = []
-    for sett in image_sets:
-        euc_min = min([sett[-4], sett[-3], sett[-2]])
-        if euc_min == sett[-4]:
+    for set in image_sets:
+        euc_min = min([set[-4], set[-3], set[-2]])
+        if euc_min == set[-4]:
             choice = 3
-        elif euc_min == sett[-3]:
+        elif euc_min == set[-3]:
             choice = 2
-        elif euc_min == sett[-2]:
+        elif euc_min == set[-2]:
             choice = 1
         else:
             raise ValueError('Best Distance not found among image_sets')
         # [row_idx, image1_idx, image2_idx, image3_idx,
         #  image1_name, image2_name, image3_name,
         #  euc_dist_1_2, euc_dist_1_3, euc_dist_2_3, CorrRes]
-        if (int(sett[-1]) == choice):
+        if (int(set[-1]) == choice):
             answer = 'correct'
             euc_correct_total += 1
         else:
             answer = 'incorrect'
 
         #print(f'{int(set[-1])} || {choice} || {answer}')
-        answer_set.append([answer, int(sett[-1]), choice, [*sett]])
+        answer_set.append([answer, int(set[-1]), choice])
         num_total +=1
     '''''
     print(f'\n\n\nUsing Model: {args.model_name}\n-------------\n\
@@ -138,14 +141,14 @@ Euc Many Oddball Correct: {euc_correct_total} / {num_total}\n')
    
     percent_corr = euc_correct_total / num_total
     
-    return [euc_correct_total, num_total, percent_corr, answer_set]
+    return [model_name, euc_correct_total, num_total, percent_corr, answer_set, image_sets]
 
 # look for object with biggest distance from the other two
 # is that different than taking min??
 # make sure they are the same
 # look toward trials to see how maybe people favoredo one of the other
 # mathamatical proof?? or just show emperically...
-def three_ACF(image_names, reps, csv_file, data_dir):
+def three_ACF(model_name, image_names, reps, csv_file, data_dir):
     img_files = os.listdir(data_dir)
     for file in img_files:
         img = Image.open(os.path.join(data_dir, file))
@@ -182,13 +185,13 @@ def three_ACF(image_names, reps, csv_file, data_dir):
         answer_set.append([answer, int(set[-1]), choice])
         #print(f'{int(set[-1])} || {choice} || {answer}')
         num_total +=1
-  
+    '''''
     print(f'\n\n\nUsing Model: {args.model_name}\n-------------\n\
 Euc 3ACF Correct: {euc_correct_total} / {num_total}\n')
-
+    '''''
     percent_corr = euc_correct_total / num_total
 
-    return [euc_correct_total, num_total, percent_corr, answer_set]
+    return [model_name, euc_correct_total, num_total, percent_corr, answer_set, image_sets]
     
 
 
@@ -314,9 +317,7 @@ Average Factor for incorrect LBA: {LBA_incorrect_avg}\n')
 def image_sets_maker(csv_file, image_names, reps, num_sets):
     
     with open(csv_file, newline='') as c:
-        image_set = []
         csv_data = csv.reader(c)
-
         image_sets = []
         row_idx = 0
         for row in csv_data:
@@ -382,12 +383,7 @@ def image_sets_maker(csv_file, image_names, reps, num_sets):
             row_idx += 1
 
     return image_sets
-        
-    print(image_sets)
-    image1_idx = image_names.index(image1_name)
-    idx1 = image_sets[2][1]
-    idx2 = image_sets[2][2]
-    euc_dist = euclidean_distance(reps[idx1], reps[idx2])
+
 
 def euclidean_distance(x1, x2):
     temp = x1 - x2
@@ -591,7 +587,7 @@ if __name__ == "__main__":
             model_list = []
             # need to change this pronto!!!!
             #idplease = 0
-           # for model_file in list(args.model_files.split(", ")):
+            # for model_file in list(args.model_files.split(", ")):
             with open("../data_storage/hubModel_storage/hubModels_timm.json", "r") as f:
                 hubModels = json.loads(f.read())
                 model_list.append([*hubModels])
@@ -600,8 +596,6 @@ if __name__ == "__main__":
             model_name = model_list[args.index]
             print('\nUsing:', model_name)
             if 5 == 5:
-               # print(f'New Addition: {model_name}')
-                #results.append(model_name)
                 modelFile, modelData = find_model(args.model_files, model_name)
                 # getting modelFile data
                 with open(modelFile, "r") as f:
@@ -617,25 +611,31 @@ if __name__ == "__main__":
                     results.append(same_diff(image_names, reps,
                                              '../data_storage/ziggerins_trials_full.csv'))
                 elif args.test == 'threeACF':
-                    three_path = '../data_storage/threeACF_results_new.npy'
+                    '''''
+                    if args.noise == 'zeros':
+                        three_path = '../data_storage/results/threeACF_results_noise_zeros.npy'
+                    elif args.noise == 'size':
+                        three_path = '../data_storage/results/threeACF_results_noise_size.npy'
+                    else:
+                    '''''
+                    three_path = '../data_storage/results/threeACF_results.npy'
                     if os.path.exists(three_path):
-                        results_full = np.load(three_path,
-                                               allow_pickle=True)
+                        results_full = np.load(three_path, allow_pickle=True)
                     else:
                         results_full = []
-
                     if model_name not in results_full:
                         print(f'New Addition for 3ACF: {model_name}')
-                        #results.append(model_name)
                         ddir = '../data_storage/standalone/3AFCMatching/stimuli_altered'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
+                        '''''
+                        if args.noise == 'True':
+                            reps = reps
+                            ##################
+                        '''''
                         image_names = image_list(ddir)
-                        results.append([model_name, 
-                            three_ACF(image_names, reps, '../data_storage/3ACF_trials.csv',
-                                      ddir)])
+                        results.append([model_name, three_ACF(model_name, image_names, reps, '../data_storage/3ACF_trials.csv', ddir)])
                         if os.path.exists(three_path):
-                            results_full = np.load(three_path,
-                                                   allow_pickle=True)
+                            results_full = np.load(three_path, allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
                             print("Using new file for 3ACF")
@@ -645,23 +645,19 @@ if __name__ == "__main__":
                         print(f'Already have model for 3ACF: {model_name}')
 
                 elif args.test == 'many_odd':
-                    odd_path = '../data_storage/many_odd_results_new.npy'
+                    odd_path = '../data_storage/results/many_odd_results.npy'
                     if os.path.exists(odd_path):
                         results_full = np.load(odd_path, allow_pickle=True)
                     else:
                         results_full = []
-                    if model_name not in list(results_full):
+                    if model_name not in results_full:
                         print(f'New Addition for ManyOdd: {model_name}')
-                        #results.append(model_name)
                         ddir = '../data_storage/standalone/ManyObjectsOddball/stimuli'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
                         image_names = image_list(ddir)
-                        results.append([model_name, many_oddball(image_names, reps,
-                                                    '../data_storage/many_oddball_trials.csv',
-                                                    ddir)])
+                        results.append([model_name, many_oddball(model_name, image_names, reps, '../data_storage/many_oddball_trials.csv', ddir)])
                         if os.path.exists(odd_path):
-                            results_full = np.load(odd_path,
-                                                   allow_pickle=True)
+                            results_full = np.load(odd_path, allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
                             print("Using new file for 3ACF")
@@ -671,7 +667,7 @@ if __name__ == "__main__":
                         print(f'Already have model for many_odd: {model_name}')
 
                 elif args.test == 'learn_exemp':
-                    learn_path = '../data_storage/learn_exemp_results_new.npy'
+                    learn_path = '../data_storage/results/learn_exemp_results.npy'
                     if os.path.exists(learn_path):
                         results_full = np.load(learn_path,
                                                allow_pickle=True)
@@ -682,20 +678,19 @@ if __name__ == "__main__":
                         ddir = '../novset_lr'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
                         image_names = image_list(ddir)
-                        results.append([model_name, learning_exemplar(image_names, reps,
-                                                         '../data_storage/learning_exemplar_trials.csv',
-                                                         ddir)])
+                        results.append([model_name, learning_exemplar(model_name, image_names, reps, '../data_storage/learning_exemplar_trials.csv', ddir)])
                         if os.path.exists(learn_path):
-                            results_full = np.load(learn_path,
-                                                   allow_pickle=True)
+                            results_full = np.load(learn_path, allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
                             print("Using new file for 3ACF")
                             results_full = results
                         np.save(learn_path, results_full)
-                        #print(*results, sep='\n')
                     else:
                         print(f'Already have model for lr: {model_name}')
+                
+                make_csv_normal(args.test)
+                
             else:
                 print(f'Already have model for lr: {model_name}')
     else:

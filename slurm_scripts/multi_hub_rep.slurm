@@ -32,6 +32,7 @@ done
 
 date
 
+
 n=0;
 while [[ $n -lt 785 ]];
 do python3 ../python_scripts/multi_hub_rep.py -t learn_exemp --reps True -i $n;
