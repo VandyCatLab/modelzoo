@@ -10,7 +10,7 @@ import hubReps
 import csv
 import math
 from itertools import chain
-from csv_data_maker import make_csv_normal
+#from csv_data_maker import make_csv_normal
 
 
 # get basics working, threshhld, does it work for multiple models
@@ -46,6 +46,18 @@ def apply_uniform_noise(array, noise_level=0.01):
     
     return noisy_array
 
+# fix this
+def apply_noise_three_std(rep_arr, paths, fixed_factor=0.5):
+    
+    arrays = [np.load(path) for path in paths]
+    combined_arrays = np.concatenate(arrays)
+    std_dev = np.std(combined_arrays)
+    zero_indices = np.where(rep_arr == 0)
+    noise = fixed_factor * std_dev * np.random.randn(*rep_arr.shape)
+    rep_arr_with_noise = rep_arr + noise
+    rep_arr_with_noise[zero_indices] = 0
+
+    return rep_arr_with_noise
 
 def image_list(data_dir):
     img_files = os.listdir(data_dir)
@@ -369,11 +381,13 @@ def image_sets_maker(csv_file, image_names, reps, num_sets):
                     foil1_idx = image_names.index(foil1_name)
                     foil2_idx = image_names.index(foil2_name)
                     target_idx = image_names.index(target_name)
+                    
                     for img6 in set6:
                         img6_idx = image_names.index(img6)
                         euc_dist_target.append(euclidean_distance(reps[img6_idx], reps[target_idx]))
                         euc_dist_1.append(euclidean_distance(reps[img6_idx], reps[foil1_idx]))
                         euc_dist_2.append(euclidean_distance(reps[img6_idx], reps[foil2_idx]))
+        
                     CorrRes  = row[3]
                     image_sets.append([row_idx, target_idx, foil1_idx, foil2_idx, target_name, foil1_name, foil2_name, euc_dist_target, euc_dist_1, euc_dist_2, CorrRes])
                 else:
@@ -577,6 +591,14 @@ if __name__ == "__main__":
         type=str,
         help="which trial type to use",
     )
+    parser.add_argument(
+        "--noise",
+        "-n",
+        type=str,
+        default="none",
+        choices=['noise', 'none'],
+        help="which noise type to use",
+    )
     args = parser.parse_args()
 
 
@@ -618,15 +640,25 @@ if __name__ == "__main__":
                         three_path = '../data_storage/results/threeACF_results_noise_size.npy'
                     else:
                     '''''
-                    three_path = '../data_storage/results/threeACF_results.npy'
-                    if os.path.exists(three_path):
-                        results_full = np.load(three_path, allow_pickle=True)
+                    if args.noise == 'noise':
+                        test_path = f'../data_storage/results/{args.test}_results-{args.noise}.npy'
+                    else:
+                        test_path =  f'../data_storage/results/{args.test}_results.npy'
+                    if os.path.exists(test_path):
+                        results_full = np.load(test_path, allow_pickle=True)
                     else:
                         results_full = []
                     if model_name not in results_full:
-                        print(f'New Addition for 3ACF: {model_name}')
+                        print(f'New Addition for {args.test}: {model_name}')
                         ddir = '../data_storage/standalone/3AFCMatching/stimuli_altered'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
+                        if args.noise == 'noise':
+                            rep1 = f'../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy'
+                            rep2 = f'../data_storage/results/test_rep_storage/many_odd/{model_name}-many_odd-none-rep.npy'
+                            rep3 = f'../data_storage/results/test_rep_storage/learn_exemp/{model_name}-learn_exemp-none-rep.npy'
+                            reps = apply_noise_three_std(reps, [rep1, rep2, rep3])
+                        save_dir = f'../data_storage/results/test_rep_storage/{args.test}/{model_name}-{args.test}-{args.noise}-rep.npy'
+                        np.save(save_dir, reps)
                         '''''
                         if args.noise == 'True':
                             reps = reps
@@ -634,62 +666,82 @@ if __name__ == "__main__":
                         '''''
                         image_names = image_list(ddir)
                         results.append([model_name, three_ACF(model_name, image_names, reps, '../data_storage/3ACF_trials.csv', ddir)])
-                        if os.path.exists(three_path):
-                            results_full = np.load(three_path, allow_pickle=True)
+                        if os.path.exists(test_path):
+                            results_full = np.load(test_path, allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
-                            print("Using new file for 3ACF")
+                            print(f"Using new file for {args.test}")
                             results_full = results
-                        np.save(three_path, results_full)
+                        np.save(test_path, results_full)
                     else:
-                        print(f'Already have model for 3ACF: {model_name}')
+                        print(f'Already have model for {args.test}: {model_name}')
 
                 elif args.test == 'many_odd':
-                    odd_path = '../data_storage/results/many_odd_results.npy'
-                    if os.path.exists(odd_path):
-                        results_full = np.load(odd_path, allow_pickle=True)
+                    if args.noise == 'noise':
+                        test_path = f'../data_storage/results/{args.test}_results-{args.noise}.npy'
+                    else:
+                        test_path =  f'../data_storage/results/{args.test}_results.npy'
+                    if os.path.exists(test_path):
+                        results_full = np.load(test_path, allow_pickle=True)
                     else:
                         results_full = []
                     if model_name not in results_full:
-                        print(f'New Addition for ManyOdd: {model_name}')
+                        print(f'New Addition for {args.test}: {model_name}')
                         ddir = '../data_storage/standalone/ManyObjectsOddball/stimuli'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
+                        if args.noise == 'noise':
+                            rep1 = f'../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy'
+                            rep2 = f'../data_storage/results/test_rep_storage/many_odd/{model_name}-many_odd-none-rep.npy'
+                            rep3 = f'../data_storage/results/test_rep_storage/learn_exemp/{model_name}-learn_exemp-none-rep.npy'
+                            reps = apply_noise_three_std(reps, [rep1, rep2, rep3])
+                        save_dir = f'../data_storage/results/test_rep_storage/{args.test}'
+                        np.save(os.path.join(save_dir, f'{model_name}-{args.test}-{args.noise}-rep.npy'), reps)
                         image_names = image_list(ddir)
                         results.append([model_name, many_oddball(model_name, image_names, reps, '../data_storage/many_oddball_trials.csv', ddir)])
-                        if os.path.exists(odd_path):
-                            results_full = np.load(odd_path, allow_pickle=True)
+                        if os.path.exists(test_path):
+                            results_full = np.load(test_path, allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
-                            print("Using new file for 3ACF")
+                            print(f"Using new file for {args.test}")
                             results_full = results
-                        np.save(odd_path, results_full)
+                        np.save(test_path, results_full)
                     else:
-                        print(f'Already have model for many_odd: {model_name}')
+                        print(f'Already have model for {args.test}: {model_name}')
 
                 elif args.test == 'learn_exemp':
-                    learn_path = '../data_storage/results/learn_exemp_results.npy'
-                    if os.path.exists(learn_path):
-                        results_full = np.load(learn_path,
+                    if args.noise == 'noise':
+                        test_path = f'../data_storage/results/{args.test}_results-{args.noise}.npy'
+                    else:
+                        test_path =  f'../data_storage/results/{args.test}_results.npy'
+                    if os.path.exists(test_path):
+                        results_full = np.load(test_path,
                                                allow_pickle=True)
                     else:
                         results_full = []
                     if model_name not in results_full:
-                        print(f'New Addition for lr: {model_name}')
+                        print(f'New Addition for {args.test}: {model_name}')
                         ddir = '../novset_lr'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
+                        if args.noise == 'noise':
+                            rep1 = f'../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy'
+                            rep2 = f'../data_storage/results/test_rep_storage/many_odd/{model_name}-many_odd-none-rep.npy'
+                            rep3 = f'../data_storage/results/test_rep_storage/learn_exemp/{model_name}-learn_exemp-none-rep.npy'
+                            reps = apply_noise_three_std(reps, [rep1, rep2, rep3])
+                        save_dir = f'../data_storage/results/test_rep_storage/{args.test}'
+                        np.save(os.path.join(save_dir, f'{model_name}-{args.test}-{args.noise}-rep.npy'), reps)
                         image_names = image_list(ddir)
                         results.append([model_name, learning_exemplar(model_name, image_names, reps, '../data_storage/learning_exemplar_trials.csv', ddir)])
-                        if os.path.exists(learn_path):
-                            results_full = np.load(learn_path, allow_pickle=True)
+                        if os.path.exists(test_path):
+                            results_full = np.load(test_path, allow_pickle=True)
                             results_full = np.append(results_full, results)
                         else:
-                            print("Using new file for 3ACF")
+                            print(f"Using new file for {args.test}")
                             results_full = results
-                        np.save(learn_path, results_full)
+                        np.save(test_path, results_full)
                     else:
-                        print(f'Already have model for lr: {model_name}')
+                        print(f'Already have model for {args.test}: {model_name}')
                 
-                make_csv_normal(args.test)
+                #make_csv_normal(args.test)
                 
             else:
                 print(f'Already have model for lr: {model_name}')

@@ -56,13 +56,19 @@ def old_format():
 
                         f_object.close()
 
-def make_csv_normal(data_types=['many_odd', 'learn_exemp', 'threeACF']):
+def make_csv_normal(data_types=['many_odd', 'learn_exemp', 'threeACF'], noise=False):
     print('ok')
     for data_type in data_types:
-        npa = np.load(f'../data_storage/results/{data_type}_results.npy', allow_pickle=True)
-        pda = pd.DataFrame(columns=['SbjID', 'response', 'TrialN', 'CorrRes', 'AnsCatagory'])
-        csv_path = f'../data_storage/results/csv_data_maker_{data_type}.csv'
-        pda.to_csv(csv_path, index=False)
+        if noise:
+            npa = np.load(f'../data_storage/results/{data_type}_results-noise.npy', allow_pickle=True)
+            pda = pd.DataFrame(columns=['SbjID', 'response', 'TrialN', 'CorrRes', 'AnsCatagory'])
+            csv_path = f'../data_storage/results/csv_data_maker_{data_type}-noise.csv'
+            pda.to_csv(csv_path, index=False)
+        else:
+            npa = np.load(f'../data_storage/results/{data_type}_results.npy', allow_pickle=True)
+            pda = pd.DataFrame(columns=['SbjID', 'response', 'TrialN', 'CorrRes', 'AnsCatagory'])
+            csv_path = f'../data_storage/results/csv_data_maker_{data_type}.csv'
+            pda.to_csv(csv_path, index=False)
 
         for row in npa[1::2]:
             i = 0
@@ -74,8 +80,47 @@ def make_csv_normal(data_types=['many_odd', 'learn_exemp', 'threeACF']):
                     f_object.close()
                 i += 1
 
+def add_to_csv(filetype, data_list, column_name):
+    file_paths = []
+    file_paths.append('../data_storage/results/csv_data_maker_' + filetype + '.csv')
+    file_paths.append('../data_storage/results/csv_data_maker_' + filetype + '-noise.csv')
+    for file_path in file_paths:
+        df = pd.read_csv(file_path)
+
+        # Ensure 'TrialN' column exists
+        if 'TrialN' not in df.columns:
+            raise ValueError("The CSV file must contain a 'TrialN' column.")
+
+        # Ensure the column exists or create it if not
+        if column_name not in df.columns:
+            df[column_name] = float('nan')
+
+        # Insert data based on TrialN
+        for index, row in df.iterrows():
+            trial_n = row['TrialN']
+            # Check for index bounds in the list and insert data
+            if trial_n < len(data_list):
+                df.at[index, column_name] = data_list[trial_n]
+
+        # Save the modified DataFrame back to CSV
+        df.to_csv(file_path, index=False)
+
+data_types=['many_odd', 'learn_exemp', 'threeACF']
+threeACF_view_list = ['s'] * 11 + ['d'] * 16 + ['s'] * 12 + ['d'] * 12
+threeACF_noise_list = ['n'] * 27 + ['y'] * 24
+learn_exemp_view_list = ['s'] * 25 + ['d'] * 23
+learn_exemp_noise_list = ['n'] * 18 + ['y'] * 6 + ['n'] * 12 + ['y'] * 12
+many_odd_view_list = ['d'] * 45
+many_odd_noise_list = ['n'] * 12 + ['y'] * 10 + ['n'] * 3 + ['y'] + ['n'] * 4 + ['y'] + ['n'] * 2 + ['y'] + ['n'] * 2 + ['y'] + ['n'] * 8
+many_odd_size_list = ['y'] * 45
+
+add_to_csv(data_types[2], threeACF_view_list, "View")
+add_to_csv(data_types[2], threeACF_noise_list, "Noise")
+add_to_csv(data_types[1], learn_exemp_view_list, "View")
+add_to_csv(data_types[1], learn_exemp_noise_list, "Noise")
+add_to_csv(data_types[0], many_odd_view_list, "View")
+add_to_csv(data_types[0], many_odd_noise_list, "Noise")
 
 
 
-
-make_csv_normal()
+#make_csv_normal(noise=True)

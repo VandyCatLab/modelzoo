@@ -6,7 +6,7 @@ def accuracy_correlation(accuracies_array, names):
     df = pd.DataFrame(columns=tuple(names))
     for i in range(1, len(accuracies_array), 2):
         new_dat = [accuracies_array[0][i], accuracies_array[1][i], accuracies_array[2][i]]
-        print(new_dat, type(new_dat))
+        #print(new_dat, type(new_dat))
         df[names[i]] = tuple(new_dat)
     corr_mat = df.corr()
 
@@ -156,7 +156,8 @@ def ensure_networks(dfs):
     networks_to_remove = set()
     for network in common_networks:
         all_incorrect_for_trials = any(all(df[df['SbjID'] == network]['AnsCatagory'] == 'incorrect') for df in dfs)
-
+        if any(all(df[df['SbjID'] == network]['AnsCatagory'] == 'correct') for df in dfs):
+            print(f'Network {network} got them all correct')
         if all_incorrect_for_trials:
             networks_to_remove.add(network)
     #print(networks_to_remove)
@@ -184,7 +185,7 @@ def compare_dfs(data_before, data_after):
 
 def csv_accuracies(csv_files=['../data_storage/results/csv_data_maker_threeACF.csv', '../data_storage/results/csv_data_maker_many_odd.csv', '../data_storage/results/csv_data_maker_learn_exemp.csv']):
     #bad_network_list_learn_exemp = ['inception_resnet_v2', 'xception', 'inception_v3']
-
+    
     dfs = []
     for file in csv_files:
         dfs.append(pd.read_csv(file))
@@ -210,12 +211,18 @@ def csv_accuracies(csv_files=['../data_storage/results/csv_data_maker_threeACF.c
     ]
 
     correlation_before = np.corrcoef(accuracies_before)
-    correlation_after = np.corrcoef(accuracies_after)
+    #correlation_after = np.corrcoef(accuracies_after)
+    '''''
     print('\n#######################################')
     print('Correlation before removing trials:\n', correlation_before, '\n\nCorrelation after removing trials:\n', correlation_after)
     print('#######################################\n')
-    #print(list(cross_data_before[2]))
-    #print('\n\n\n', list(cross_data_after[2]))
+    #print(list(cross_data_before[2][0:50]))
+    #print('\n\n\n', list(cross_data_after[2][0:50]))
+    '''''
+    print('\n#######################################')
+    print('Correlation:\n', correlation_before)
+    print('#######################################\n')
+
     '''''
     for i in range(3):
         cross_data_before[i]['']
@@ -235,6 +242,8 @@ def csv_accuracies(csv_files=['../data_storage/results/csv_data_maker_threeACF.c
     print('Cross Data After\n', cross_data_after[i])
     print(len(cross_data_before), len(cross_data_after))
     '''''
-
-csv_accuracies()
-
+csv_list = ['../data_storage/results/csv_data_maker_threeACF.csv', '../data_storage/results/csv_data_maker_many_odd.csv', '../data_storage/results/csv_data_maker_learn_exemp.csv']
+csv_accuracies(csv_list)
+for i, _csv in enumerate(csv_list):
+    csv_list[i] = _csv[0:-4] + '-noise' + _csv[-4::]
+csv_accuracies(csv_list)

@@ -17,7 +17,7 @@
 date
 
 n=0;
-while [[ $n -lt 785 ]];
+while [[ $n -lt 615 ]];
 do python3 ../python_scripts/multi_hub_rep.py -t threeACF --reps True -i $n;
 n=$((n+1));
 done
@@ -25,7 +25,7 @@ done
 date
 
 n=0;
-while [[ $n -lt 785 ]];
+while [[ $n -lt 615 ]];
 do python3 ../python_scripts/multi_hub_rep.py -t many_odd --reps True -i $n;
 n=$((n+1));
 done
@@ -34,9 +34,31 @@ date
 
 
 n=0;
-while [[ $n -lt 785 ]];
+while [[ $n -lt 615 ]];
 do python3 ../python_scripts/multi_hub_rep.py -t learn_exemp --reps True -i $n;
 n=$((n+1));
 done
 
+n=0;
+while [[ $n -lt 615 ]];
+do python3 ../python_scripts/multi_hub_rep.py -t threeACF --reps True -n noise -i $n;
+n=$((n+1));
+done
 
+date
+
+n=0;
+while [[ $n -lt 615 ]];
+do python3 ../python_scripts/multi_hub_rep.py -t many_odd --reps True -n noise -i $n;
+n=$((n+1));
+done
+
+date
+
+n=0;
+while [[ $n -lt 615 ]];
+do python3 ../python_scripts/multi_hub_rep.py -t learn_exemp --reps True -n noise -i $n;
+n=$((n+1));
+done
+
+date

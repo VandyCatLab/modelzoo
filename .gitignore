@@ -20,6 +20,11 @@ corr_test/
 correspondences/
 data_storage/standalone
 data_storage/*.csv
+data_storage/data_backup/
+data_storage/results/working_dir
+data_storage/results/test_rep_storage/learn_exemp/*
+data_storage/results/test_rep_storage/many_odd/*
+data_storage/results/test_rep_storage/threeACF/*
 hmIT_stimuli&RDMs/
 hubReps/
 logs/
@@ -45,3 +50,5 @@ notebooks/masterSanbox.py
 torch/
 python_scripts/svcca
 python_scripts/pretrained-models.pytorch
+model_dir_test.py
+notes.txt
