@@ -3,6 +3,7 @@ library(tidyverse)
 library(dplyr)
 library(GGally)
 library(psych)
+library(readr)
 
 # Read the CSV file for one o them
 csv_filename = "csv_data_maker_threeACF.csv"
@@ -221,3 +222,37 @@ trials_below_zero <- names(item_rest_correlations)[item_rest_correlations < 0]
 # Output the trials below the threshold
 print(trials_below_threshold)
 print(trials_below_zero)
+
+data_cats <- read_csv("csv_data_maker_threeACF-noise.csv")
+
+# Compute accuracy for each subject under each condition
+accuracy_data <- data_cats %>%
+  group_by(SbjID, View, Noise) %>%
+  summarize(
+    total_trials = n(),
+    number_correct = sum(AnsCatagory == "correct"),
+    accuracy = number_correct / total_trials,
+    .groups = 'drop'  # This ensures the group_by is dropped after summarization
+  )
+
+# Perform statistical tests (e.g., ANOVA) to compare accuracy across conditions
+# Here we use ANOVA as an example; you may need a different test depending on your data structure
+ANOVA_results <- aov(accuracy ~ View * Noise, data = accuracy_data)
+summary(ANOVA_results)
+
+# Output the results
+print(accuracy_data)
+print(summary(ANOVA_results))
+
+
+# Convert AnsCatagory to a binary variable (1 for 'correct', 0 for 'incorrect')
+data_cats$AnsCatagory <- ifelse(data_cats$AnsCatagory == "correct", 1, 0)
+
+# Set up the logistic regression model
+logistic_model <- glm(AnsCatagory ~ View + Noise, data = data_cats, family = binomial)
+
+# Summarize the model
+summary(logistic_model)
+
+# To get the odds ratios instead of the log(odds) you can exponentiate the coefficients
+exp(coef(logistic_model))
