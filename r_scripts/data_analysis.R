@@ -5,17 +5,15 @@ library(GGally)
 library(psych)
 library(readr)
 
-# Read the CSV file for one o them
-csv_filename = "csv_data_maker_threeACF.csv"
+
+# Read the CSV file for one of them
+csv_filename = "csvs/csv_data_maker_learn_exemp-noise.csv"
 data <- read.csv(csv_filename)
 
 # Reading all the data
-trial1_data <- read.csv("csv_data_maker_threeACF-noise.csv", stringsAsFactors = FALSE)
-trial2_data <- read.csv("csv_data_maker_many_odd-noise.csv", stringsAsFactors = FALSE)
-trial3_data <- read.csv("csv_data_maker_learn_exemp-noise.csv", stringsAsFactors = FALSE)
-
-# Loading the dplyr package
-library(dplyr)
+trial1_data <- read.csv("csvs/csv_data_maker_threeACF-noise.csv", stringsAsFactors = FALSE)
+trial2_data <- read.csv("csvs/csv_data_maker_many_odd-noise.csv", stringsAsFactors = FALSE)
+trial3_data <- read.csv("csvs/csv_data_maker_learn_exemp-noise.csv", stringsAsFactors = FALSE)
 
 # Extracting unique SbjIDs
 subjids_trial1 <- unique(trial1_data$SbjID)
@@ -35,7 +33,6 @@ filter_data <- function(dataset, common_ids) {
 data1 <- filter_data(trial1_data, common_subjids)
 data2 <- filter_data(trial2_data, common_subjids)
 data3 <- filter_data(trial3_data, common_subjids)
-
 
 
 # Display the first few rows of the data
@@ -223,7 +220,7 @@ trials_below_zero <- names(item_rest_correlations)[item_rest_correlations < 0]
 print(trials_below_threshold)
 print(trials_below_zero)
 
-data_cats <- read_csv("csv_data_maker_threeACF-noise.csv")
+data_cats <- read_csv("csvs/csv_data_maker_threeACF-noise.csv")
 
 # Compute accuracy for each subject under each condition
 accuracy_data <- data_cats %>%
@@ -256,3 +253,6 @@ summary(logistic_model)
 
 # To get the odds ratios instead of the log(odds) you can exponentiate the coefficients
 exp(coef(logistic_model))
+
+
+splitHalf(wide_data[,3:50], check.keys=FALSE)
