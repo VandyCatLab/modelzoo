@@ -172,9 +172,9 @@ corMatrixPlot <- function(
                         )
                         drawsLines <- as.data.frame(as.matrix(plotLM))
                         colnames(drawsLines) <- c("intercept", "slope", "sigma")
-                        ggplot(data, aes_string(
-                            x = testLabels[row],
-                            y = testLabels[col]
+                        ggplot(data, aes(
+                            x = .data[[testLabels[row]]],
+                            y = .data[[testLabels[col]]]
                         )) +
                             geom_abline(
                                 data = drawsLines,
@@ -191,9 +191,9 @@ corMatrixPlot <- function(
                         # Aspect ratio issue https://github.com/ggobi/ggally/issues/415
                     },
                     error = function(e) {
-                        ggplot(data, aes_string(
-                            x = testLabels[row],
-                            y = testLabels[col]
+                        ggplot(data, aes(
+                            x = .data[[testLabels[row]]],
+                            y = .data[[testLabels[col]]]
                         )) +
                             geom_point(alpha = 0.3)
                     }
