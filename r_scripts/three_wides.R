@@ -38,13 +38,13 @@ transform_to_wide <- function(data) {
 }
 
 # Read the CSV file for one of them
-csv_filename = "csvs/csv_data_maker_learn_exemp-noise.csv"
-data <- read.csv(csv_filename)
+# csv_filename = "csvs/csv_data_maker_learn_exemp-noise.csv"
+# data <- read.csv(csv_filename)
 
 # Reading all the data
-trial1_data <- read.csv("csvs/csv_data_maker_threeACF-noise.csv", stringsAsFactors = FALSE)
-trial2_data <- read.csv("csvs/csv_data_maker_many_odd-noise.csv", stringsAsFactors = FALSE)
-trial3_data <- read.csv("csvs/csv_data_maker_learn_exemp-noise.csv", stringsAsFactors = FALSE)
+trial1_data <- read.csv("./data_storage/results/r_results/csv_data_maker_threeACF-noise.csv", stringsAsFactors = FALSE)
+trial2_data <- read.csv("./data_storage/results/r_results/csv_data_maker_many_odd-noise.csv", stringsAsFactors = FALSE)
+trial3_data <- read.csv("./data_storage/results/r_results/csv_data_maker_learn_exemp-noise.csv", stringsAsFactors = FALSE)
 
 # Extracting unique SbjIDs
 subjids_trial1 <- unique(trial1_data$SbjID)
@@ -71,6 +71,6 @@ wide_MOO = transform_to_wide(data2)
 wide_LE = transform_to_wide(data3)
 
 # write wides to csvs
-write.csv(wide_3ACF, "./csvs/wides/wide_3ACF.csv", row.names = FALSE)
-write.csv(wide_MOO, "./csvs/wides/wide_MOO.csv", row.names = FALSE)
-write.csv(wide_LE, "./csvs/wides/wide_LE.csv", row.names = FALSE)
+write.csv(wide_3ACF, "./data_storage/results/r_results/wides/wide_3ACF.csv", row.names = FALSE)
+write.csv(wide_MOO, "./data_storage/results/r_results/wides/wide_MOO.csv", row.names = FALSE)
+write.csv(wide_LE, "./data_storage/results/r_results/wides/wide_LE.csv", row.names = FALSE)
