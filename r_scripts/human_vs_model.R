@@ -1,11 +1,11 @@
 library(tidyverse)
-library(lavaan)
 library(psych)
 library(ggplot2)
 library(GGally)
 library(ggpp)
 library(BayesFactor)
 library(rstanarm)
+library(lavaan)
 
 # Helper functions ----
 corMatrixPlot <- function(
@@ -56,7 +56,7 @@ corMatrixPlot <- function(
 
                 corMatPlot[row, row] <- ggplot(
                     data,
-                    aes_string(x = testLabels[row])
+                    aes(x = .data[[testLabels[row]]])
                 ) +
                     geom_density(
                         color = ifelse(draw_dist, "gray", NA)
@@ -164,7 +164,9 @@ corMatrixPlot <- function(
                     {
                         # Calculate line of best fit
                         plotLM <- stan_glm(
-                            as.formula(paste0(testLabels[col], "~", testLabels[row])),
+                            as.formula(
+                                paste0(testLabels[col], "~", testLabels[row])
+                            ),
                             data = data,
                             refresh = 0,
                         )
@@ -178,7 +180,7 @@ corMatrixPlot <- function(
                                 data = drawsLines,
                                 aes(intercept = intercept, slope = slope), # nolint
                                 color = "gray",
-                                size = 0.1,
+                                linewidth = 0.1,
                                 alpha = 0.1
                             ) +
                             geom_abline(
@@ -287,7 +289,6 @@ modelSummary <- tibble(
         o = c((scale(LE) + scale(Match) + scale(MOO))) / 3
     )
 
-
 # Test specific measures ----
 # Reliability
 humanLERel <- splitHalf(humanLE, check.keys = FALSE)$lambda2
@@ -314,6 +315,82 @@ LEDiffCor <- cor(humanLEDiff, modelLEDiff, use = "complete.obs")
 matchDiffCor <- cor(humanMatchDiff, modelMatchDiff)
 MOODiffCor <- cor(humanMOODiff, modelMOODiff)
 
+# Plot difficulty correlations where points are trial numbers
+LEDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(humanLEDiff)),
+        human = humanLEDiff,
+        model = modelLEDiff
+    ),
+    aes(x = human, y = model)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(LEDiffCor, digits = 2))
+    ) +
+    labs(x = "Human", y = "Model", title = "LE Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+LEDiffPlot
+
+matchDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(humanMatchDiff)),
+        human = humanMatchDiff,
+        model = modelMatchDiff
+    ),
+    aes(x = human, y = model)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(matchDiffCor, digits = 2))
+    ) +
+    labs(x = "Human", y = "Model", title = "Match Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+matchDiffPlot
+
+MOODiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(humanMOODiff)),
+        human = humanMOODiff,
+        model = modelMOODiff
+    ),
+    aes(x = human, y = model)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(MOODiffCor, digits = 2))
+    ) +
+    labs(x = "Human", y = "Model", title = "MOO Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+MOODiffPlot
+
 # Create model/human correlation matrix plot ----
 lambda2 <- "\U03BB\U2082"
 humanCorMatrix <- corMatrixPlot(
@@ -337,3 +414,34 @@ modelCorMatrix <- corMatrixPlot(
     showN = TRUE
 )
 modelCorMatrix
+
+# Measurement invariance testing ----
+# Concatenate the model and the human data
+allSummary <- rbind(
+    humanSummary |> mutate(Group = "Human"),
+    modelSummary |> mutate(Group = "Model")
+)
+
+oModel <- "
+    oLat =~ LE + Match + MOO
+"
+confInvarFit <- cfa(
+    oModel,
+    data = allSummary,
+    group = "Group"
+)
+weakInvarFit <- cfa(
+    model = oModel,
+    data = allSummary,
+    group = "Group",
+    group.equal = c("loadings")
+)
+strongInvarFit <- cfa(
+    model = oModel,
+    data = allSummary,
+    group = "Group",
+    group.equal = c("loadings", "intercepts")
+)
+lavTestLRT(confInvarFit, weakInvarFit, strongInvarFit)
+
+summary(confInvarFit, standardized = TRUE, fit.measures = TRUE)
