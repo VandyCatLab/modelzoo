@@ -1,3 +1,4 @@
+# Loading packages ----
 library(tidyverse)
 library(psych)
 library(ggplot2)
@@ -6,6 +7,7 @@ library(ggpp)
 library(BayesFactor)
 library(rstanarm)
 library(lavaan)
+library(semPlot)
 
 # Helper functions ----
 corMatrixPlot <- function(
@@ -430,18 +432,58 @@ confInvarFit <- cfa(
     data = allSummary,
     group = "Group"
 )
-weakInvarFit <- cfa(
+metricInvarFit <- cfa(
     model = oModel,
     data = allSummary,
     group = "Group",
     group.equal = c("loadings")
 )
-strongInvarFit <- cfa(
+scalarInvarFit <- cfa(
     model = oModel,
     data = allSummary,
     group = "Group",
     group.equal = c("loadings", "intercepts")
 )
-lavTestLRT(confInvarFit, weakInvarFit, strongInvarFit)
+residInvarFit <- cfa(
+    model = oModel,
+    data = allSummary,
+    group = "Group",
+    group.equal = c("loadings", "intercepts", "residuals")
+)
 
+lavTestLRT(confInvarFit, metricInvarFit, scalarInvarFit, residInvarFit)
 summary(confInvarFit, standardized = TRUE, fit.measures = TRUE)
+
+# Manual partial invariance model
+partialMetricInvarModel <- "
+    # Remember that LE is the first and is always set to 1 anyways
+    oLat =~ c(l1, l1)*LE + Match + c(l2, l2)*MOO
+"
+partialMetricInvarFit <- cfa(
+    model = partialMetricInvarModel,
+    data = allSummary,
+    group = "Group"
+)
+anova(confInvarFit, partialMetricInvarFit)
+
+partialScalarInvar <- "
+    # LE ~ c(i1, i1)*1
+    MOO ~ c(i2, i2)*1
+"
+partialScalarInvarFit <- cfa(
+    model = c(partialMetricInvarModel, partialScalarInvar),
+    data = allSummary,
+    group = "Group"
+)
+anova(partialMetricInvarFit, partialScalarInvarFit)
+
+# Plot confInvarFit model
+semPaths(
+    confInvarFit,
+    "std",
+    intercepts = FALSE,
+    edge.color = "black",
+    edge.label.cex = 2,
+    ask = FALSE,
+    panelGroups = TRUE
+)
