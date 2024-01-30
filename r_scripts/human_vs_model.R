@@ -243,6 +243,19 @@ colnames(humanLE) <- gsub("X", "", colnames(humanLE))
 colnames(humanMatch) <- gsub("X", "", colnames(humanMatch))
 colnames(humanMOO) <- gsub("X", "", colnames(humanMOO))
 
+# Load human data 2
+humanLE2 <- read_csv("./data_storage/humanData/le2.csv") |>
+    column_to_rownames("SbjID")
+humanMatch2 <- read_csv("./data_storage/humanData/match2.csv") |>
+    column_to_rownames("SbjID")
+humanMOO2 <- read_csv("./data_storage/humanData/moo2.csv") |>
+    column_to_rownames("SbjID")
+
+# Change the column names to just be the trial number (removing the Corr.)
+colnames(humanLE2) <- gsub("Corr.", "", colnames(humanLE2))
+colnames(humanMatch2) <- gsub("Corr.", "", colnames(humanMatch2))
+colnames(humanMOO2) <- gsub("Corr.", "", colnames(humanMOO2))
+
 # Load model data
 modelLE <- read_csv("./data_storage/results/r_results/wides/wide_LE.csv") |>
     column_to_rownames("SbjID") |>
@@ -281,6 +294,16 @@ humanSummary <- tibble(
     mutate(
         o = c((scale(LE) + scale(Match) + scale(MOO))) / 3
     )
+humanSummary2 <- tibble(
+    SbjID = rownames(humanLE2),
+    LE = rowMeans(humanLE2, na.rm = TRUE),
+    Match = rowMeans(humanMatch2, na.rm = TRUE),
+    MOO = rowMeans(humanMOO2, na.rm = TRUE)
+) |>
+    mutate(
+        o = c((scale(LE) + scale(Match) + scale(MOO))) / 3
+    )
+
 modelSummary <- tibble(
     SbjID = rownames(modelLE),
     LE = rowMeans(modelLE, na.rm = TRUE),
@@ -296,6 +319,9 @@ modelSummary <- tibble(
 humanLERel <- splitHalf(humanLE, check.keys = FALSE)$lambda2
 humanMatchRel <- splitHalf(humanMatch, check.keys = FALSE)$lambda2
 humanMOORel <- splitHalf(humanMOO, check.keys = FALSE)$lambda2
+humanLE2Rel <- splitHalf(humanLE2, check.keys = FALSE)$lambda2
+humanMatch2Rel <- splitHalf(humanMatch2, check.keys = FALSE)$lambda2
+humanMOO2Rel <- splitHalf(humanMOO2, check.keys = FALSE)$lambda2
 
 # Only use LE trials that have no NA
 tmp <- modelLE[, !is.na(modelLE[1, ])]
@@ -307,6 +333,9 @@ modelMOORel <- splitHalf(modelMOO, check.keys = FALSE)$lambda2
 humanLEDiff <- colMeans(humanLE)
 humanMatchDiff <- colMeans(humanMatch)
 humanMOODiff <- colMeans(humanMOO)
+humanLE2Diff <- colMeans(humanLE2)
+humanMatch2Diff <- colMeans(humanMatch2)
+humanMOO2Diff <- colMeans(humanMOO2)
 
 modelLEDiff <- colMeans(modelLE)
 modelMatchDiff <- colMeans(modelMatch)
@@ -316,6 +345,11 @@ modelMOODiff <- colMeans(modelMOO)
 LEDiffCor <- cor(humanLEDiff, modelLEDiff, use = "complete.obs")
 matchDiffCor <- cor(humanMatchDiff, modelMatchDiff)
 MOODiffCor <- cor(humanMOODiff, modelMOODiff)
+
+# Correlate difficulty between humans and humans
+LEHumanDiffCor <- cor(humanLEDiff, humanLE2Diff)
+matchHumanDiffCor <- cor(humanMatchDiff, humanMatch2Diff)
+MOOHumanDiffCor <- cor(humanMOODiff, humanMOO2Diff)
 
 # Plot difficulty correlations where points are trial numbers
 LEDiffPlot <- ggplot(
@@ -393,6 +427,83 @@ MOODiffPlot <- ggplot(
     )
 MOODiffPlot
 
+LEHumanDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(humanLEDiff)),
+        human1 = humanLEDiff,
+        human2 = humanLE2Diff
+    ),
+    aes(x = human1, y = human2)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(LEHumanDiffCor, digits = 2))
+    ) +
+    labs(x = "Human 1", y = "Human 2", title = "LE Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+LEHumanDiffPlot
+
+matchHumanDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(humanMatchDiff)),
+        human1 = humanMatchDiff,
+        human2 = humanMatch2Diff
+    ),
+    aes(x = human1, y = human2)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(matchHumanDiffCor, digits = 2))
+    ) +
+    labs(x = "Human 1", y = "Human 2", title = "Match Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+
+matchHumanDiffPlot
+
+MOOHumanDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(humanMOODiff)),
+        human1 = humanMOODiff,
+        human2 = humanMOO2Diff
+    ),
+    aes(x = human1, y = human2)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(MOOHumanDiffCor, digits = 2))
+    ) +
+    labs(x = "Human 1", y = "Human 2", title = "MOO Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+
+MOOHumanDiffPlot
+
 # Create model/human correlation matrix plot ----
 lambda2 <- "\U03BB\U2082"
 humanCorMatrix <- corMatrixPlot(
@@ -406,6 +517,17 @@ humanCorMatrix <- corMatrixPlot(
 )
 humanCorMatrix
 
+human2CorMatrix <- corMatrixPlot(
+    data = humanSummary2 |> select(LE, Match, MOO),
+    reliability = c(humanLERel, humanMatchRel, humanMOORel),
+    nullInterval = c(-1, 0),
+    rscale = 1 / 3,
+    relSymbol = lambda2,
+    draw_dist = TRUE,
+    showN = TRUE
+)
+human2CorMatrix
+
 modelCorMatrix <- corMatrixPlot(
     data = modelSummary |> select(LE, Match, MOO),
     reliability = c(modelLERel, modelMatchRel, modelMOORel),
@@ -417,7 +539,7 @@ modelCorMatrix <- corMatrixPlot(
 )
 modelCorMatrix
 
-# Measurement invariance testing ----
+# Measurement invariance testing between human and model ----
 # Concatenate the model and the human data
 allSummary <- rbind(
     humanSummary |> mutate(Group = "Human"),
@@ -480,6 +602,58 @@ anova(partialMetricInvarFit, partialScalarInvarFit)
 # Plot confInvarFit model
 semPaths(
     confInvarFit,
+    "std",
+    intercepts = FALSE,
+    edge.color = "black",
+    edge.label.cex = 2,
+    ask = FALSE,
+    panelGroups = TRUE
+)
+
+# Measurement invariance between human and human ----
+# Bind together human data only
+allHumanSummary <- rbind(
+    humanSummary |> mutate(Group = "Human"),
+    humanSummary2 |> mutate(Group = "Human2")
+)
+
+# We can use the exact same models as before, just fits
+confInvarHumanFit <- cfa(
+    oModel,
+    data = allHumanSummary,
+    group = "Group"
+)
+
+metricInvarHumanFit <- cfa(
+    model = oModel,
+    data = allHumanSummary,
+    group = "Group",
+    group.equal = c("loadings")
+)
+
+scalarInvarHumanFit <- cfa(
+    model = oModel,
+    data = allHumanSummary,
+    group = "Group",
+    group.equal = c("loadings", "intercepts")
+)
+
+residInvarHumanFit <- cfa(
+    model = oModel,
+    data = allHumanSummary,
+    group = "Group",
+    group.equal = c("loadings", "intercepts", "residuals")
+)
+
+lavTestLRT(
+    confInvarHumanFit,
+    metricInvarHumanFit,
+    scalarInvarHumanFit,
+    residInvarHumanFit
+)
+
+semPaths(
+    metricInvarHumanFit,
     "std",
     intercepts = FALSE,
     edge.color = "black",
