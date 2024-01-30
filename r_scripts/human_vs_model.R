@@ -321,7 +321,7 @@ humanMatchRel <- splitHalf(humanMatch, check.keys = FALSE)$lambda2
 humanMOORel <- splitHalf(humanMOO, check.keys = FALSE)$lambda2
 humanLE2Rel <- splitHalf(humanLE2, check.keys = FALSE)$lambda2
 humanMatch2Rel <- splitHalf(humanMatch2, check.keys = FALSE)$lambda2
-humanMOO2Rel <- splitHalf(humanMOO2, check.keys = FALSE)$lambda2
+humanMOO2Rel <- splitHalf(humanMOO2, check.keys = FALSE, covar = TRUE)$lambda2
 
 # Only use LE trials that have no NA
 tmp <- modelLE[, !is.na(modelLE[1, ])]
