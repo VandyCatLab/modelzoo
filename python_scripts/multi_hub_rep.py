@@ -96,6 +96,10 @@ def image_list(data_dir):
 
 
 def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
+    if "origin" in modelData.keys() and modelData["origin"] == "keras":
+        # Override model input shape for keras models
+        modelData["shape"] = model.input_shape[1:]
+
     # get dataset from datasets.py
     dataset = get_dataset(data_dir, modelFile, model_name, modelData, model, batch_size)
     # print('\nDataset size:', dataset, '\n')
@@ -750,6 +754,7 @@ if __name__ == "__main__":
 
         torch.set_default_tensor_type("torch.cuda.FloatTensor")
 
+    badModels = ['nts-net']
     # Get all model files and information
     fileList = args.model_files.split(", ")
 
@@ -931,6 +936,7 @@ if __name__ == "__main__":
                 ]
             )
 
+        missingModels = []
         for modelName in modelList:
             modelData = hubModels[modelName]
             modelFile = modelData["modelFile"]
@@ -954,9 +960,13 @@ if __name__ == "__main__":
                         for line in f:
                             img_names.append(line.strip())
             else:
-                # Load model
-                missingModels = []
                 try:
+                    if modelName in badModels:
+                        print(f"Skipping {modelName}")
+                        missingModels.append(modelName)
+
+                        continue
+
                     model = get_model(modelName, modelFile, hubModels)
                 except Exception as e:
                     # Echo exception
@@ -979,11 +989,14 @@ if __name__ == "__main__":
                         f.write(file + "\n")
 
                 # Adjust batch size based on number of parameters
-                batch_size = int(
-                    args.batch_size
-                    * (1 / 2 ** int(np.log10(int(modelData["num_params"])) - 3))
-                )
-                batch_size = 2 if batch_size < 2 else batch_size
+                if "num_params" not in modelData.keys():
+                    batch_size = args.batch_size
+                else:
+                    batch_size = int(
+                        args.batch_size
+                        * (1 / 2 ** int(np.log10(int(modelData["num_params"])) - 3))
+                    )
+                    batch_size = 2 if batch_size < 2 else batch_size
 
                 reps = rep_maker(
                     ddir,
@@ -1012,7 +1025,7 @@ if __name__ == "__main__":
                 # Save results
                 results.to_csv(resultsPath, index=False)
 
-        else:
-            print(f"Invalid test: {args.test}")
+    else:
+        print(f"Invalid test: {args.test}")
 
     print("Missing models:", missingModels)
