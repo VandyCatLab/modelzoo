@@ -295,9 +295,16 @@ def get_flat_dataset(data_dir, preprocFun=None, batch_size=64):
     files = os.listdir(data_dir)
     files.sort()
 
+    # Preprocess one image to see what size it is
+    img = PIL.Image.open(os.path.join(data_dir, files[0]))
+    img = np.array(img)
+    if preprocFun is not None:
+        img = preprocFun(img)
+
+    # Preallocate
+    imgs = np.empty([len(files)] + list(img.shape))
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
-        imgs = np.empty([len(files)] + list(preprocFun.shape))
         img = np.array(img)
 
         if preprocFun is not None:
