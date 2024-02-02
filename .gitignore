@@ -25,6 +25,7 @@ data_storage/results/working_dir
 data_storage/results/test_rep_storage/learn_exemp/*
 data_storage/results/test_rep_storage/many_odd/*
 data_storage/results/test_rep_storage/threeACF/*
+data_storage/results/le_reps/
 hmIT_stimuli&RDMs/
 hubReps/
 logs/
