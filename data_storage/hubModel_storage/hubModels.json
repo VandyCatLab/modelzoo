@@ -32,7 +32,7 @@
         "origin": "tenorflowHub"
     },
     "experts/bit/r50x1/in21k/matter": {
-        "url": "https://tfhub.dev/google/x1/in21k/matter/1",
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/matter/1",
         "numFeatures": 2048,
         "type": "resnet-v2",
         "trainingSet": "imagenet21k",
