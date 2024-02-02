@@ -7,6 +7,8 @@ import numpy as np
 import scipy.stats as stats
 import json
 import glob
+import tensorflow as tf
+import gc
 
 
 def compile_correspondence(path, models_path):
@@ -64,12 +66,10 @@ def correspondence_missing_optimizer(missing):
 
         modelN = np.array([len(count) for count in modelCounts])
         target = models.pop(np.argmax(modelN))
-        modelPairs[target] = list(
-            data["model1"].loc[data["model2"] == target]
-        ) + list(data["model2"].loc[data["model1"] == target])
-        data = data.loc[
-            (data["model1"] != target) & (data["model2"] != target)
-        ]
+        modelPairs[target] = list(data["model1"].loc[data["model2"] == target]) + list(
+            data["model2"].loc[data["model1"] == target]
+        )
+        data = data.loc[(data["model1"] != target) & (data["model2"] != target)]
 
     return modelPairs
 
@@ -89,9 +89,7 @@ def compile_augment(path, augment, layer):
     if augment == "color":
         df["version"] = (df["version"] - 25) * (3 / 50)
     elif "translate" in augment:
-        metricNames = [
-            name for name in df.columns if not name in ["version", "layer"]
-        ]
+        metricNames = [name for name in df.columns if not name in ["version", "layer"]]
         # Remove directions from metricNames
         metricNames = [name.split("-")[0] for name in metricNames]
         # Keep only unique names
@@ -163,9 +161,7 @@ def compile_baseline_dict(path, tests, layers, metrics):
                 for metric in metrics:
                     if testKey == "translate":  # Translation test
                         directions = ["left", "right", "up", "down"]
-                        dirKeys = [
-                            f"{metric}-{direction}" for direction in directions
-                        ]
+                        dirKeys = [f"{metric}-{direction}" for direction in directions]
                         df[metric] = df[dirKeys].mean(1)
                     for version in versions:
                         tmpData = df[metric].loc[df["version"] == version]
@@ -194,13 +190,9 @@ def compile_baseline_dict(path, tests, layers, metrics):
                             }
                         ]
 
-                        if (
-                            testKey == "translate"
-                        ):  # Add directions for translation
+                        if testKey == "translate":  # Add directions for translation
                             for i, dirCol in enumerate(dirKeys):
-                                metricData[metric][-1][
-                                    directions[i]
-                                ] = np.mean(
+                                metricData[metric][-1][directions[i]] = np.mean(
                                     df[dirCol].loc[df["version"] == version]
                                 )
 
@@ -377,10 +369,7 @@ def compile_training_traj(trajDir, pattern):
         log = [line for line in log if "val_accuracy" in line]
 
         # Just grab validation accuracy
-        valAcc = [
-            float(line.split(":")[-1].replace("\n", "").strip())
-            for line in log
-        ]
+        valAcc = [float(line.split(":")[-1].replace("\n", "").strip()) for line in log]
 
         # Get model name
         model = file.split("/")[-1].split(".")[0]
@@ -401,6 +390,14 @@ def compile_training_traj(trajDir, pattern):
         )
 
     return df
+
+
+def clear_model():
+    # Check if model variable exists
+    if "model" in globals():
+        del globals()["model"]
+        tf.keras.backend.clear_session()
+        gc.collect()
 
 
 if __name__ == "__main__":
