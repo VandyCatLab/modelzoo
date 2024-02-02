@@ -96,6 +96,10 @@ def image_list(data_dir):
 
 
 def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
+    if "origin" in modelData.keys() and modelData["origin"] == "keras":
+        # Override model input shape for keras models
+        modelData["shape"] = model.input_shape[1:]
+
     # get dataset from datasets.py
     dataset = get_dataset(data_dir, modelFile, model_name, modelData, model, batch_size)
     # print('\nDataset size:', dataset, '\n')
@@ -154,48 +158,18 @@ def learning_exemplar(
     return results
 
 
-def many_oddball(model_name, image_names, reps, csv_file, data_dir):
-    image_sets = image_sets_maker(csv_file, image_names, reps, "odd")
-    euc_correct_total = 0
-    num_total = 0
-    answer_set = []
-    for set in image_sets:
-        euc_min = min([set[-4], set[-3], set[-2]])
-        if euc_min == set[-4]:
-            choice = 3
-        elif euc_min == set[-3]:
-            choice = 2
-        elif euc_min == set[-2]:
-            choice = 1
-        else:
-            raise ValueError("Best Distance not found among image_sets")
-        # [row_idx, image1_idx, image2_idx, image3_idx,
-        #  image1_name, image2_name, image3_name,
-        #  euc_dist_1_2, euc_dist_1_3, euc_dist_2_3, CorrRes]
-        if int(set[-1]) == choice:
-            answer = "correct"
-            euc_correct_total += 1
-        else:
-            answer = "incorrect"
+def many_oddball(model_name, image_names, reps, csv_file, encoding_noise=0.0):
+    # If noise is not 0, apply noise to the representations
+    if encoding_noise != 0.0:
+        repStd = np.std(reps)
 
-        # print(f'{int(set[-1])} || {choice} || {answer}')
-        answer_set.append([answer, int(set[-1]), choice])
-        num_total += 1
-    """''
-    print(f'\n\n\nUsing Model: {args.model_name}\n-------------\n\
-Euc Many Oddball Correct: {euc_correct_total} / {num_total}\n')
-    """ ""
+        # Load csv
+    trials = pd.read_csv(csv_file)
 
-    percent_corr = euc_correct_total / num_total
-
-    return [
-        model_name,
-        euc_correct_total,
-        num_total,
-        percent_corr,
-        answer_set,
-        image_sets,
-    ]
+    # Loop through each row
+    results = pd.DataFrame(
+        columns=["ModelName", "Response", "Corr"] + list(trials.columns)
+    )
 
 
 # look for object with biggest distance from the other two
@@ -579,6 +553,7 @@ def get_model(modelName, modelFile, hubModels):
     ):
         # Create model from pytorch hub
         model = hubReps.get_pytorch_model(hubModels, modelFile, modelName)
+        model.eval()
     else:
         raise ValueError(f"Unknown models file {modelFile}")
 
@@ -624,6 +599,8 @@ def get_reps(modelFile, model, dataset, modelData, batch_size=64):
     ):
         reps = hubReps.get_reps(model, dataset, modelData, batch_size)
 
+        utils.clear_model()
+
     elif (
         modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json"
         or modelFile
@@ -641,7 +618,7 @@ if __name__ == "__main__":
     import argparse
 
     print("\n\n/////////////////////////////////////")
-    os.environ["TORCH_HOME"] = "/data/brustdm/modelnet/torch"
+    os.environ["TORCH_HOME"] = "/data/modelnet/torch"
 
     parser = argparse.ArgumentParser(
         description="Get representations from Tensorflow Hub networks using the validation set of ImageNet, intended to be used in HPC"
@@ -737,8 +714,17 @@ if __name__ == "__main__":
         default=0.0,
         help="amount of memory decay to add",
     )
+    parser.add_argument(
+        "--use_gpu", default=False, action="store_true", help="uses GPU"
+    )
     args = parser.parse_args()
 
+    if args.use_gpu:
+        import torch
+
+        torch.set_default_tensor_type("torch.cuda.FloatTensor")
+
+    badModels = ['nts-net']
     # Get all model files and information
     fileList = args.model_files.split(", ")
 
@@ -761,164 +747,136 @@ if __name__ == "__main__":
         # Fill a list with all the models
         modelList = list(hubModels.keys())
 
-    for modelName in modelList:
-        modelData = hubModels[modelName]
-        modelFile = modelData["modelFile"]
-
-        results = []
-        model_list = []
-
-        if args.test == "same_diff":
-            ddir = "../novset"
-            reps = rep_maker(
-                ddir, modelFile, model_name, modelData, model, args.batch_size
+    if args.test == "same_diff":
+        ddir = "../novset"
+        reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
+        image_names = image_list(ddir)
+        results.append(
+            same_diff(
+                image_names,
+                reps,
+                "../data_storage/ziggerins_trials_full.csv",
             )
+        )
+    elif args.test == "threeACF":
+        """''
+        if args.noise == 'zeros':
+            three_path = '../data_storage/results/threeACF_results_noise_zeros.npy'
+        elif args.noise == 'size':
+            three_path = '../data_storage/results/threeACF_results_noise_size.npy'
+        else:
+        """ ""
+        if args.noise == "noise":
+            test_path = f"../data_storage/results/{args.test}_results-{args.noise}.npy"
+        else:
+            test_path = f"../data_storage/results/{args.test}_results.npy"
+        if os.path.exists(test_path):
+            results_full = np.load(test_path, allow_pickle=True)
+        else:
+            results_full = []
+        if model_name not in results_full:
+            print(f"New Addition for {args.test}: {model_name}")
+            ddir = "../data_storage/standalone/3AFCMatching/stimuli_altered"
+            reps = rep_maker(
+                ddir,
+                modelFile,
+                model_name,
+                modelData,
+                model,
+                args.batch_size,
+            )
+            if args.noise == "noise":
+                rep1 = f"../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy"
+                rep2 = f"../data_storage/results/test_rep_storage/many_odd/{model_name}-many_odd-none-rep.npy"
+                rep3 = f"../data_storage/results/test_rep_storage/learn_exemp/{model_name}-learn_exemp-none-rep.npy"
+                reps = apply_noise_three_std(reps, [rep1, rep2, rep3])
+            save_dir = f"../data_storage/results/test_rep_storage/{args.test}/{model_name}-{args.test}-{args.noise}-rep.npy"
+            np.save(save_dir, reps)
+            """''
+            if args.noise == 'True':
+                reps = reps
+                ##################
+            """ ""
             image_names = image_list(ddir)
             results.append(
-                same_diff(
-                    image_names,
-                    reps,
-                    "../data_storage/ziggerins_trials_full.csv",
-                )
-            )
-        elif args.test == "threeACF":
-            """''
-            if args.noise == 'zeros':
-                three_path = '../data_storage/results/threeACF_results_noise_zeros.npy'
-            elif args.noise == 'size':
-                three_path = '../data_storage/results/threeACF_results_noise_size.npy'
-            else:
-            """ ""
-            if args.noise == "noise":
-                test_path = (
-                    f"../data_storage/results/{args.test}_results-{args.noise}.npy"
-                )
-            else:
-                test_path = f"../data_storage/results/{args.test}_results.npy"
-            if os.path.exists(test_path):
-                results_full = np.load(test_path, allow_pickle=True)
-            else:
-                results_full = []
-            if model_name not in results_full:
-                print(f"New Addition for {args.test}: {model_name}")
-                ddir = "../data_storage/standalone/3AFCMatching/stimuli_altered"
-                reps = rep_maker(
-                    ddir,
-                    modelFile,
+                [
                     model_name,
-                    modelData,
-                    model,
-                    args.batch_size,
-                )
-                if args.noise == "noise":
-                    rep1 = f"../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy"
-                    rep2 = f"../data_storage/results/test_rep_storage/many_odd/{model_name}-many_odd-none-rep.npy"
-                    rep3 = f"../data_storage/results/test_rep_storage/learn_exemp/{model_name}-learn_exemp-none-rep.npy"
-                    reps = apply_noise_three_std(reps, [rep1, rep2, rep3])
-                save_dir = f"../data_storage/results/test_rep_storage/{args.test}/{model_name}-{args.test}-{args.noise}-rep.npy"
-                np.save(save_dir, reps)
-                """''
-                if args.noise == 'True':
-                    reps = reps
-                    ##################
-                """ ""
-                image_names = image_list(ddir)
-                results.append(
-                    [
+                    three_ACF(
                         model_name,
-                        three_ACF(
-                            model_name,
-                            image_names,
-                            reps,
-                            "../data_storage/3ACF_trials.csv",
-                            ddir,
-                        ),
-                    ]
-                )
-                if os.path.exists(test_path):
-                    results_full = np.load(test_path, allow_pickle=True)
-                    results_full = np.append(results_full, results)
-                else:
-                    print(f"Using new file for {args.test}")
-                    results_full = results
-                np.save(test_path, results_full)
-            else:
-                print(f"Already have model for {args.test}: {model_name}")
-
-        elif args.test == "many_odd":
-            if args.noise == "noise":
-                test_path = (
-                    f"../data_storage/results/{args.test}_results-{args.noise}.npy"
-                )
-            else:
-                test_path = f"../data_storage/results/{args.test}_results.npy"
-            if os.path.exists(test_path):
-                results_full = np.load(test_path, allow_pickle=True)
-            else:
-                results_full = []
-            if model_name not in results_full:
-                print(f"New Addition for {args.test}: {model_name}")
-                ddir = "../data_storage/standalone/ManyObjectsOddball/stimuli"
-                reps = rep_maker(
-                    ddir,
-                    modelFile,
-                    model_name,
-                    modelData,
-                    model,
-                    args.batch_size,
-                )
-                if args.noise == "noise":
-                    rep1 = f"../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy"
-                    rep2 = f"../data_storage/results/test_rep_storage/many_odd/{model_name}-many_odd-none-rep.npy"
-                    rep3 = f"../data_storage/results/test_rep_storage/learn_exemp/{model_name}-learn_exemp-none-rep.npy"
-                    reps = apply_noise_three_std(reps, [rep1, rep2, rep3])
-                save_dir = f"../data_storage/results/test_rep_storage/{args.test}"
-                np.save(
-                    os.path.join(
-                        save_dir,
-                        f"{model_name}-{args.test}-{args.noise}-rep.npy",
+                        image_names,
+                        reps,
+                        "../data_storage/3ACF_trials.csv",
+                        ddir,
                     ),
-                    reps,
-                )
-                image_names = image_list(ddir)
-                results.append(
-                    [
-                        model_name,
-                        many_oddball(
-                            model_name,
-                            image_names,
-                            reps,
-                            "../data_storage/many_oddball_trials.csv",
-                            ddir,
-                        ),
-                    ]
-                )
-                if os.path.exists(test_path):
-                    results_full = np.load(test_path, allow_pickle=True)
-                    results_full = np.append(results_full, results)
-                else:
-                    print(f"Using new file for {args.test}")
-                    results_full = results
-                np.save(test_path, results_full)
-            else:
-                print(f"Already have model for {args.test}: {model_name}")
-
-        elif args.test == "learn_exemp":
-            rep_path = f"../data_storage/results/le_reps/{modelName}-learn_exemp.npy"
-            image_name_path = (
-                f"../data_storage/results/le_reps/{modelName}-learn_exemp.txt"
+                ]
             )
-            ddir = "../data_storage/standalone/LE_set"
+            if os.path.exists(test_path):
+                results_full = np.load(test_path, allow_pickle=True)
+                results_full = np.append(results_full, results)
+            else:
+                print(f"Using new file for {args.test}")
+                results_full = results
+            np.save(test_path, results_full)
+        else:
+            print(f"Already have model for {args.test}: {model_name}")
+
+    elif args.test == "many_odd":
+        # Setup results file
+        # Check if results already exists
+        resultsPath = f"../data_storage/results/results_{args.test}"
+        if args.noise != 0:
+            raise NotImplementedError("Encoding not implemented")
+            resultsPath += f"_noise-{args.noise}"
+
+        resultsPath += ".csv"
+        if os.path.exists(resultsPath):
+            results = pd.read_csv(resultsPath)
+        else:
+            results = pd.DataFrame(
+                columns=[
+                    "ModelName",
+                    "Response",
+                    "Corr",
+                    "Trial",
+                    "CorrRes",
+                    "Duration",
+                    "Feedback",
+                ]
+            )
+
+        for modelName in modelList:
+            modelData = hubModels[modelName]
+            modelFile = modelData["modelFile"]
+
+            rep_path = f"../data_storage/results/moo_reps/{modelName.replace('/', '-')}-moo.npy"
+            image_name_path = f"../data_storage/results/moo_reps/{modelName.replace('/', '-')}-moo.txt"
+            ddir = "../data_storage/standalone/MOO_set"
             if os.path.exists(rep_path):
                 print(f"Already have reps for {args.test} from {modelName}")
-                reps = np.load(rep_path)
-                img_names = []
-                with open(image_name_path, "r") as f:
-                    for line in f:
-                        img_names.append(line.strip())
+
+                if modelName in results["ModelName"].values:
+                    print(f"Already have results for le: {modelName}")
+                    # Get the accuracy for this model
+                    acc = results[results["ModelName"] == modelName]["Corr"].mean()
+                    print(f"Accuracy for {modelName}: {acc}")
+                    continue
+                else:
+                    reps = np.load(rep_path)
+                    img_names = []
+                    with open(image_name_path, "r") as f:
+                        for line in f:
+                            img_names.append(line.strip())
             else:
                 # Load model
-                model = get_model(modelName, modelFile, hubModels)
+                missingModels = []
+                try:
+                    model = get_model(modelName, modelFile, hubModels)
+                except Exception as e:
+                    # Echo exception
+                    print(f"Error loading model {modelName}: {e}")
+                    missingModels.append(modelName)
+
+                    continue
 
                 print(f"New reps for {args.test}: {modelName}")
 
@@ -933,49 +891,147 @@ if __name__ == "__main__":
                     for file in img_names:
                         f.write(file + "\n")
 
+                # Adjust batch size based on number of parameters
+                if "num_params" not in modelData.keys():
+                    batch_size = args.batch_size
+                else:
+                    batch_size = int(
+                        args.batch_size
+                        * (1 / 2 ** int(np.log10(int(modelData["num_params"])) - 3))
+                    )
+                    batch_size = 2 if batch_size < 2 else batch_size
+
                 reps = rep_maker(
                     ddir,
                     modelFile,
                     modelName,
                     modelData,
                     model,
-                    args.batch_size,
+                    batch_size,
                 )
 
+                # Flatten reps
+                reps = reps.reshape(reps.shape[0], -1)
                 np.save(rep_path, reps)
 
-            # Calculate results
-            resultsPath = f"../data_storage/results/results_{args.test}"
-            if args.noise != 0:
-                resultsPath += f"_noise-{args.noise}"
-            if args.memory_decay != 0:
-                raise NotImplementedError("Memory decay not implemented")
-                resultsPath += f"_memDecay-{args.memory_decay}"
-            resultsPath += ".csv"
+                print(f"New results for {args.test}: {modelName}")
+                modelResults = many_oddball(
+                    modelName,
+                    img_names,
+                    reps,
+                    "../data_storage/many_odd_trials.csv",
+                    encoding_noise=args.noise,
+                )
+                results = pd.concat([results, modelResults])
 
-            # Check if results already exists
-            if os.path.exists(resultsPath):
-                results = pd.read_csv(resultsPath)
+                # Save results
+                results.to_csv(resultsPath, index=False)
+
+    elif args.test == "learn_exemp":
+        # Setup results file
+        # Check if results already exists
+        resultsPath = f"../data_storage/results/results_{args.test}"
+        if args.noise != 0:
+            resultsPath += f"_noise-{args.noise}"
+        if args.memory_decay != 0:
+            raise NotImplementedError("Memory decay not implemented")
+            resultsPath += f"_memDecay-{args.memory_decay}"
+        resultsPath += ".csv"
+        if os.path.exists(resultsPath):
+            results = pd.read_csv(resultsPath)
+        else:
+            results = pd.DataFrame(
+                columns=[
+                    "ModelName",
+                    "Response",
+                    "Corr",
+                    "Trial",
+                    "Img",
+                    "Target",
+                    "CorrRes",
+                    "FoilLevel",
+                    "View",
+                    "Noise",
+                    "Foil1",
+                    "Foil2",
+                ]
+            )
+
+        missingModels = []
+        for modelName in modelList:
+            modelData = hubModels[modelName]
+            modelFile = modelData["modelFile"]
+
+            rep_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp.npy"
+            image_name_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp.txt"
+            ddir = "../data_storage/standalone/LE_set"
+            if os.path.exists(rep_path):
+                print(f"Already have reps for {args.test} from {modelName}")
+
+                if modelName in results["ModelName"].values:
+                    print(f"Already have results for le: {modelName}")
+                    # Get the accuracy for this model
+                    acc = results[results["ModelName"] == modelName]["Corr"].mean()
+                    print(f"Accuracy for {modelName}: {acc}")
+                    continue
+                else:
+                    reps = np.load(rep_path)
+                    img_names = []
+                    with open(image_name_path, "r") as f:
+                        for line in f:
+                            img_names.append(line.strip())
             else:
-                results = pd.DataFrame(
-                    columns=[
-                        "ModelName",
-                        "Response",
-                        "Corr",
-                        "Trial",
-                        "Img",
-                        "Target",
-                        "CorrRes",
-                        "FoilLevel",
-                        "View",
-                        "Noise",
-                        "Foil1",
-                        "Foil2",
-                    ]
+                try:
+                    if modelName in badModels:
+                        print(f"Skipping {modelName}")
+                        missingModels.append(modelName)
+
+                        continue
+
+                    model = get_model(modelName, modelFile, hubModels)
+                except Exception as e:
+                    # Echo exception
+                    print(f"Error loading model {modelName}: {e}")
+                    missingModels.append(modelName)
+
+                    continue
+
+                print(f"New reps for {args.test}: {modelName}")
+
+                # Get file list and save
+                img_names = os.listdir(ddir)
+                img_names.sort()
+                # Save file list as text file
+                with open(
+                    image_name_path,
+                    "w",
+                ) as f:
+                    for file in img_names:
+                        f.write(file + "\n")
+
+                # Adjust batch size based on number of parameters
+                if "num_params" not in modelData.keys():
+                    batch_size = args.batch_size
+                else:
+                    batch_size = int(
+                        args.batch_size
+                        * (1 / 2 ** int(np.log10(int(modelData["num_params"])) - 3))
+                    )
+                    batch_size = 2 if batch_size < 2 else batch_size
+
+                reps = rep_maker(
+                    ddir,
+                    modelFile,
+                    modelName,
+                    modelData,
+                    model,
+                    batch_size,
                 )
 
-            # Check if results for this model exists
-            if modelName not in results["ModelName"].values:
+                # Flatten reps
+                reps = reps.reshape(reps.shape[0], -1)
+                np.save(rep_path, reps)
+
                 print(f"New results for {args.test}: {modelName}")
                 modelResults = learning_exemplar(
                     modelName,
@@ -989,11 +1045,8 @@ if __name__ == "__main__":
 
                 # Save results
                 results.to_csv(resultsPath, index=False)
-            else:
-                print(f"Already have model for le: {modelName}")
-                # Get the accuracy for this model
-                acc = results[results["ModelName"] == modelName]["Corr"].mean()
-                print(f"Accuracy for {modelName}: {acc}")
 
-        else:
-            print(f"Invalid test: {args.test}")
+    else:
+        print(f"Invalid test: {args.test}")
+
+    print("Missing models:", missingModels)
