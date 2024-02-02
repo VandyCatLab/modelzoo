@@ -579,6 +579,7 @@ def get_model(modelName, modelFile, hubModels):
     ):
         # Create model from pytorch hub
         model = hubReps.get_pytorch_model(hubModels, modelFile, modelName)
+        model.eval()
     else:
         raise ValueError(f"Unknown models file {modelFile}")
 
@@ -623,6 +624,8 @@ def get_reps(modelFile, model, dataset, modelData, batch_size=64):
         or modelFile == "../data_storage/hubModel_storage/hubModels_keras.json"
     ):
         reps = hubReps.get_reps(model, dataset, modelData, batch_size)
+
+        utils.clear_model()
 
     elif (
         modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json"
@@ -978,7 +981,7 @@ if __name__ == "__main__":
                 # Adjust batch size based on number of parameters
                 batch_size = int(
                     args.batch_size
-                    * (1 / 2 ** int(np.log10(modelData["num_params"]) - 3))
+                    * (1 / 2 ** int(np.log10(int(modelData["num_params"])) - 3))
                 )
                 batch_size = 2 if batch_size < 2 else batch_size
 
