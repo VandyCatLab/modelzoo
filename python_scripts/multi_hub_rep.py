@@ -170,64 +170,40 @@ def many_oddball(model_name, image_names, reps, csv_file, encoding_noise=0.0):
     results = pd.DataFrame(
         columns=["ModelName", "Response", "Corr"] + list(trials.columns)
     )
+    choices = [0, 1, 2]
+    for index, row in trials.iterrows():
+        # Get trial number
+        trial = row["Trial"]
 
+        idxs = [
+            i
+            for i, name in enumerate(image_names)
+            if name.split("-")[0].replace("trial", "") == str(trial)
+        ]
+        choiceReps = reps[idxs]
 
-# look for object with biggest distance from the other two
-# is that different than taking min??
-# make sure they are the same
-# look toward trials to see how maybe people favoredo one of the other
-# mathamatical proof?? or just show emperically...
-def three_ACF(model_name, image_names, reps, csv_file, data_dir):
-    img_files = os.listdir(data_dir)
-    for file in img_files:
-        img = Image.open(os.path.join(data_dir, file))
-        if img.size == (203, 470):
-            left = 2
-            top = 0
-            right = 202
-            bottom = 200
-            img_altered = img.crop((left, top, right, bottom))
-            img_altered.save(os.path.join(data_dir, file))
-    image_sets = image_sets_maker(csv_file, image_names, reps, 3)
-    euc_correct_total = 0
-    num_total = 0
-    answer_set = []
-    for set in image_sets:
-        euc_min = min([set[-4], set[-3], set[-2]])
-        if euc_min == set[-4]:
-            choice = 1
-        elif euc_min == set[-3]:
-            choice = 2
-        elif euc_min == set[-2]:
-            choice = 3
-        else:
-            raise ValueError("Best Distance not found among image_sets")
-        # [row_idx, image1_idx, image2_idx, image3_idx, target_idx, image1_name,
-        # image2_name, image3_name, target_image, euc_dist_1, euc_dist_2, euc_dist_3, CorrRes])
-        if int(set[-1]) == choice:
-            answer = "correct"
-            euc_correct_total += 1
+        dists = cdist(choiceReps, choiceReps, "euclidean")
+        np.fill_diagonal(dists, np.inf)
 
-        else:
-            answer = "incorrect"
+        # Find the smallest distance
+        chosenIdx = np.unravel_index(np.argmin(dists), dists.shape)
 
-        answer_set.append([answer, int(set[-1]), choice])
-        # print(f'{int(set[-1])} || {choice} || {answer}')
-        num_total += 1
-    """''
-    print(f'\n\n\nUsing Model: {args.model_name}\n-------------\n\
-Euc 3ACF Correct: {euc_correct_total} / {num_total}\n')
-    """ ""
-    percent_corr = euc_correct_total / num_total
+        # Find the response that isn't in the choices
+        response = list(set(choices) - set(chosenIdx))[0] + 1
 
-    return [
-        model_name,
-        euc_correct_total,
-        num_total,
-        percent_corr,
-        answer_set,
-        image_sets,
-    ]
+        # Copy row and add new info to it
+        newRow = row.copy()
+        newRow["ModelName"] = model_name
+        newRow["Response"] = response
+        newRow["Corr"] = int(response == newRow["CorrRes"])
+
+        # Save new row to results
+        results = pd.concat([results, pd.DataFrame(newRow).T])
+
+    # Print model accuracy
+    print(f"Model: {model_name}, Accuracy: {results['Corr'].mean()}")
+
+    return results
 
 
 def normalize(arr, t_min, t_max):
@@ -724,7 +700,7 @@ if __name__ == "__main__":
 
         torch.set_default_tensor_type("torch.cuda.FloatTensor")
 
-    badModels = ['nts-net']
+    badModels = ["nts-net"]
     # Get all model files and information
     fileList = args.model_files.split(", ")
 
