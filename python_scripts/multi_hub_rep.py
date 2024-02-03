@@ -545,7 +545,7 @@ def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64)
             **modelData,
             labels=False,
         )
-        dataset = datasets.get_flat_dataset(data_dir, preprocFun, batch_size=64)
+        dataset = datasets.get_flat_dataset(data_dir, preprocFun, batch_size=batch_size)
 
     elif (
         modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json"
