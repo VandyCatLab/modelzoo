@@ -83,7 +83,7 @@ def apply_std_noise(array, scale, include_zeros=True, relu=True):
     if relu:
         noisy_array[noisy_array < 0] = 0
 
-    return noisy_array
+    return noisy_array, std
 
 
 def image_list(data_dir):
@@ -114,7 +114,7 @@ def learning_exemplar(
 ):
     # If noise is not 0, apply noise to the representations
     if noise != 0:
-        reps = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+        reps, _ = apply_std_noise(reps, noise, include_zeros=False, relu=True)
 
     # Get the target representations (they're just the nz* ones)
     targetIdxs = [
@@ -161,9 +161,9 @@ def learning_exemplar(
 def many_oddball(model_name, image_names, reps, csv_file, encoding_noise=0.0):
     # If noise is not 0, apply noise to the representations
     if encoding_noise != 0.0:
-        repStd = np.std(reps)
+        repStd = np.std(reps[reps != 0])
 
-        # Load csv
+    # Load csv
     trials = pd.read_csv(csv_file)
 
     # Loop through each row
@@ -190,6 +190,61 @@ def many_oddball(model_name, image_names, reps, csv_file, encoding_noise=0.0):
 
         # Find the response that isn't in the choices
         response = list(set(choices) - set(chosenIdx))[0] + 1
+
+        # Copy row and add new info to it
+        newRow = row.copy()
+        newRow["ModelName"] = model_name
+        newRow["Response"] = response
+        newRow["Corr"] = int(response == newRow["CorrRes"])
+
+        # Save new row to results
+        results = pd.concat([results, pd.DataFrame(newRow).T])
+
+    # Print model accuracy
+    print(f"Model: {model_name}, Accuracy: {results['Corr'].mean()}")
+
+    return results
+
+
+def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise=0.0):
+    # Calculate std noise for encoding noise
+    if encoding_noise != 0.0:
+        repStd = np.std(reps[reps != 0])
+
+    # If noise is not 0, apply noise to the representations
+    if noise != 0.0:
+        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+
+    # Load csv
+    trials = pd.read_csv(csv_file)
+
+    # Loop through each row
+    results = pd.DataFrame(
+        columns=["ModelName", "Response", "Corr"] + list(trials.columns)
+    )
+    for index, row in trials.iterrows():
+        # Get trial number
+        trial = row["Trial"]
+
+        # Get the index of the target and its reps
+        targetIdxs = [
+            i
+            for i, name in enumerate(image_names)
+            if name.split("-")[0] == f"trial{trial}" and "target" in name
+        ]
+        targetRep = reps[targetIdxs]
+
+        # Get the choice indices and their reps
+        choiceIdxs = [
+            i
+            for i, name in enumerate(image_names)
+            if name.split("-")[0] == f"trial{trial}" and "target" not in name
+        ]
+        choiceReps = reps[choiceIdxs]
+
+        # Calculate distance and find the choice with smallest distance
+        dists = cdist(choiceReps, targetRep, "euclidean")
+        response = np.argmin(dists) + 1
 
         # Copy row and add new info to it
         newRow = row.copy()
@@ -685,6 +740,12 @@ if __name__ == "__main__":
         help="amount of noise to add",
     )
     parser.add_argument(
+        "--encoding_noise",
+        type=float,
+        default=0.0,
+        help="amount of encoding noise to add, based on durations",
+    )
+    parser.add_argument(
         "--memory_decay",
         type=float,
         default=0.0,
@@ -734,75 +795,124 @@ if __name__ == "__main__":
                 "../data_storage/ziggerins_trials_full.csv",
             )
         )
-    elif args.test == "threeACF":
-        """''
-        if args.noise == 'zeros':
-            three_path = '../data_storage/results/threeACF_results_noise_zeros.npy'
-        elif args.noise == 'size':
-            three_path = '../data_storage/results/threeACF_results_noise_size.npy'
+    elif args.test == "threeAFC":
+        # Setup results file
+        # Check if results already exists
+        resultsPath = f"../data_storage/results/results_{args.test}"
+        if args.noise != 0:
+            resultsPath += f"_noise-{args.noise}"
+
+        if args.encoding_noise != 0:
+            raise NotImplementedError("Encoding not implemented")
+            resultsPath += f"_noise-{args.encoding_noise}"
+
+        resultsPath += ".csv"
+        if os.path.exists(resultsPath):
+            results = pd.read_csv(resultsPath)
         else:
-        """ ""
-        if args.noise == "noise":
-            test_path = f"../data_storage/results/{args.test}_results-{args.noise}.npy"
-        else:
-            test_path = f"../data_storage/results/{args.test}_results.npy"
-        if os.path.exists(test_path):
-            results_full = np.load(test_path, allow_pickle=True)
-        else:
-            results_full = []
-        if model_name not in results_full:
-            print(f"New Addition for {args.test}: {model_name}")
-            ddir = "../data_storage/standalone/3AFCMatching/stimuli_altered"
-            reps = rep_maker(
-                ddir,
-                modelFile,
-                model_name,
-                modelData,
-                model,
-                args.batch_size,
-            )
-            if args.noise == "noise":
-                rep1 = f"../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy"
-                rep2 = f"../data_storage/results/test_rep_storage/many_odd/{model_name}-many_odd-none-rep.npy"
-                rep3 = f"../data_storage/results/test_rep_storage/learn_exemp/{model_name}-learn_exemp-none-rep.npy"
-                reps = apply_noise_three_std(reps, [rep1, rep2, rep3])
-            save_dir = f"../data_storage/results/test_rep_storage/{args.test}/{model_name}-{args.test}-{args.noise}-rep.npy"
-            np.save(save_dir, reps)
-            """''
-            if args.noise == 'True':
-                reps = reps
-                ##################
-            """ ""
-            image_names = image_list(ddir)
-            results.append(
-                [
-                    model_name,
-                    three_ACF(
-                        model_name,
-                        image_names,
-                        reps,
-                        "../data_storage/3ACF_trials.csv",
-                        ddir,
-                    ),
+            results = pd.DataFrame(
+                columns=[
+                    "ModelName",
+                    "Response",
+                    "Corr",
+                    "Trial",
+                    "CorrRes",
+                    "Duration",
+                    "Feedback",
                 ]
             )
-            if os.path.exists(test_path):
-                results_full = np.load(test_path, allow_pickle=True)
-                results_full = np.append(results_full, results)
+
+        # Load model
+        missingModels = []
+        for modelName in modelList:
+            modelData = hubModels[modelName]
+            modelFile = modelData["modelFile"]
+
+            rep_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc.npy"
+            image_name_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc.txt"
+            ddir = "../data_storage/standalone/3AFC_set"
+            if os.path.exists(rep_path):
+                print(f"Already have reps for {args.test} from {modelName}")
+
+                if modelName in results["ModelName"].values:
+                    print(f"Already have results for 3afc: {modelName}")
+                    # Get the accuracy for this model
+                    acc = results[results["ModelName"] == modelName]["Corr"].mean()
+                    print(f"Accuracy for {modelName}: {acc}")
+                    continue
+                else:
+                    reps = np.load(rep_path)
+                    img_names = []
+                    with open(image_name_path, "r") as f:
+                        for line in f:
+                            img_names.append(line.strip())
             else:
-                print(f"Using new file for {args.test}")
-                results_full = results
-            np.save(test_path, results_full)
-        else:
-            print(f"Already have model for {args.test}: {model_name}")
+                try:
+                    model = get_model(modelName, modelFile, hubModels)
+                except Exception as e:
+                    # Echo exception
+                    print(f"Error loading model {modelName}: {e}")
+                    missingModels.append(modelName)
+
+                    continue
+
+                print(f"New reps for {args.test}: {modelName}")
+
+                # Get file list and save
+                img_names = os.listdir(ddir)
+                img_names.sort()
+                # Save file list as text file
+                with open(
+                    image_name_path,
+                    "w",
+                ) as f:
+                    for file in img_names:
+                        f.write(file + "\n")
+
+                # Adjust batch size based on number of parameters
+                if "num_params" not in modelData.keys():
+                    batch_size = args.batch_size
+                else:
+                    batch_size = int(
+                        args.batch_size
+                        * (1 / 2 ** int(np.log10(int(modelData["num_params"])) - 3))
+                    )
+                    batch_size = 2 if batch_size < 2 else batch_size
+
+                reps = rep_maker(
+                    ddir,
+                    modelFile,
+                    modelName,
+                    modelData,
+                    model,
+                    batch_size,
+                )
+
+                # Flatten reps
+                reps = reps.reshape(reps.shape[0], -1)
+                np.save(rep_path, reps)
+
+            print(f"New results for {args.test}: {modelName}")
+            modelResults = three_afc(
+                modelName,
+                img_names,
+                reps,
+                "../data_storage/many_odd_trials.csv",
+                noise=args.noise,
+                encoding_noise=args.encoding_noise,
+            )
+            results = pd.concat([results, modelResults])
+
+            # Save results
+            results.to_csv(resultsPath, index=False)
 
     elif args.test == "many_odd":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
-        if args.noise != 0:
+        if args.encoding_noise != 0:
             raise NotImplementedError("Encoding not implemented")
-            resultsPath += f"_noise-{args.noise}"
+            resultsPath += f"_noise-{args.encoding_noise}"
 
         resultsPath += ".csv"
         if os.path.exists(resultsPath):
@@ -833,7 +943,7 @@ if __name__ == "__main__":
                 print(f"Already have reps for {args.test} from {modelName}")
 
                 if modelName in results["ModelName"].values:
-                    print(f"Already have results for le: {modelName}")
+                    print(f"Already have results for moo: {modelName}")
                     # Get the accuracy for this model
                     acc = results[results["ModelName"] == modelName]["Corr"].mean()
                     print(f"Accuracy for {modelName}: {acc}")
@@ -896,7 +1006,7 @@ if __name__ == "__main__":
                 img_names,
                 reps,
                 "../data_storage/many_odd_trials.csv",
-                encoding_noise=args.noise,
+                encoding_noise=args.encoding_noise,
             )
             results = pd.concat([results, modelResults])
 
