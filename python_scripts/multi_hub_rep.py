@@ -97,8 +97,10 @@ def image_list(data_dir):
 
 def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
     if "origin" in modelData.keys() and modelData["origin"] == "keras":
-        # Override model input shape for keras models
-        modelData["shape"] = model.input_shape[1:]
+        # Override model input shape for keras models if input_shape isn't none
+        inputShape = model.input_shape[1:]
+        if not any([dim is None for dim in inputShape]):
+            modelData["shape"] = model.input_shape[1:]
 
     # get dataset from datasets.py
     dataset = get_dataset(data_dir, modelFile, model_name, modelData, model, batch_size)
