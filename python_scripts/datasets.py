@@ -2,7 +2,6 @@ import numpy as np
 import os
 import random
 import tensorflow as tf
-import tensorflow_addons as tfa
 from tensorflow.keras.datasets import cifar10
 import tensorflow_datasets as tfds
 import PIL
@@ -14,6 +13,7 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
 import timm
+import utilities as utils
 
 # Get training information
 (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
@@ -126,7 +126,7 @@ def augmentData(image, label):
         image = tf.image.flip_left_right(image)
     x = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
     y = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
-    image = tfa.image.translate(images=image, translations=[x, y])
+    image = utils.translate_image(images=image, translations=[x, y])
 
     return image, label
 

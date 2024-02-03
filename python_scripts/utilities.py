@@ -400,6 +400,47 @@ def clear_model():
         gc.collect()
 
 
+def translate_image(images, translations):
+    """
+    Return the image after translating it by the given translations, defined
+    by a list [x, y] pixels.
+    """
+    # Remember original shape
+    shape = image.shape
+
+    # If shape is 4 elements, then it includes a batch dimension
+    if len(shape) == 4:
+        width = shape[1]
+        height = shape[2]
+    elif len(shape) == 3:
+        width = shape[0]
+        height = shape[1]
+
+    # Calculate the translation
+    if translations[0] < 0:
+        widthStart = translations[0]
+        widthEnd = translations[0] + width
+    else:
+        widthStart = 0
+        widthEnd = width - translations[0]
+
+    if translations[1] < 0:
+        heightStart = translations[1]
+        heightEnd = translations[1] + height
+    else:
+        heightStart = 0
+        heightEnd = height - translations[1]
+
+    # If shape is 4 elements, then it includes a batch dimension
+    if len(shape) == 4:
+        image = image[:, widthStart:widthEnd, heightStart:heightEnd, :]
+    elif len(shape) == 3:
+        image = image[widthStart:widthEnd, heightStart:heightEnd, :]
+
+    # Pad image back to the original size
+    return tf.image.pad_to_bounding_box(image, widthStart, heightStart, width, height)
+
+
 if __name__ == "__main__":
     # layers = [2, 6, 10]
     # path = "../outputs/masterOutput/baseline/catDiff_max1-100"
