@@ -106,7 +106,7 @@ def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
 
     # get reps from hubReps.py
     # could have a pointer error with iterations.
-    return get_reps(modelFile, model, dataset, modelData, args.batch_size)
+    return get_reps(modelFile, model, dataset, modelData, batch_size)
 
 
 def learning_exemplar(
@@ -820,6 +820,8 @@ if __name__ == "__main__":
                 ]
             )
 
+        # Load model
+        missingModels = []
         for modelName in modelList:
             modelData = hubModels[modelName]
             modelFile = modelData["modelFile"]
@@ -843,8 +845,6 @@ if __name__ == "__main__":
                         for line in f:
                             img_names.append(line.strip())
             else:
-                # Load model
-                missingModels = []
                 try:
                     model = get_model(modelName, modelFile, hubModels)
                 except Exception as e:
@@ -890,18 +890,18 @@ if __name__ == "__main__":
                 reps = reps.reshape(reps.shape[0], -1)
                 np.save(rep_path, reps)
 
-                print(f"New results for {args.test}: {modelName}")
-                modelResults = many_oddball(
-                    modelName,
-                    img_names,
-                    reps,
-                    "../data_storage/many_odd_trials.csv",
-                    encoding_noise=args.noise,
-                )
-                results = pd.concat([results, modelResults])
+            print(f"New results for {args.test}: {modelName}")
+            modelResults = many_oddball(
+                modelName,
+                img_names,
+                reps,
+                "../data_storage/many_odd_trials.csv",
+                encoding_noise=args.noise,
+            )
+            results = pd.concat([results, modelResults])
 
-                # Save results
-                results.to_csv(resultsPath, index=False)
+            # Save results
+            results.to_csv(resultsPath, index=False)
 
     elif args.test == "learn_exemp":
         # Setup results file
