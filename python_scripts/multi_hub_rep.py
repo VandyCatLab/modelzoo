@@ -876,14 +876,27 @@ if __name__ == "__main__":
                     )
                     batch_size = 2 if batch_size < 2 else batch_size
 
-                reps = rep_maker(
-                    ddir,
-                    modelFile,
-                    modelName,
-                    modelData,
-                    model,
-                    batch_size,
-                )
+                try:
+                    reps = rep_maker(
+                        ddir,
+                        modelFile,
+                        modelName,
+                        modelData,
+                        model,
+                        batch_size,
+                    )
+                except Exception as e:
+                    print(f"Error making reps for {modelName}: {e}")
+                    print(f"Attempting fallback batch_size")
+                    batch_size = 2
+                    reps = rep_maker(
+                        ddir,
+                        modelFile,
+                        modelName,
+                        modelData,
+                        model,
+                        batch_size,
+                    )
 
                 # Flatten reps
                 reps = reps.reshape(reps.shape[0], -1)
@@ -989,14 +1002,28 @@ if __name__ == "__main__":
                     )
                     batch_size = 2 if batch_size < 2 else batch_size
 
-                reps = rep_maker(
-                    ddir,
-                    modelFile,
-                    modelName,
-                    modelData,
-                    model,
-                    batch_size,
-                )
+                try:
+                    reps = rep_maker(
+                        ddir,
+                        modelFile,
+                        modelName,
+                        modelData,
+                        model,
+                        batch_size,
+                    )
+                except Exception as e:
+                    print(f"Error making reps for {modelName}: {e}")
+                    print(f"Attempting fallback batch_size")
+                    batch_size = 2
+                    reps = rep_maker(
+                        ddir,
+                        modelFile,
+                        modelName,
+                        modelData,
+                        model,
+                        batch_size,
+                    )
+
 
                 # Flatten reps
                 reps = reps.reshape(reps.shape[0], -1)
@@ -1107,14 +1134,27 @@ if __name__ == "__main__":
                     )
                     batch_size = 2 if batch_size < 2 else batch_size
 
-                reps = rep_maker(
-                    ddir,
-                    modelFile,
-                    modelName,
-                    modelData,
-                    model,
-                    batch_size,
-                )
+                try:
+                    reps = rep_maker(
+                        ddir,
+                        modelFile,
+                        modelName,
+                        modelData,
+                        model,
+                        batch_size,
+                    )
+                except Exception as e:
+                    print(f"Error making reps for {modelName}: {e}")
+                    print(f"Attempting fallback batch_size")
+                    batch_size = 2
+                    reps = rep_maker(
+                        ddir,
+                        modelFile,
+                        modelName,
+                        modelData,
+                        model,
+                        batch_size,
+                    )
 
                 # Flatten reps
                 reps = reps.reshape(reps.shape[0], -1)
