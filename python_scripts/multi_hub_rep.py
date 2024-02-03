@@ -786,18 +786,7 @@ if __name__ == "__main__":
         # Fill a list with all the models
         modelList = list(hubModels.keys())
 
-    if args.test == "same_diff":
-        ddir = "../novset"
-        reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
-        image_names = image_list(ddir)
-        results.append(
-            same_diff(
-                image_names,
-                reps,
-                "../data_storage/ziggerins_trials_full.csv",
-            )
-        )
-    elif args.test == "threeAFC":
+    if args.test == "threeAFC":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
@@ -849,6 +838,12 @@ if __name__ == "__main__":
                         for line in f:
                             img_names.append(line.strip())
             else:
+                if modelName in badModels:
+                    print(f"Skipping {modelName}")
+                    missingModels.append(modelName)
+
+                    continue
+
                 try:
                     model = get_model(modelName, modelFile, hubModels)
                 except Exception as e:
@@ -957,6 +952,11 @@ if __name__ == "__main__":
                         for line in f:
                             img_names.append(line.strip())
             else:
+                if modelName in badModels:
+                    print(f"Skipping {modelName}")
+                    missingModels.append(modelName)
+
+                    continue
                 try:
                     model = get_model(modelName, modelFile, hubModels)
                 except Exception as e:
