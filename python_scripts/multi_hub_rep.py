@@ -907,7 +907,7 @@ if __name__ == "__main__":
                 modelName,
                 img_names,
                 reps,
-                "../data_storage/many_odd_trials.csv",
+                "../data_storage/three_AFC_trials.csv",
                 noise=args.noise,
                 encoding_noise=args.encoding_noise,
             )
@@ -1023,7 +1023,6 @@ if __name__ == "__main__":
                         model,
                         batch_size,
                     )
-
 
                 # Flatten reps
                 reps = reps.reshape(reps.shape[0], -1)
