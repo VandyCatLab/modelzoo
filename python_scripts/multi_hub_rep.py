@@ -179,6 +179,9 @@ def many_oddball(
     )
     choices = [0, 1, 2]
     for index, row in trials.iterrows():
+        # Cast Feedback row to int
+        row["Feedback"] = int(row["Feedback"])
+
         # Get trial number
         trial = row["Trial"]
 
@@ -230,6 +233,9 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
         columns=["ModelName", "Response", "Corr"] + list(trials.columns)
     )
     for index, row in trials.iterrows():
+        # Cast Feedback row to int
+        row["Feedback"] = int(row["Feedback"])
+
         # Get trial number
         trial = row["Trial"]
 
