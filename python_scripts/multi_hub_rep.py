@@ -192,6 +192,19 @@ def many_oddball(
         ]
         choiceReps = reps[idxs]
 
+        # If encoding noise is not 0
+        if encoding_noise != 0.0:
+            # Calculate noise amount
+            encNoise = repStd * encoding_noise * np.exp(-(row["Duration"] / 1000))
+
+            # Apply noise to target
+            choiceReps = choiceReps + np.random.normal(
+                loc=0, scale=encNoise, size=choiceReps.shape
+            )
+
+            # Apply relu back to targetRep
+            choiceReps[choiceReps < 0] = 0
+
         dists = cdist(choiceReps, choiceReps, "euclidean")
         np.fill_diagonal(dists, np.inf)
 
@@ -254,6 +267,19 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
             if name.split("-")[0] == f"trial{trial}" and "target" not in name
         ]
         choiceReps = reps[choiceIdxs]
+
+        # If encoding noise is not 0
+        if encoding_noise != 0.0:
+            # Calculate noise amount
+            encNoise = repStd * encoding_noise * np.exp(-(row["Duration"] / 1000))
+
+            # Apply noise to target
+            targetRep = targetRep + np.random.normal(
+                loc=0, scale=encNoise, size=targetRep.shape
+            )
+
+            # Apply relu back to targetRep
+            targetRep[targetRep < 0] = 0
 
         # Calculate distance and find the choice with smallest distance
         dists = cdist(choiceReps, targetRep, "euclidean")
@@ -805,8 +831,7 @@ if __name__ == "__main__":
             resultsPath += f"_noise-{args.noise}"
 
         if args.encoding_noise != 0:
-            raise NotImplementedError("Encoding not implemented")
-            resultsPath += f"_noise-{args.encoding_noise}"
+            resultsPath += f"_encNoise-{args.encoding_noise}"
 
         resultsPath += ".csv"
         if os.path.exists(resultsPath):
@@ -935,8 +960,7 @@ if __name__ == "__main__":
             resultsPath += f"_noise-{args.noise}"
 
         if args.encoding_noise != 0:
-            raise NotImplementedError("Encoding not implemented")
-            resultsPath += f"_noise-{args.encoding_noise}"
+            resultsPath += f"_encNoise-{args.encoding_noise}"
 
         resultsPath += ".csv"
         if os.path.exists(resultsPath):
