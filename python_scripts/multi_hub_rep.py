@@ -160,10 +160,15 @@ def learning_exemplar(
     return results
 
 
-def many_oddball(model_name, image_names, reps, csv_file, encoding_noise=0.0):
+def many_oddball(
+    model_name, image_names, reps, csv_file, noise=0.0, encoding_noise=0.0
+):
     # If noise is not 0, apply noise to the representations
     if encoding_noise != 0.0:
         repStd = np.std(reps[reps != 0])
+
+    if noise != 0.0:
+        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=True)
 
     # Load csv
     trials = pd.read_csv(csv_file)
@@ -920,6 +925,9 @@ if __name__ == "__main__":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
+        if args.noise != 0:
+            resultsPath += f"_noise-{args.noise}"
+
         if args.encoding_noise != 0:
             raise NotImplementedError("Encoding not implemented")
             resultsPath += f"_noise-{args.encoding_noise}"
@@ -1034,6 +1042,7 @@ if __name__ == "__main__":
                 img_names,
                 reps,
                 "../data_storage/many_odd_trials.csv",
+                noise=args.noise,
                 encoding_noise=args.encoding_noise,
             )
             results = pd.concat([results, modelResults])
