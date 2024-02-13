@@ -195,7 +195,8 @@ def many_oddball(
         # If encoding noise is not 0
         if encoding_noise != 0.0:
             # Calculate noise amount
-            encNoise = repStd * encoding_noise * np.exp(-(row["Duration"] / 1000))
+            encNoise = repStd * encoding_noise * np.exp(-(row["Duration"] / 1000) * 2)
+            # Scaling constant 2
 
             # Apply noise to target
             choiceReps = choiceReps + np.random.normal(
@@ -271,7 +272,9 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
         # If encoding noise is not 0
         if encoding_noise != 0.0:
             # Calculate noise amount
-            encNoise = repStd * encoding_noise * np.exp(-(row["Duration"] / 1000))
+            encNoise = (
+                repStd * encoding_noise * np.exp(-(row["Duration"] / 1000) * 2)
+            )  # Scaling constant 2
 
             # Apply noise to target
             targetRep = targetRep + np.random.normal(
@@ -1198,19 +1201,19 @@ if __name__ == "__main__":
                 reps = reps.reshape(reps.shape[0], -1)
                 np.save(rep_path, reps)
 
-                print(f"New results for {args.test}: {modelName}")
-                modelResults = learning_exemplar(
-                    modelName,
-                    img_names,
-                    reps,
-                    "../data_storage/learning_exemplar_trials.csv",
-                    noise=args.noise,
-                    memory_decay=args.memory_decay,
-                )
-                results = pd.concat([results, modelResults])
+            print(f"New results for {args.test}: {modelName}")
+            modelResults = learning_exemplar(
+                modelName,
+                img_names,
+                reps,
+                "../data_storage/learning_exemplar_trials.csv",
+                noise=args.noise,
+                memory_decay=args.memory_decay,
+            )
+            results = pd.concat([results, modelResults])
 
-                # Save results
-                results.to_csv(resultsPath, index=False)
+            # Save results
+            results.to_csv(resultsPath, index=False)
 
     else:
         print(f"Invalid test: {args.test}")
