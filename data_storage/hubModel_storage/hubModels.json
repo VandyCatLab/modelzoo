@@ -32,7 +32,7 @@
         "origin": "tenorflowHub"
     },
     "experts/bit/r50x1/in21k/matter": {
-        "url": "https://tfhub.dev/google/x1/in21k/matter/1",
+        "url": "https://tfhub.dev/google/experts/bit/r50x1/in21k/matter/1",
         "numFeatures": 2048,
         "type": "resnet-v2",
         "trainingSet": "imagenet21k",
@@ -93,7 +93,7 @@
         "origin": "tenorflowHub"
     },
     "imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector": {
-        "url": "https://tfhub.dev/google/imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector/2",
+        "url": "https://www.kaggle.com/models/google/efficientnet-v2/frameworks/TensorFlow2/variations/imagenet21k-ft1k-b2-feature-vector/versions/1",
         "shape": [
             260,
             260,
