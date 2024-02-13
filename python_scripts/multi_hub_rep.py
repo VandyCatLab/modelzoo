@@ -531,6 +531,7 @@ def image_sets_maker(csv_file, image_names, reps, num_sets):
                     foil1_name = row[-2] + ".tif"
                     foil2_name = row[-1] + ".tif"
                     target_name = row[2] + ".tif"
+                    
                     foil1_idx = image_names.index(foil1_name)
                     foil2_idx = image_names.index(foil2_name)
                     target_idx = image_names.index(target_name)
@@ -800,7 +801,6 @@ if __name__ == "__main__":
 
     if args.use_gpu:
         import torch
-
         torch.set_default_tensor_type("torch.cuda.FloatTensor")
 
     badModels = ["nts-net"]
@@ -822,6 +822,7 @@ if __name__ == "__main__":
     if args.model_name is not None:
         # Fill a list with just that first model
         modelList = [args.model_name]
+
     else:
         # Fill a list with all the models
         modelList = list(hubModels.keys())

@@ -17,6 +17,64 @@ from torchvision.models.feature_extraction import create_feature_extractor
 import timm
 import pretrainedmodels
 import transformers
+import torch.nn as nn
+import hubReps
+
+def count_recurrent_layers(model):
+    recurrent_layer_count = 0
+    for layer in model.modules():
+        if isinstance(layer, (nn.LSTM, nn.GRU, nn.RNN)):
+            recurrent_layer_count += 1
+    return recurrent_layer_count
+
+
+def is_likely_dimension_matching(module):
+    """
+    Heuristic to guess if the module potentially matches input-output dimensions.
+    This is a simplified check and may not cover all cases or architectures.
+    """
+    for layer in module.modules():
+        if isinstance(layer, torch.nn.Conv2d):
+            # Check if the convolution is likely to maintain spatial dimensions
+            if layer.stride == (1, 1) and layer.kernel_size in [(1, 1), (3, 3)]:
+                # Assuming padding is set to maintain dimensions for kernel_size 3
+                return True
+            # Additional checks for other layers or configurations can be added here
+    return False
+
+def has_potential_residual_structure(module):
+    """
+    Combines checks for residual-like structure and dimension matching.
+    """
+    return has_residual_connection(module) and is_likely_dimension_matching(module)
+
+def extract_layer_info_and_count_residuals(module, parent_name='', residual_counter=None):
+    if residual_counter is None:
+        residual_counter = collections.defaultdict(int)
+
+    layer_info = {}
+    for name, layer in module.named_children():
+        layer_name = f"{parent_name}.{name}" if parent_name else name
+
+        # Check if the module potentially represents a true residual block
+        if has_potential_residual_structure(layer):
+            residual_counter[layer.__class__.__name__] += 1
+
+        # Recursively inspect child modules
+        children_info, residual_counter = extract_layer_info_and_count_residuals(
+            layer, parent_name=layer_name, residual_counter=residual_counter)
+
+        layer_info[layer_name] = {
+            'type': layer.__class__.__name__,
+            'children': children_info
+        }
+
+    return layer_info, residual_counter
+
+def has_residual_connection(module):
+    # List known residual block types here
+    residual_block_types = ['Bottleneck', 'BasicBlock']
+    return module.__class__.__name__ in residual_block_types
 
 
 def revise_names(names):
@@ -48,15 +106,15 @@ def write_json(new_data):
         f.seek(0)
         json.dump(hubModels, f, indent=4)
 
-def get_model(name):
-    if args.models_file == "./hubModels_keras.json":
+def get_model(name, name_i):
+    if args.models_file == "../data_storage/hubModel_storage/hubModels_keras.json":
         function = hubModels[name_i]['function']
         model_full = eval(function)
         inp = model_full.input
         layerName = model_full.layers[int(hubModels[name_i]['layerIdx'])].name
         out = model_full.get_layer(layerName).output
         model = tf.keras.Model(inputs=inp, outputs=out)
-    elif args.models_file == "./hubModels_pytorch.json":
+    elif args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json":
         function = name['function']
         model_full = eval("torch.hub.load" + function)
         x = name["shape"] if "shape" in name else [224, 224, 3]
@@ -72,16 +130,19 @@ def get_model(name):
             return_nodes = name["outputLayer"]
         model = create_feature_extractor(model_full, return_nodes=return_nodes)
 
-    elif args.models_file == "./hubModels_pretrainedmodels.json":
+    elif args.models_file == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json":
         import ssl
         ssl._create_default_https_context = ssl._create_unverified_context
 
-    elif args.models_file == "./hubModels_transformers.json":
+    elif args.models_file == "../data_storage/hubModel_storage/hubModels_transformers.json":
 
         function = name['func']
         extractor_func = name['extractor_func']
         model = eval('transformers.' + function + f'.from_pretrained("{name_i}")')
         model_de = eval('transformers.' + extractor_func + f'.from_pretrained("{name_i}")')
+    
+    elif args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json":
+        model = hubReps.get_pytorch_model(hubModels, args.models_file, name_i)
 
     else:
         shape = name["shape"] if "shape" in name else [224, 224, 3]
@@ -112,9 +173,9 @@ def get_children(model: torch.nn.Module):
 
 
 def get_model_data(model, get_weights=False):
-    if args.models_file == "./hubModels_pytorch.json" \
-            or args.models_file == "./hubModels_timm.json" \
-            or args.models_file == "./hubModels_transformers.json":
+    if args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json" \
+            or args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json" \
+            or args.models_file == "../data_storage/hubModel_storage/hubModels_transformers.json":
 
         num_layers = len(get_children(model))
         for param in model.parameters():
@@ -128,7 +189,7 @@ def get_model_data(model, get_weights=False):
             model_weights = None
 
 
-    elif args.models_file != "./hubModels_pytorch.json":
+    elif args.models_file != "../data_storage/hubModel_storage/hubModels_pytorch.json":
         num_layers = len(model.layers)
         num_params_train = np.sum([np.prod(v.get_shape()) for v in model.trainable_weights])
         num_params_non_train = np.sum([np.prod(v.get_shape()) for v in model.non_trainable_weights])
@@ -187,7 +248,7 @@ if __name__ == "__main__":
         "-f",
         type=str,
         help=".json file with the hub model info",
-        default="./hubModels.json"
+        default="../data_storage/hubModel_storage/hubModels_timm.json"
     )
     parser.add_argument(
         "--add",
@@ -203,7 +264,7 @@ if __name__ == "__main__":
         type=str,
         help="indicates ned to load up model",
         choices=["yes", "no"],
-        default="no"
+        default="yes"
     )
 
     args = parser.parse_args()
@@ -220,9 +281,9 @@ if __name__ == "__main__":
                 name_i = modelNames[idx]
                 print("Working on " + name_i + f" (Index {idx})")
                 name = hubModels[name_i]
-                if (("num_params" not in name) or ("num_layers" not in name) or ("orign" not in name)) and ("defunct" not in name):
+                if (("num_params" not in name) or ("num_layers" not in name) or ("orign" not in name) or ("recurrent_layers" not in name)) and ("defunct" not in name):
                     if args.need_model is "yes":
-                        model = get_model(name)
+                        model = get_model(name, name_i)
                         num_params, num_layers, model_weights = get_model_data(model)
                         if "num_params" not in name:
                             params_str = str(num_params)
@@ -239,12 +300,18 @@ if __name__ == "__main__":
                             print(f"{name_i} already has data, skipping.")
 
                     if "origin" not in name:
-                        if args.models_file == "./hubModels.json":
+                        if args.models_file == "../data_storage/hubModel_storage/hubModels.json":
                             new_data = {"origin": "tenorflowHub"}
                             write_json(new_data)
-                        if args.models_file == "./hubModels_pytorch.json":
+                        if args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json":
                             new_data = {"origin": "pytorch"}
                             write_json(new_data)
+                    
+                    if "recurrent_layers" not in name:
+                        if args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json":
+                            if args.need_model is "yes":
+                                num_recurrent = count_recurrent_layers(model)
+                                new_data = {"recurrent_layers": num_recurrent}
 
 
                 else:
@@ -254,7 +321,7 @@ if __name__ == "__main__":
             else:
                 print("json modification completed")
         else:
-            if args.models_file == "./hubModels_timm.json":
+            if args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json":
                 model_names = timm.list_models(pretrained=True)
                 new_model_names = revise_names(model_names)
                 new_model_names = revise_names(new_model_names)
@@ -274,7 +341,7 @@ if __name__ == "__main__":
                     else:
                         print(f"{i} already in json, skipping.")
                     n += 1
-            elif args.models_file == "./hubModels_pretrainedmodels.json":
+            elif args.models_file == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json":
                 idx = 0
                 with open(args.models_file, "r") as f:
                     hubModels = json.loads(f.read())
