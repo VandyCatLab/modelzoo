@@ -374,10 +374,18 @@ def image_sets_maker(csv_file, image_names, reps, num_sets):
                     euc_dist_1 = []
                     euc_dist_2 = []
                     euc_dist_target = []
-                    set6 = ['nz1_4_a.tif', 'nz1_12_b.tif', 'nz1_30_a.tif', 'nz1_75_a.tif', 'nz1_70_b.tif', 'nz1_77_b.tif']
-                    foil1_name = row[-2] + '.tif'
-                    foil2_name = row[-1] + '.tif'
-                    target_name = row[2] + '.tif'
+                    set6 = ['nz1_4_a.jpg', 'nz1_12_b.jpg', 'nz1_30_a.jpg', 'nz1_75_a.jpg', 'nz1_70_b.jpg', 'nz1_77_b.jpg']
+                    target_name = f'{row[1][:-4]}_{row[3]}.jpg'
+                    if row[3] == 1:
+                        foil1_name = f'{row[1][:-4]}_2.jpg'
+                        foil2_name = f'{row[1][:-4]}_3.jpg'
+                    elif row[3] == 2:
+                        foil1_name = f'{row[1][:-4]}_1.jpg'
+                        foil2_name = f'{row[1][:-4]}_3.jpg'
+                    else:
+                        foil1_name = f'{row[1][:-4]}_1.jpg'
+                        foil2_name = f'{row[1][:-4]}_2.jpg'
+
                     foil1_idx = image_names.index(foil1_name)
                     foil2_idx = image_names.index(foil2_name)
                     target_idx = image_names.index(target_name)
@@ -720,7 +728,7 @@ if __name__ == "__main__":
                         results_full = []
                     if model_name not in results_full:
                         print(f'New Addition for {args.test}: {model_name}')
-                        ddir = '../novset_lr'
+                        ddir = '../LE_set'
                         reps = rep_maker(ddir, modelFile, model_name, modelData, model, args.batch_size)
                         if args.noise == 'noise':
                             rep1 = f'../data_storage/results/test_rep_storage/threeACF/{model_name}-threeACF-none-rep.npy'
