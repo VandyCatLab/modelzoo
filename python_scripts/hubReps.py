@@ -1,6 +1,7 @@
 import datasets
 import tensorflow as tf
-#import tensorflow.core
+
+# import tensorflow.core
 import tensorflow_hub as hub
 import json
 import numpy as np
@@ -10,11 +11,14 @@ import itertools
 import pandas as pd
 import datetime
 import torch
-#from torchvision import transforms
+
+# from torchvision import transforms
 import cv2
 from torchvision.models.feature_extraction import create_feature_extractor
-#import transformers
+
+# import transformers
 import timm
+
 
 def get_reps(model, dataset, info, batch_size):
     """Manual batching to avoid memory problems."""
@@ -39,21 +43,19 @@ def get_reps(model, dataset, info, batch_size):
 
     numImgs = 0
     for i, batch in enumerate(dataset):
-        print(
-            f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True
-        )
+        print(f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True)
         numImgs += len(batch)
         res = model.predict(batch)
-
 
         if "outputIdx" in info.keys():
             # Save representations
 
             if res[info["outputIdx"]].shape[0] == batch_size:
-                reps[i * batch_size : (i + 1) * batch_size] = res[
-                 info["outputIdx"]]
+                reps[i * batch_size : (i + 1) * batch_size] = res[info["outputIdx"]]
             else:
-                reps[i * batch_size: i * batch_size + len(res[info["outputIdx"]])] = res[info["outputIdx"]]
+                reps[i * batch_size : i * batch_size + len(res[info["outputIdx"]])] = (
+                    res[info["outputIdx"]]
+                )
 
         else:
             # Save representations
@@ -73,31 +75,30 @@ def get_pytorch_reps(model, data_set, info, batch_size):
     # Num batches
     nBatches = len(data_set)
     b = None
-    #dataset = torch.utils.data.TensorDataset(dataset)
-    if 'shape' in info:
+    # dataset = torch.utils.data.TensorDataset(dataset)
+    if "shape" in info:
         x = info["shape"]
-    elif 'input_size' in info:
+    elif "input_size" in info:
         x = info["input_size"]
     if len(x) < 4:
         x.insert(0, 1)
     temp_data = torch.rand(x)
-    if 'outputLayer' in info:
+    if "outputLayer" in info:
         if len(info["outputLayer"]) > 1:
             a = info["outputLayer"][1]
             b = info["outputLayer"][0]
-            return_nodes = {
-                a: b
-            }
+            return_nodes = {a: b}
         else:
             return_nodes = info["outputLayer"]
-        model_int = create_feature_extractor(model, return_nodes=return_nodes)  # dict(layer4 = 'layer4.2.conv2'))
+        model_int = create_feature_extractor(
+            model, return_nodes=return_nodes
+        )  # dict(layer4 = 'layer4.2.conv2'))
         intermediate_outputs = model_int(temp_data)
         intermediate = intermediate_outputs[b]
     else:
         model_int = model
-        #print(f'\n\n\n{temp_data.shape}')
+        # print(f'\n\n\n{temp_data.shape}')
         intermediate = model_int(temp_data)
-
 
     if "outputIdx" in info.keys():
         # Get output size of model
@@ -111,73 +112,79 @@ def get_pytorch_reps(model, data_set, info, batch_size):
 
     numImgs = 0
     for i, batch in enumerate(data_set):
-        print(
-            f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True
-        )
+        print(f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True)
         batch = batch.float()
         numImgs += len(batch)
-        #print(f'\n\n\n{batch.shape}')
+        # print(f'\n\n\n{batch.shape}')
         res_full = model_int(batch)
         if b != None:
             res_data = res_full[b]
         else:
             res_data = res_full
-        res = res_data.detach().numpy()
+        res = res_data.detach().cpu().numpy()
         if "outputIdx" in info.keys():
             # Save representations
 
             if res[info["outputIdx"]].shape[0] == batch_size:
-                reps[i * batch_size: (i + 1) * batch_size] = res[
-                    info["outputIdx"]]
+                reps[i * batch_size : (i + 1) * batch_size] = res[info["outputIdx"]]
             else:
-                reps[i * batch_size: i * batch_size + len(res[info["outputIdx"]])] = res[info["outputIdx"]]
+                reps[i * batch_size : i * batch_size + len(res[info["outputIdx"]])] = (
+                    res[info["outputIdx"]]
+                )
 
         else:
             # Save representations
             if res.shape[0] == batch_size:
-                reps[i * batch_size: (i + 1) * batch_size] = res
+                reps[i * batch_size : (i + 1) * batch_size] = res
             else:
-                reps[i * batch_size: i * batch_size + len(res)] = res
+                reps[i * batch_size : i * batch_size + len(res)] = res
 
     # Remove empty rows
     reps = reps[:numImgs]
     return reps
 
+
 def get_keras_model(hubModels, modelName):
-    function = hubModels[modelName]['function']
+    function = hubModels[modelName]["function"]
     model_full = eval(function)
     inp = model_full.input
-    layerName = model_full.layers[int(hubModels[modelName]['layerIdx'])].name
+    layerName = model_full.layers[int(hubModels[modelName]["layerIdx"])].name
     out = model_full.get_layer(layerName).output
     model = tf.keras.Model(inputs=inp, outputs=out)
     return model, model_full
 
+
 def get_pytorch_model(hubModels, modelFile, modelName):
     if modelFile == "../data_storage/hubModel_storage/hubModels_timm.json":
-        #print(modelName)
-        #print(hubModels[modelName])
+        # print(modelName)
+        # print(hubModels[modelName])
         model = timm.create_model(modelName, pretrained=True, num_classes=0)
 
     elif modelFile == "../data_storage/hubModel_storage/hubModels_transformers.json":
-        function = hubModels[modelName]['func']
-        model_full = eval('transformers.' + function + f'.from_pretrained("{modelName}")')
-        x = hubModels[modelName]["shape"] if "shape" in hubModels[modelName] else [224, 224, 3]
+        function = hubModels[modelName]["func"]
+        model_full = eval(
+            "transformers." + function + f'.from_pretrained("{modelName}")'
+        )
+        x = (
+            hubModels[modelName]["shape"]
+            if "shape" in hubModels[modelName]
+            else [224, 224, 3]
+        )
         x.insert(0, 1)
         temp_data = torch.rand(x)
         if len(hubModels[modelName]["outputLayer"]) > 1:
             a = hubModels[modelName]["outputLayer"][1]
             b = hubModels[modelName]["outputLayer"][0]
-            return_nodes = {
-                a: b
-            }
+            return_nodes = {a: b}
         else:
             return_nodes = hubModels[modelName]["outputLayer"]
         model = model_full
 
     else:
-        function = hubModels[modelName]['function']
+        function = hubModels[modelName]["function"]
         model = eval("torch.hub.load" + function)
     return model
+
 
 if __name__ == "__main__":
     import argparse
@@ -230,7 +237,7 @@ if __name__ == "__main__":
         "-f",
         type=str,
         help=".json file with the hub model info",
-        default="../data_storage/hubModel_storage/hubModels.json"
+        default="../data_storage/hubModel_storage/hubModels.json",
     )
     parser.add_argument(
         "--feature_limit",
@@ -274,17 +281,31 @@ if __name__ == "__main__":
             f"==== Working on model: {modelName} [{datetime.datetime.now()}] ====",
             flush=True,
         )
-        if args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_timm.json':
+        if (
+            args.models_file
+            == "/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_timm.json"
+        ):
             args.models_file = "../data_storage/hubModel_storage/hubModels_timm.json"
-        elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_keras.json':
+        elif (
+            args.models_file
+            == "/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_keras.json"
+        ):
             args.models_file = "../data_storage/hubModel_storage/hubModels_keras.json"
-        elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels.json':
+        elif (
+            args.models_file
+            == "/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels.json"
+        ):
             args.models_file = "../data_storage/hubModel_storage/hubModels.json"
-        elif args.models_file == '/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_pytorch.json':
+        elif (
+            args.models_file
+            == "/Users/david/PycharmProjects/NeuralNet/modelnet/python_scripts/hubModels_pytorch.json"
+        ):
             args.models_file = "../data_storage/hubModel_storage/hubModels_pytorch.json"
 
         if args.rep_name is not None:
-            fileName = f"../hubreps/{args.rep_name}/{modelName.replace('/', '-')}-Reps.npy"
+            fileName = (
+                f"../hubreps/{args.rep_name}/{modelName.replace('/', '-')}-Reps.npy"
+            )
         else:
             fileName = f"../hubreps/{modelName.replace('/', '-')}-Reps.npy"
         if os.path.exists(fileName):
@@ -299,18 +320,36 @@ if __name__ == "__main__":
                 inp = tf.keras.Input(shape=shape)
                 out = hub.KerasLayer(info["url"])(inp)
                 model = tf.keras.Model(inputs=inp, outputs=out)
-            elif args.models_file == "../data_storage/hubModel_storage/hubModels_keras.json":
+            elif (
+                args.models_file
+                == "../data_storage/hubModel_storage/hubModels_keras.json"
+            ):
                 # Create model from keras function
                 model = get_keras_model(hubModels, modelName)[0]
-            elif (args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json") or \
-                (args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json") or \
-                (args.models_file == "../data_storage/hubModel_storage/hubModels_transformers.json"):
+            elif (
+                (
+                    args.models_file
+                    == "../data_storage/hubModel_storage/hubModels_pytorch.json"
+                )
+                or (
+                    args.models_file
+                    == "../data_storage/hubModel_storage/hubModels_timm.json"
+                )
+                or (
+                    args.models_file
+                    == "../data_storage/hubModel_storage/hubModels_transformers.json"
+                )
+            ):
                 # Create model from pytorch hub
                 model = get_pytorch_model(hubModels, args.models_file, modelName)
             else:
                 raise ValueError(f"Unknown models file {args.models_file}")
 
-            if args.models_file == "../data_storage/hubModel_storage/hubModels.json" or args.models_file == "../data_storage/hubModel_storage/hubModels_keras.json":
+            if (
+                args.models_file == "../data_storage/hubModel_storage/hubModels.json"
+                or args.models_file
+                == "../data_storage/hubModel_storage/hubModels_keras.json"
+            ):
                 preprocFun = datasets.preproc(
                     **hubModels[modelName],
                     labels=False,
@@ -334,14 +373,18 @@ if __name__ == "__main__":
                 else:
                     raise ValueError(f"Unknown dataset {args.dataset}")
 
-                reps = get_reps(
-                    model, dataset, hubModels[modelName], args.batch_size
-                )
+                reps = get_reps(model, dataset, hubModels[modelName], args.batch_size)
 
-            elif args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json" \
-                    or args.models_file == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json" \
-                    or args.models_file == "../data_storage/hubModel_storage/hubModels_timm.json" \
-                    or args.models_file == "../data_storage/hubModel_storage/hubModels_transformers.json":
+            elif (
+                args.models_file
+                == "../data_storage/hubModel_storage/hubModels_pytorch.json"
+                or args.models_file
+                == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json"
+                or args.models_file
+                == "../data_storage/hubModel_storage/hubModels_timm.json"
+                or args.models_file
+                == "../data_storage/hubModel_storage/hubModels_transformers.json"
+            ):
 
                 # using pytorch model
                 dataset = datasets.get_pytorch_dataset(
@@ -356,7 +399,6 @@ if __name__ == "__main__":
 
             np.save(fileName, reps)
             print(f"Saved {fileName}", flush=True)
-
 
     elif args.analysis == "similarity":
         print(
@@ -377,7 +419,9 @@ if __name__ == "__main__":
         else:
             # Load representations
             if args.rep_name is not None:
-                modelRepsName = f"../hubReps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
+                modelRepsName = (
+                    f"../hubReps/{modelName.replace('/', '-')}-{args.rep_name}Reps.npy"
+                )
             else:
                 modelRepsName = f"../hubReps/{modelName.replace('/', '-')}-Reps.npy"
             reps = np.load(modelRepsName)
@@ -387,10 +431,7 @@ if __name__ == "__main__":
                 reps = np.mean(reps, axis=(1, 2))
 
             # Check if there's too many features
-            if (
-                args.feature_limit is not None
-                and reps.shape[-1] > args.feature_limit
-            ):
+            if args.feature_limit is not None and reps.shape[-1] > args.feature_limit:
                 # Raise an error
                 raise ValueError(
                     f"The number of features is too high: {reps.shape[0]}. [{datetime.datetime.now()}]"
@@ -401,14 +442,10 @@ if __name__ == "__main__":
 
             # Find combinations of models and only keep combinations with this model
             modelCombinations = list(itertools.combinations(hubModelNames, 2))
-            modelCombinations = [
-                x for x in modelCombinations if x[0] == modelName
-            ]
+            modelCombinations = [x for x in modelCombinations if x[0] == modelName]
 
             # Similarity functions
-            preprocFuns, simFuns, analysisNames = analysis.get_funcs(
-                args.simSet
-            )
+            preprocFuns, simFuns, analysisNames = analysis.get_funcs(args.simSet)
 
             # Create dataframe to store results
             simDf = pd.DataFrame(columns=["model1", "model2"] + analysisNames)
@@ -424,7 +461,9 @@ if __name__ == "__main__":
                 if args.rep_name is not None:
                     pairModelRepsName = f"../hubReps/{pairModel.replace('/', '-')}-{args.rep_name}Reps.npy"
                 else:
-                    pairModelRepsName = f"../hubReps/{pairModel.replace('/', '-')}-Reps.npy"
+                    pairModelRepsName = (
+                        f"../hubReps/{pairModel.replace('/', '-')}-Reps.npy"
+                    )
                 pairReps = np.load(pairModelRepsName)
 
                 # If representations is not flat, average pool it
@@ -454,9 +493,7 @@ if __name__ == "__main__":
                 del pairReps
 
             # Save dataframe
-            print(
-                f"Saving similarities [{datetime.datetime.now()}]", flush=True
-            )
+            print(f"Saving similarities [{datetime.datetime.now()}]", flush=True)
             simDf.to_csv(fileName)
 
     elif args.analysis == "test_model":
@@ -468,7 +505,10 @@ if __name__ == "__main__":
         if args.dataset == "novset" or "kreigset":
 
             predictions = []
-            if args.models_file == "../data_storage/hubModel_storage/hubModels_keras.json":
+            if (
+                args.models_file
+                == "../data_storage/hubModel_storage/hubModels_keras.json"
+            ):
                 preprocFun = datasets.preproc(
                     **hubModels[modelName],
                     labels=False,
@@ -477,14 +517,21 @@ if __name__ == "__main__":
                     args.data_dir, preprocFun, args.batch_size
                 )
                 model_full = get_keras_model(hubModels, modelName)[1]
-                pred_func = "tf.keras.applications." + hubModels[modelName]['type'] + ".decode_predictions(preds, top=5)"
+                pred_func = (
+                    "tf.keras.applications."
+                    + hubModels[modelName]["type"]
+                    + ".decode_predictions(preds, top=5)"
+                )
                 predictions = []
                 for i, batch in enumerate(dataset):
                     preds = model_full.predict(batch)
                     predictions.append(eval(pred_func))
 
-                print('\n'.join(map(str,predictions[0])))
-            elif args.models_file == "../data_storage/hubModel_storage/hubModels_pytorch.json":
+                print("\n".join(map(str, predictions[0])))
+            elif (
+                args.models_file
+                == "../data_storage/hubModel_storage/hubModels_pytorch.json"
+            ):
                 dataset = datasets.get_pytorch_dataset(
                     args.data_dir, hubModels[modelName], args.batch_size
                 )
@@ -501,5 +548,3 @@ if __name__ == "__main__":
 
             else:
                 raise ValueError(f"models file unsupported for testing {args.dataset}")
-
-

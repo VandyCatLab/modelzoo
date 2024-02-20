@@ -207,6 +207,57 @@ corMatrixPlot <- function(
     return(corMatPlot)
 }
 
+long2Matrix <- function(data, idCol, corrCol, trialNCol, standardize = FALSE) {
+    # Get subjects and trials
+    sbjs <- data[idCol] |>
+        unique() |>
+        pull() |>
+        sort()
+    trials <- unique(data[trialNCol]) |>
+        pull() |>
+        as.character()
+
+    # Create a tibble with subject id row
+    taskMatrix <- tibble(!!idCol := sbjs)
+
+    for (trial in trials) {
+        trialData <- data[data[trialNCol] == trial, c(idCol, corrCol)]
+        # Rename corr to the trial
+        names(trialData)[2] <- trial
+
+        taskMatrix <- suppressMessages(taskMatrix |>
+            left_join(
+                trialData
+            ))
+    }
+
+    # Set the SbjID column as row names
+    taskMatrix <- column_to_rownames(taskMatrix, var = idCol)
+
+    # Save raw matrix for later
+    rawInfo <- taskMatrix
+
+    # Add mean row
+    taskMatrix <- rbind(taskMatrix, mean = apply(taskMatrix, 2, mean))
+
+    # Add participant mean row
+    taskMatrix <- cbind(taskMatrix, Sum = apply(taskMatrix, 1, sum))
+
+    # Add correlation row
+    totals <- taskMatrix[seq_len(nrow(taskMatrix) - 1), "Sum"]
+    tmp <- c()
+    for (col in seq_len(ncol(rawInfo))) {
+        tmp <- c(tmp, cor(rawInfo[col], totals - rawInfo[col]))
+    }
+    taskMatrix["cor", ] <- c(tmp, 1)
+
+    # Add variance row
+    sbjs <- as.character(t(unique(data[idCol])))
+    taskMatrix <- rbind(taskMatrix, var = apply(taskMatrix[sbjs, ], 2, var))
+
+    return(taskMatrix)
+}
+
 disattCor <- function(rxy, rxx, ryy) {
     return(rxy / sqrt(rxx * ryy))
 }
@@ -257,32 +308,28 @@ colnames(humanMatch2) <- gsub("Corr.", "", colnames(humanMatch2))
 colnames(humanMOO2) <- gsub("Corr.", "", colnames(humanMOO2))
 
 # Load model data
-modelLE <- read_csv("./data_storage/results/r_results/wides/wide_LE.csv") |>
-    column_to_rownames("SbjID") |>
-    select(-PercentageCorrect)
-modelMatch <- read_csv("./data_storage/results/r_results/wides/wide_3ACF.csv") |>
-    column_to_rownames("SbjID") |>
-    select(-PercentageCorrect)
-modelMOO <- read_csv("./data_storage/results/r_results/wides/wide_MOO.csv") |>
-    column_to_rownames("SbjID") |>
-    select(-PercentageCorrect)
+modelLE <- read_csv("./data_storage/results/results_learn_exemp_noise-1.0.csv")
+modelLE <- long2Matrix(modelLE, "ModelName", "Corr", "Trial")
+modelLE <- modelLE[!rownames(modelLE) %in% c("mean", "cor", "var"), !colnames(modelLE) %in% c("Sum")]
 
-# Change column name to just be the trial number (remove the X and +1 index)
-colnames(modelLE) <- as.character(
-    as.numeric(gsub("Trial", "", colnames(modelLE))) + 1
-)
-colnames(modelMatch) <- as.character(
-    as.numeric(gsub("Trial", "", colnames(modelMatch))) + 1
-)
-colnames(modelMOO) <- as.character(
-    as.numeric(gsub("Trial", "", colnames(modelMOO))) + 1
-)
+modelMatch <- read_csv("./data_storage/results/results_threeAFC_noise-1.0_encNoise-1.0.csv")
+modelMatch <- long2Matrix(modelMatch, "ModelName", "Corr", "Trial")
+modelMatch <- modelMatch[!rownames(modelMatch) %in% c("mean", "cor", "var"), !colnames(modelMatch) %in% c("Sum")]
 
-# Find the colums where every model gets the LE trials correct
-LECorrect <- apply(modelLE, 2, function(x) all(x == 1))
+modelMOO <- read_csv("./data_storage/results/results_many_odd_noise-1.0_encNoise-1.0.csv")
+modelMOO <- long2Matrix(modelMOO, "ModelName", "Corr", "Trial")
+modelMOO <- modelMOO[!rownames(modelMOO) %in% c("mean", "cor", "var"), !colnames(modelMOO) %in% c("Sum")]
 
-# Set the LE trials to NA for the models that got them all correct
-modelLE[, LECorrect] <- NA
+# Get the rownames of all models
+modelNames <- unique(c(rownames(modelLE), rownames(modelMatch), rownames(modelMOO)))
+modelNames <- modelNames[modelNames %in% rownames(modelLE)]
+modelNames <- modelNames[modelNames %in% rownames(modelMatch)]
+modelNames <- modelNames[modelNames %in% rownames(modelMOO)]
+
+# Filter the models
+modelLE <- modelLE[modelNames, ]
+modelMatch <- modelMatch[modelNames, ]
+modelMOO <- modelMOO[modelNames, ]
 
 # Calculate subject wise performance on each task
 humanSummary <- tibble(
@@ -323,11 +370,9 @@ humanLE2Rel <- splitHalf(humanLE2, check.keys = FALSE)$lambda2
 humanMatch2Rel <- splitHalf(humanMatch2, check.keys = FALSE)$lambda2
 humanMOO2Rel <- splitHalf(humanMOO2, check.keys = FALSE, covar = TRUE)$lambda2
 
-# Only use LE trials that have no NA
-tmp <- modelLE[, !is.na(modelLE[1, ])]
-modelLERel <- splitHalf(tmp, check.keys = FALSE)$lambda2
+modelLERel <- splitHalf(modelLE, check.keys = FALSE)$lambda2
 modelMatchRel <- splitHalf(modelMatch, check.keys = FALSE)$lambda2
-modelMOORel <- splitHalf(modelMOO, check.keys = FALSE)$lambda2
+modelMOORel <- splitHalf(modelMOO, check.keys = FALSE, covar = TRUE)$lambda2
 
 # Get trial difficulty
 humanLEDiff <- colMeans(humanLE)
@@ -504,6 +549,103 @@ MOOHumanDiffPlot <- ggplot(
 
 MOOHumanDiffPlot
 
+# Split Model Analyses ----
+# Split the model data into two groups randomly
+splitModel <- sample(1:2, nrow(modelSummary), replace = TRUE)
+
+# Calculate trial difficulty for each group
+modelLE1 <- modelLE[splitModel == 1, ]
+modelMatch1 <- modelMatch[splitModel == 1, ]
+modelMOO1 <- modelMOO[splitModel == 1, ]
+modelLE2 <- modelLE[splitModel == 2, ]
+modelMatch2 <- modelMatch[splitModel == 2, ]
+modelMOO2 <- modelMOO[splitModel == 2, ]
+
+# Calculate difficulty correlations between the two groups
+LEModelDiffCor <- cor(colMeans(modelLE1), colMeans(modelLE2))
+matchModelDiffCor <- cor(colMeans(modelMatch1), colMeans(modelMatch2))
+MOOModelDiffCor <- cor(colMeans(modelMOO1), colMeans(modelMOO2))
+
+# Plot
+LEModelDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(colMeans(modelLE1))),
+        model1 = colMeans(modelLE1),
+        model2 = colMeans(modelLE2)
+    ),
+    aes(x = model1, y = model2)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(LEModelDiffCor, digits = 2))
+    ) +
+    labs(x = "Model 1", y = "Model 2", title = "LE Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+
+LEModelDiffPlot
+
+matchModelDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(colMeans(modelMatch1))),
+        model1 = colMeans(modelMatch1),
+        model2 = colMeans(modelMatch2)
+    ),
+    aes(x = model1, y = model2)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(matchModelDiffCor, digits = 2))
+    ) +
+    labs(x = "Model 1", y = "Model 2", title = "Match Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+
+matchModelDiffPlot
+
+MOOModelDiffPlot <- ggplot(
+    data = tibble(
+        trial = seq_len(length(colMeans(modelMOO1))),
+        model1 = colMeans(modelMOO1),
+        model2 = colMeans(modelMOO2)
+    ),
+    aes(x = model1, y = model2)
+) +
+    geom_text(aes(label = trial)) +
+    geom_abline(intercept = 0, slope = 1) +
+    annotate(
+        "text",
+        x = 0.9,
+        y = 0,
+        label = paste0("r = ", round(MOOModelDiffCor, digits = 2))
+    ) +
+    labs(x = "Model 1", y = "Model 2", title = "MOO Difficulty") +
+    coord_fixed(xlim = c(0, 1), ylim = c(0, 1)) +
+    theme_bw() +
+    theme(
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+    )
+
+MOOModelDiffPlot
+
+
 # Create model/human correlation matrix plot ----
 lambda2 <- "\U03BB\U2082"
 humanCorMatrix <- corMatrixPlot(
@@ -579,29 +721,38 @@ summary(confInvarFit, standardized = TRUE, fit.measures = TRUE)
 # Manual partial invariance model
 partialMetricInvarModel <- "
     # Remember that LE is the first and is always set to 1 anyways
-    oLat =~ c(l1, l1)*LE + Match + c(l2, l2)*MOO
+    oLat =~ c(l1, l1)*LE + c(l2, l2)*Match + MOO
 "
 partialMetricInvarFit <- cfa(
     model = partialMetricInvarModel,
     data = allSummary,
     group = "Group"
 )
-anova(confInvarFit, partialMetricInvarFit)
 
 partialScalarInvar <- "
-    # LE ~ c(i1, i1)*1
-    MOO ~ c(i2, i2)*1
+    LE ~ c(i1, i1)*1
+    Match ~ c(i2, i2)*1
 "
 partialScalarInvarFit <- cfa(
     model = c(partialMetricInvarModel, partialScalarInvar),
     data = allSummary,
     group = "Group"
 )
-anova(partialMetricInvarFit, partialScalarInvarFit)
+lavTestLRT(confInvarFit, partialMetricInvarFit, partialScalarInvarFit)
 
 # Plot confInvarFit model
 semPaths(
     confInvarFit,
+    "std",
+    intercepts = FALSE,
+    edge.color = "black",
+    edge.label.cex = 2,
+    ask = FALSE,
+    panelGroups = TRUE
+)
+
+semPaths(
+    partialMetricInvarFit,
     "std",
     intercepts = FALSE,
     edge.color = "black",

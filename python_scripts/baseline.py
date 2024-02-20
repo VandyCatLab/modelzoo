@@ -5,7 +5,6 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.python.ops.gen_batch_ops import batch
-import tensorflow_addons as tfa
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.models import Model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
@@ -13,6 +12,7 @@ from tensorflow.keras.datasets import cifar10
 import analysis, datasets
 import pandas as pd
 import os
+import utilities as utils
 
 
 def yield_transforms(
@@ -43,9 +43,7 @@ def yield_transforms(
         # Get counts
         nImages = input.shape[0]
         completeBatches = (
-            nImages // batch_size
-            if batch_size < input.shape[0]
-            else input.shape[0]
+            nImages // batch_size if batch_size < input.shape[0] else input.shape[0]
         )
         finalBatchSize = nImages % batch_size
 
@@ -54,9 +52,7 @@ def yield_transforms(
         for idx in range(completeBatches):
             # Create a batch
             with tf.device("/cpu:0"):
-                batch = input[
-                    (idx * batch_size) : ((idx + 1) * batch_size), :, :, :
-                ]
+                batch = input[(idx * batch_size) : ((idx + 1) * batch_size), :, :, :]
             outs += [model.call(batch, training=False)]
 
         # Final batch
@@ -113,19 +109,19 @@ def yield_transforms(
 
             # Generate transformed imageset
             with tf.device("/cpu:0"):
-                transImg = tfa.image.translate(dataset, [v, 0])  # Right
+                transImg = utils.translate_image(dataset, [v, 0])  # Right
             rep2 = [batched_call(model, transImg, 512)]
 
             with tf.device("/cpu:0"):
-                transImg = tfa.image.translate(dataset, [-v, 0])  # Left
+                transImg = utils.translate_image(dataset, [-v, 0])  # Left
             rep2 += [batched_call(model, transImg, 512)]
 
             with tf.device("/cpu:0"):
-                transImg = tfa.image.translate(dataset, [0, v])  # Down
+                transImg = utils.translate_image(dataset, [0, v])  # Down
             rep2 += [batched_call(model, transImg, 512)]
 
             with tf.device("/cpu:0"):
-                transImg = tfa.image.translate(dataset, [0, -v])  # Up
+                transImg = utils.translate_image(dataset, [0, -v])  # Up
             rep2 += [batched_call(model, transImg, 512)]
 
             if return_aug:
@@ -133,10 +129,10 @@ def yield_transforms(
                 with tf.device("/cpu:0"):
                     transImg = tf.concat(
                         [
-                            tfa.image.translate(dataset, [v, 0]),
-                            tfa.image.translate(dataset, [-v, 0]),
-                            tfa.image.translate(dataset, [0, v]),
-                            tfa.image.translate(dataset, [0, -v]),
+                            utils.translate_image(dataset, [v, 0]),
+                            utils.translate_image(dataset, [-v, 0]),
+                            utils.translate_image(dataset, [0, v]),
+                            utils.translate_image(dataset, [0, -v]),
                         ],
                         axis=0,
                     )
@@ -206,9 +202,7 @@ def yield_transforms(
             # Generate transformed imageset
             with tf.device("/cpu:0"):
                 transformed_dataset = tf.zeros(1)
-                transformed_dataset = dataset[
-                    :, v : smallDim - v, v : smallDim - v, :
-                ]
+                transformed_dataset = dataset[:, v : smallDim - v, v : smallDim - v, :]
                 transformed_dataset = tf.image.resize(
                     transformed_dataset, (smallDim, smallDim)
                 )
@@ -309,9 +303,7 @@ def visualize_transform(transform, depth, img_arr):
         dim = img_arr.shape[0]
         v = depth
         empty = np.zeros((dim, dim, 3))
-        up_transformed = np.concatenate(
-            [img_arr[v:dim, :, :], empty[0:v, :, :]]
-        )
+        up_transformed = np.concatenate([img_arr[v:dim, :, :], empty[0:v, :, :]])
         down_transformed = np.concatenate(
             [empty[0:v, :, :], img_arr[0 : dim - v, :, :]]
         )
@@ -360,9 +352,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--shuffle_seed", type=int, help="shuffle seed of the main model"
     )
-    parser.add_argument(
-        "--weight_seed", type=int, help="weight seed of the main model"
-    )
+    parser.add_argument("--weight_seed", type=int, help="weight seed of the main model")
     parser.add_argument(
         "--model_seeds",
         type=str,
@@ -546,15 +536,11 @@ if __name__ == "__main__":
                     transDir = tf.split(transImg, 4)
                     accs = [0.0] * 4
                     for i, direct in enumerate(transDir):
-                        _, accs[i] = model.evaluate(
-                            direct, dataLabels, batch_size=128
-                        )
+                        _, accs[i] = model.evaluate(direct, dataLabels, batch_size=128)
 
                     accDF.loc[len(accDF.index)] = [float(v.numpy())] + accs
                 else:
-                    _, acc = model.evaluate(
-                        transImg, dataLabels, batch_size=128
-                    )
+                    _, acc = model.evaluate(transImg, dataLabels, batch_size=128)
                     accDF.loc[len(accDF.index)] = [v, acc]
 
             # Save
@@ -586,10 +572,7 @@ if __name__ == "__main__":
 
         data = pd.DataFrame(columns=analysisNames + ["layer", "dropRate"])
         for drop in dropRates:
-            if (
-                args.version_slice is not None
-                and not args.version_slice == drop
-            ):
+            if args.version_slice is not None and not args.version_slice == drop:
                 continue
             dropModel = make_dropout_model(model, layerIdx, drop)
             rep1 = dropModel.predict(dataset)

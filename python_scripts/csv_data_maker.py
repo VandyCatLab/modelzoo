@@ -66,7 +66,9 @@ def make_csv_normal(data_types=['many_odd', 'learn_exemp', 'threeACF'], noise=Fa
             pda.to_csv(csv_path, index=False)
         else:
             npa = np.load(f'../data_storage/results/{data_type}_results.npy', allow_pickle=True)
+            print(npa)
             pda = pd.DataFrame(columns=['SbjID', 'response', 'TrialN', 'CorrRes', 'AnsCatagory'])
+            print(pda)
             csv_path = f'../data_storage/results/csv_data_maker_{data_type}.csv'
             pda.to_csv(csv_path, index=False)
 
@@ -114,13 +116,13 @@ many_odd_view_list = ['d'] * 45
 many_odd_noise_list = ['n'] * 12 + ['y'] * 10 + ['n'] * 3 + ['y'] + ['n'] * 4 + ['y'] + ['n'] * 2 + ['y'] + ['n'] * 2 + ['y'] + ['n'] * 8
 many_odd_size_list = ['y'] * 45
 
-add_to_csv(data_types[2], threeACF_view_list, "View")
-add_to_csv(data_types[2], threeACF_noise_list, "Noise")
-add_to_csv(data_types[1], learn_exemp_view_list, "View")
-add_to_csv(data_types[1], learn_exemp_noise_list, "Noise")
-add_to_csv(data_types[0], many_odd_view_list, "View")
-add_to_csv(data_types[0], many_odd_noise_list, "Noise")
+#add_to_csv(data_types[2], threeACF_view_list, "View")
+#add_to_csv(data_types[2], threeACF_noise_list, "Noise")
+#add_to_csv(data_types[1], learn_exemp_view_list, "View")
+#add_to_csv(data_types[1], learn_exemp_noise_list, "Noise")
+#add_to_csv(data_types[0], many_odd_view_list, "View")
+#add_to_csv(data_types[0], many_odd_noise_list, "Noise")
 
 
 
-#make_csv_normal(noise=True)
+make_csv_normal(['learn_exemp'], noise=False)
