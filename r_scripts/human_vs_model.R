@@ -361,6 +361,9 @@ modelSummary <- tibble(
         o = c((scale(LE) + scale(Match) + scale(MOO))) / 3
     )
 
+# Load model attribute summary
+modelInfo <- read_csv("./data_storage/results/models_summary_timm.csv")
+
 # Test specific measures ----
 # Reliability
 humanLERel <- splitHalf(humanLE, check.keys = FALSE)$lambda2
@@ -645,7 +648,6 @@ MOOModelDiffPlot <- ggplot(
 
 MOOModelDiffPlot
 
-
 # Create model/human correlation matrix plot ----
 lambda2 <- "\U03BB\U2082"
 humanCorMatrix <- corMatrixPlot(
@@ -812,3 +814,21 @@ semPaths(
     ask = FALSE,
     panelGroups = TRUE
 )
+
+# Model attribute analysis ----
+# First figure out which models are missing from the modelInfo file
+missingModels <- modelSummary$SbjID[!modelNames %in% modelInfo$Model]
+
+# Combine model info with modelSummary
+modelSummary <- modelSummary |>
+    left_join(modelInfo, by = c("SbjID" = "Model"))
+
+# Change any column names with spaces to use underscore
+colnames(modelSummary) <- gsub(" ", "_", colnames(modelSummary))
+
+regModel <- lm(
+    o ~ Layers + Parameters + as.factor(Training_Dataset) + as.factor(Family),
+    data = modelSummary,
+    na.action = na.omit
+)
+summary(regModel)
