@@ -179,11 +179,6 @@
         "type": "efficientnet",
         "parameters": "default",
         "trainingSet": "imagenet",
-        "shape": [
-            600,
-            600,
-            3
-        ],
         "num_params": "64097687",
         "num_layers": "815"
     },

@@ -2,7 +2,6 @@ import numpy as np
 import os
 import random
 import tensorflow as tf
-import tensorflow_addons as tfa
 from tensorflow.keras.datasets import cifar10
 import tensorflow_datasets as tfds
 import PIL
@@ -14,6 +13,7 @@ import torch
 from torch.utils.data import Dataset
 from torchvision import transforms
 import timm
+import utilities as utils
 
 # Get training information
 (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
@@ -53,9 +53,7 @@ def make_train_data(
     x_flat = x_train.reshape(x_train.shape[0], -1)
 
     vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
-    prinComps = np.dot(
-        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
-    )
+    prinComps = np.dot(vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T))
 
     x_train = np.dot(x_flat, prinComps).reshape(x_train.shape)
     testFlat = x_test.reshape(x_test.shape[0], -1)
@@ -64,17 +62,13 @@ def make_train_data(
     if item_max is not None or cat_max is not None:
         item_max = item_max if item_max is not None else 1
 
-        print(
-            f"Generating dataset for item-level differences, max items {item_max}"
-        )
+        print(f"Generating dataset for item-level differences, max items {item_max}")
         np.random.seed(data_seed)
         weights = np.random.randint(1, item_max + 1, x_train.shape[0])
 
         if cat_max is not None:
             print(f"Adding category level weighting, max weight {cat_max}")
-            catWeight = np.random.randint(
-                1, cat_max + 1, len(np.unique(y_train))
-            )
+            catWeight = np.random.randint(1, cat_max + 1, len(np.unique(y_train)))
             catWeight = catWeight / np.sum(catWeight)
 
             # Generate category counts with category weight
@@ -89,16 +83,12 @@ def make_train_data(
             )
 
         # Loop through each category and sample images
-        newTrain = np.zeros(
-            (0, x_train.shape[1], x_train.shape[2], x_train.shape[3])
-        )
+        newTrain = np.zeros((0, x_train.shape[1], x_train.shape[2], x_train.shape[3]))
         newLabels = np.zeros((0, 1))
         for i in range(np.max(y_trainRaw) + 1):
             indices = np.where(y_trainRaw == i)[0]
             indWeight = weights[indices] / np.sum(weights[indices])
-            newIndices = np.random.choice(
-                indices, size=int(catCounts[i]), p=indWeight
-            )
+            newIndices = np.random.choice(indices, size=int(catCounts[i]), p=indWeight)
             newTrain = np.concatenate((newTrain, x_train[newIndices]))
             newLabels = np.concatenate((newLabels, y_train[newIndices]))
 
@@ -136,7 +126,7 @@ def augmentData(image, label):
         image = tf.image.flip_left_right(image)
     x = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
     y = tf.random.uniform((), minval=-5, maxval=5, dtype=tf.dtypes.int64)
-    image = tfa.image.translate(images=image, translations=[x, y])
+    image = utils.translate_image(images=image, translations=[x, y])
 
     return image, label
 
@@ -158,9 +148,7 @@ def preprocess(imgset):
     x_flat = x_train.reshape(x_train.shape[0], -1)
 
     vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
-    prinComps = np.dot(
-        vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T)
-    )
+    prinComps = np.dot(vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T))
 
     testFlat = imgset.reshape(imgset.shape[0], -1)
     imgset = np.dot(testFlat, prinComps).reshape(imgset.shape)
@@ -247,17 +235,19 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
 
     return dataset
 
-def get_pytorch_dataset(data_dir, info, model, bat_size=64, modelName = None):
+
+def get_pytorch_dataset(data_dir, info, model, bat_size=64, modelName=None):
     """
     Return a dataset where all images are from data_dir and uses torchvision preprocessing.
     Assumes that it all fits in memory.
     """
 
     files = os.listdir(data_dir)
-    if 'shape' in info:
-        imgs = np.empty([len(files)] + list(info['shape']))
-    elif 'input_size' in info:
-        imgs = np.empty([len(files)] + list(info['input_size']))
+    files.sort()
+    if "shape" in info:
+        imgs = np.empty([len(files)] + list(info["shape"]))
+    elif "input_size" in info:
+        imgs = np.empty([len(files)] + list(info["input_size"]))
 
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
@@ -275,7 +265,13 @@ def get_pytorch_dataset(data_dir, info, model, bat_size=64, modelName = None):
         # using preprocessing function for transformers
         elif "preproc_func" in info:
             if info["preproc_func"] != "None":
-                pypre = "transformers." + info["preproc_func"] + ".from_pretrained(" + modelName + ")"
+                pypre = (
+                    "transformers."
+                    + info["preproc_func"]
+                    + ".from_pretrained("
+                    + modelName
+                    + ")"
+                )
                 py_preproc = eval(py_pre)
                 img = py_preproc(img)
                 img = img.unsqueeze(0)
@@ -297,10 +293,18 @@ def get_flat_dataset(data_dir, preprocFun=None, batch_size=64):
     fits in memory.
     """
     files = os.listdir(data_dir)
+    files.sort()
 
+    # Preprocess one image to see what size it is
+    img = PIL.Image.open(os.path.join(data_dir, files[0]))
+    img = np.array(img)
+    if preprocFun is not None:
+        img = preprocFun(img)
+
+    # Preallocate
+    imgs = np.empty([len(files)] + list(img.shape))
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
-        imgs = np.empty([len(files)] + list(preprocFun.shape))
         img = np.array(img)
 
         if preprocFun is not None:
@@ -339,7 +343,11 @@ class preproc:
         self.numCat = numCat
         self.labels = labels
 
-    def __call__(self, img, label=None,):
+    def __call__(
+        self,
+        img,
+        label=None,
+    ):
         # Rescale then cast to correct datatype
         img = tf.keras.preprocessing.image.smart_resize(img, self.shape[:2])
         img = tf.reshape(img, self.shape)
@@ -364,9 +372,7 @@ class preproc:
             return img
 
 
-def create_cinic10_set(
-    dataPath="/data/CINIC10/test", examples=10, dtype="float64"
-):
+def create_cinic10_set(dataPath="/data/CINIC10/test", examples=10, dtype="float64"):
     """
     Return a part of CINIC10 dataset for testing. Each class will have the
     number of examples, global contrast normalized,
@@ -447,9 +453,7 @@ def create_imagenet_subset(
     if save_dir is not None:
         for i in range(1000):
             for j, img in enumerate(outImgs[i]):
-                PIL.Image.fromarray(img.numpy()).save(
-                    save_dir + f"/{i}_{j}.png"
-                )
+                PIL.Image.fromarray(img.numpy()).save(save_dir + f"/{i}_{j}.png")
     return outImgs
 
 
@@ -484,7 +488,9 @@ def collect_big_cifar10(output_dir):
             print(f'Missing synset "{row["synset"]}"')
 
         # Check if the image exists
-        imagePath = f"/data/imagenet21k/{row['synset']}/{row['synset']}_{row['image_num']}.JPEG"
+        imagePath = (
+            f"/data/imagenet21k/{row['synset']}/{row['synset']}_{row['image_num']}.JPEG"
+        )
         if not os.path.exists(imagePath):
             print(f'Missing image "{row["synset"]}_{row["image_num"]}.JPEG"')
 

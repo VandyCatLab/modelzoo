@@ -94,7 +94,7 @@
         "num_params": 85761984,
         "num_layers": 150
     },
-    "beit_base_patch16_224_in22k": {
+    "beit_base_patch16_224.in22k_ft_in22k": {
         "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_base_patch16_224_pt22k_ft22k.pth",
         "num_classes": 21841,
         "input_size": [
@@ -178,7 +178,7 @@
         "num_params": 303405568,
         "num_layers": 294
     },
-    "beit_large_patch16_224_in22k": {
+    "beit_large_patch16_224.in22k_ft_in22k": {
         "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beit/beit_large_patch16_224_pt22k_ft22k.pth",
         "num_classes": 21841,
         "input_size": [
@@ -290,7 +290,7 @@
         "num_params": 85761984,
         "num_layers": 150
     },
-    "beitv2_base_patch16_224_in22k": {
+    "beitv2_base_patch16_224.in1k_ft_in22k": {
         "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beitv2/beitv2_base_patch16_224_pt1k_ft21k.pth",
         "num_classes": 21841,
         "input_size": [
@@ -314,7 +314,7 @@
         ],
         "first_conv": "patch_embed.proj",
         "classifier": "head",
-        "architecture": "beitv2_base_patch16_224_in22k",
+        "architecture": "beitv2_base_patch16_224_in1k",
         "num_params": 85761984,
         "num_layers": 150
     },
@@ -346,7 +346,7 @@
         "num_params": 303405568,
         "num_layers": 294
     },
-    "beitv2_large_patch16_224_in22k": {
+    "beitv2_large_patch16_224.in1k_ft_in22k": {
         "url": "https://conversationhub.blob.core.windows.net/beit-share-public/beitv2/beitv2_large_patch16_224_pt1k_ft21k.pth",
         "num_classes": 21841,
         "input_size": [
@@ -370,7 +370,7 @@
         ],
         "first_conv": "patch_embed.proj",
         "classifier": "head",
-        "architecture": "beitv2_large_patch16_224_in22k",
+        "architecture": "beitv2_large_patch16_224_in1k",
         "num_params": 303405568,
         "num_layers": 294
     },
@@ -12766,8 +12766,8 @@
         "num_classes": 1000,
         "input_size": [
             3,
-            224,
-            224
+            288,
+            288
         ],
         "pool_size": [
             7,
@@ -14799,7 +14799,7 @@
         "num_params": 75779244,
         "num_layers": 418
     },
-    "tv_densenet121": {
+    "densenet121.tv_in1k": {
         "url": "https://download.pytorch.org/models/densenet121-a639ec97.pth",
         "num_classes": 1000,
         "input_size": [
@@ -15432,7 +15432,7 @@
         "num_params": 85771008,
         "num_layers": 187
     },
-    "vit_base_patch16_224_sam": {
+    "vit_base_patch16_224.sam_in1k": {
         "url": "https://storage.googleapis.com/vit_models/sam/ViT-B_16.npz",
         "num_classes": 1000,
         "input_size": [
@@ -15602,7 +15602,7 @@
         "num_params": 87455232,
         "num_layers": 187
     },
-    "vit_base_patch32_224_sam": {
+    "vit_base_patch32_224.sam_in1k": {
         "url": "https://storage.googleapis.com/vit_models/sam/ViT-B_32.npz",
         "num_classes": 1000,
         "input_size": [
@@ -15626,7 +15626,7 @@
         ],
         "first_conv": "patch_embed.proj",
         "classifier": "head",
-        "architecture": "vit_base_patch32_224_sam",
+        "architecture": "vit_base_patch32_224.sam_in1k",
         "num_params": 87455232,
         "num_layers": 187
     },
@@ -18120,7 +18120,7 @@
         "num_params": 47286384,
         "num_layers": 451
     },
-    "xcit_small_24_p16_384_dist": {
+    "xcit_small_24_p16_384.fb_dist_in1k": {
         "url": "https://dl.fbaipublicfiles.com/xcit/xcit_small_24_p16_384_dist.pth",
         "num_classes": 1000,
         "input_size": [
