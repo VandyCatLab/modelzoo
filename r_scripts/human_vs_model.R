@@ -826,9 +826,25 @@ modelSummary <- modelSummary |>
 # Change any column names with spaces to use underscore
 colnames(modelSummary) <- gsub(" ", "_", colnames(modelSummary))
 
-regModel <- lm(
-    o ~ Layers + Parameters + as.factor(Training_Dataset) + as.factor(Family),
-    data = modelSummary,
-    na.action = na.omit
-)
-summary(regModel)
+# Do a basic correlation between o and number of parameters and number of layers
+oParamCor <- cor.test(modelSummary$o, modelSummary$Parameters, use = "complete.obs")
+oLayerCor <- cor.test(modelSummary$o, modelSummary$Layers, use = "complete.obs")
+paramLayerCor <- cor.test(modelSummary$Parameters, modelSummary$Layers, use = "complete.obs")
+
+# Do a basic ANOVA of family and dataset
+familyDatasetAnova <- aov(o ~ Family * Training_Dataset, data = modelSummary)
+summary(familyDatasetAnova)
+
+# Group models by family
+familySummary <- modelSummary |>
+    group_by(Family) |>
+    summarize(
+        oMean = mean(o, na.rm = TRUE),
+        oStd = sd(o, na.rm = TRUE),
+        oCV = abs(oStd / oMean),
+        nModels = n(),
+        Parameters = mean(Parameters),
+        Layers = mean(Layers),
+        .groups = "drop"
+    )
+familySummary
