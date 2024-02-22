@@ -1103,6 +1103,7 @@
         "offset": 0,
         "type": "efficientnet",
         "trainingSet": "imagenet",
+        "numFeatures": 1280,
         "num_params": "4049564",
         "num_layers": "239",
         "origin": "tenorflowHub"
@@ -1118,6 +1119,7 @@
         "offset": 0,
         "type": "efficientnet",
         "trainingSet": "imagenet",
+        "numFeatures": 1280,
         "num_params": "6575232",
         "num_layers": "341",
         "origin": "tenorflowHub"
@@ -1133,6 +1135,7 @@
         "offset": 0,
         "type": "efficientnet",
         "trainingSet": "imagenet",
+        "numFeatures": 1792,
         "num_params": "17673816",
         "num_layers": "476",
         "origin": "tenorflowHub"
@@ -1148,6 +1151,7 @@
         "offset": 0,
         "type": "efficientnet",
         "trainingSet": "imagenet",
+        "numFeatures": 2048,
         "num_params": "28513520",
         "num_layers": "578",
         "origin": "tenorflowHub"
@@ -1163,6 +1167,7 @@
         "offset": 0,
         "type": "efficientnet",
         "trainingSet": "imagenet",
+        "numFeatures": 1408,
         "num_params": "7768562",
         "num_layers": "341",
         "origin": "tenorflowHub"
@@ -1178,6 +1183,7 @@
         "offset": 0,
         "type": "efficientnet",
         "trainingSet": "imagenet",
+        "numFeatures": 1536,
         "num_params": "10783528",
         "num_layers": "386",
         "origin": "tenorflowHub"
@@ -1193,6 +1199,7 @@
         "offset": 0,
         "type": "efficientnet",
         "trainingSet": "imagenet",
+        "numFeatures": 2560,
         "num_params": "64097680",
         "num_layers": "815",
         "origin": "tenorflowHub"
