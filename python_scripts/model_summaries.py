@@ -338,7 +338,7 @@ def analyze_keras_model(model_name, model_data):
         if is_residual_block_keras(layer, model):  
             layer_counts['residual'] += 1
 
-    family = get_model_family(model_name)
+    family, reduced_fam = get_model_family(model_name)
 
     if model_data['trainingSet'] == 'imagenet':
         dataset_used = 'ImageNet-1K'
@@ -423,9 +423,16 @@ def give_summaries_keras():
 
 
 def analyze_model_hub(model_name, model_data):
-    print(model_data)
+    print(model_name, ' : ',model_data['num_params'])
     model_url = model_data["url"]
-    model_layer = hub.KerasLayer(model_url, trainable=False)
+    shape = model_data["shape"] if "shape" in model_data.keys() else [224, 224, 3]
+    try:
+        inp = tf.keras.Input(shape=shape)
+        out = hub.KerasLayer(model_url)(inp)
+        model_layer = tf.keras.Model(inputs=inp, outputs=out)
+    except:
+        model_layer = None
+
     try: 
         model = tf.keras.Sequential([model_layer])
         model.build([None, 224, 224, 3])  # Example input shape, adjust as needed
@@ -437,6 +444,7 @@ def analyze_model_hub(model_name, model_data):
         num_layers = len(model.layers) if model.layers else model_data["num_layers"]
     except:
        num_layers = model_data["num_layers"]
+       
     try:
         num_parameters = model.count_params() 
     except:
@@ -466,10 +474,10 @@ def analyze_model_hub(model_name, model_data):
             'normalization': 0,
         }
 
-
-
     name_altered = model_data["type"].replace('-','')
-    family = get_model_family(model_name)
+
+    family = get_model_family(name_altered)
+
     summary = {
         'Model': model_name,
         'Parameters': num_parameters,
@@ -493,22 +501,24 @@ def analyze_model_hub(model_name, model_data):
     return summary
 
 
-def give_summaries_hub():
+def give_summaries_tfhub():
     all_model_summaries = []
 
     with open('../data_storage/hubModel_storage/hubModels.json', 'r') as file:
         models_data = json.load(file)
 
     for model_name, model_data in models_data.items():
-        all_model_summaries.append(analyze_model_hub(model_name, model_data))
+        if 'defunct' in model_data.keys():
+            continue
+        else:
+            all_model_summaries.append(analyze_model_hub(model_name, model_data))
 
 
     csv_columns = list(all_model_summaries[0].keys())  # Assuming all summaries have the same keys
-    csv_file = "../data_storage/results/models_summary_keras.csv"
+    csv_file = "../data_storage/results/models_summary_tfhub.csv"
     write_csv(all_model_summaries, csv_columns, csv_file)
 
 
-
 print('\n\n\n\n', 'Start:', datetime.now(), '\n')
-give_summaries_keras()
+give_summaries_tfhub()
 print('\n\n\n\n', 'End:', datetime.now())
