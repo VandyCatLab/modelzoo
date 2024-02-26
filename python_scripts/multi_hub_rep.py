@@ -116,7 +116,7 @@ def learning_exemplar(
 ):
     # If noise is not 0, apply noise to the representations
     if noise != 0:
-        reps, _ = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+        reps, _ = apply_std_noise(reps, noise, include_zeros=False, relu=False)
 
     # Get the target representations (they're just the nz* ones)
     targetIdxs = [
@@ -168,7 +168,7 @@ def many_oddball(
         repStd = np.std(reps[reps != 0])
 
     if noise != 0.0:
-        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=False)
 
     # Load csv
     trials = pd.read_csv(csv_file)
@@ -203,9 +203,6 @@ def many_oddball(
                 loc=0, scale=encNoise, size=choiceReps.shape
             )
 
-            # Apply relu back to targetRep
-            choiceReps[choiceReps < 0] = 0
-
         dists = cdist(choiceReps, choiceReps, "euclidean")
         np.fill_diagonal(dists, np.inf)
 
@@ -237,7 +234,7 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
 
     # If noise is not 0, apply noise to the representations
     if noise != 0.0:
-        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=False)
 
     # Load csv
     trials = pd.read_csv(csv_file)
@@ -280,9 +277,6 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
             targetRep = targetRep + np.random.normal(
                 loc=0, scale=encNoise, size=targetRep.shape
             )
-
-            # Apply relu back to targetRep
-            targetRep[targetRep < 0] = 0
 
         # Calculate distance and find the choice with smallest distance
         dists = cdist(choiceReps, targetRep, "euclidean")
@@ -531,7 +525,7 @@ def image_sets_maker(csv_file, image_names, reps, num_sets):
                     foil1_name = row[-2] + ".tif"
                     foil2_name = row[-1] + ".tif"
                     target_name = row[2] + ".tif"
-                    
+
                     foil1_idx = image_names.index(foil1_name)
                     foil2_idx = image_names.index(foil2_name)
                     target_idx = image_names.index(target_name)
@@ -801,6 +795,7 @@ if __name__ == "__main__":
 
     if args.use_gpu:
         import torch
+
         torch.set_default_tensor_type("torch.cuda.FloatTensor")
 
     badModels = ["nts-net"]
