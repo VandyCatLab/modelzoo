@@ -8,6 +8,7 @@ from datetime import datetime
 from tensorflow.keras.layers import Conv2D, Dense, BatchNormalization, ReLU, Add, GlobalAveragePooling2D, LSTM, GRU, SimpleRNN, LayerNormalization, Attention, MaxPooling2D, AveragePooling2D
 import tensorflow as tf
 import tensorflow_hub as hub
+from hubReps import get_pytorch_model
 
 
 def get_model_family(model_name):
@@ -29,7 +30,7 @@ def get_model_family(model_name):
                       'seresnet', 'mobilenetv2', 'mobilenetv3', 'mobilevit', 'mobilevitv2',
                       'pcpvt', 'pvt_v2', 'svt', 'vgg11', 'vgg13', 'vgg16', 'vgg19', 'regnetx',
                       'regnety', 'regnetz', 'resnetv2', 'skresnext', 'tresnet', 'xception41',
-                      'xception65', 'xception71', 'densenet']
+                      'xception65', 'xception71', 'densenet', 'unet', 'ntsnet', 'alexnet']
     
     reduced_families = ['resnet', 'mobilenet', 'beit', 'vit', 'efficientnet', 
                       'densenet', 'coatnet', 'cait', 'inception', 'inception_resnet'
@@ -518,7 +519,167 @@ def give_summaries_tfhub():
     csv_file = "../data_storage/results/models_summary_tfhub.csv"
     write_csv(all_model_summaries, csv_columns, csv_file)
 
+def summarize_model_pytorch(model_name, model_file, hubModels):
+    print(model_name)
+    model = get_pytorch_model(hubModels, model_file, model_name)
+    total_params = sum(p.numel() for p in model.parameters())
+
+    model.eval()
+    # Get parameter statistics
+    #param_stats = get_parameter_statistics(model)
+
+    # Initialize counters for various layer types
+    layer_counts = {
+        'residual': 0,
+        'conv': 0,
+        'dense': 0,
+        'recurrent': 0,
+        'attention': 0,
+        'bottlenecks': 0,
+        'pooling': 0,
+        'normalization': 0,
+    }
+
+    rf = 1  # Receptive field starts at 1
+    stride_product = 1  # Cumulative product of strides
+    layers_rf = []  # Store (layer_name, rf_value) tuples
+    max_rf = 0  # Track the maximum receptive field
+
+    # Initialize counters and thresholds for parameter percentages
+    cumulative_params = 0
+    thresholds = [0.25 * total_params, 0.5 * total_params, 0.75 * total_params]
+    percent_layers = {25: 'N/A', 50: 'N/A', 75: 'N/A'}
+    current_threshold_index = 0
+    
+    num_layers = 0
+    output_features = get_output_features(model)
+    for name, module in model.named_modules():
+        num_layers += 1
+        module_params = sum(p.numel() for p in module.parameters())
+        cumulative_params += module_params
+
+        # Check for layer types
+        if isinstance(module, torch.nn.Conv2d):
+            layer_counts['conv'] += 1
+        
+        if isinstance(module, torch.nn.Linear):
+            layer_counts['dense'] += 1
+            output_features = module.out_features
+        
+        if isinstance(module, (torch.nn.BatchNorm2d, torch.nn.LayerNorm)):
+            layer_counts['normalization'] += 1
+        
+        if isinstance(module, (torch.nn.MaxPool2d, torch.nn.AvgPool2d)):
+            layer_counts['pooling'] += 1
+
+        if 'Bottleneck' in module.__class__.__name__:
+            layer_counts['bottlenecks'] += 1
+
+        if has_residual_connection(module):
+            layer_counts['residual'] += 1
+        
+        if is_attention(module):
+            layer_counts['attention'] += 1
+        
+        if has_recurrent_component(module):
+            layer_counts['recurrent'] += 1
+
+
+        while current_threshold_index < len(thresholds) and cumulative_params >= thresholds[current_threshold_index]:
+            percent_layers[25 if current_threshold_index == 0 else 50 if current_threshold_index == 1 else 75] = name
+            current_threshold_index += 1
+
+        rf = 1 
+        stride_product = 1 
+        layers_rf = []
+        max_rf = 0 
+        
+        if isinstance(module, (torch.nn.Conv2d, torch.nn.MaxPool2d)):
+            kernel_size = module.kernel_size[0] if isinstance(module.kernel_size, (tuple, list)) else module.kernel_size
+            stride = module.stride[0] if isinstance(module.stride, (tuple, list)) else module.stride
+            rf += (kernel_size - 1) * stride_product
+            stride_product *= stride
+            layers_rf.append((name, rf))
+            max_rf = max(max_rf, rf)
+    
+    # Find the layer closest to 25% of the max_rf
+    try:
+        target_rf = 0.25 * max_rf
+        closest_layer = min(layers_rf, key=lambda x: abs(x[1] - target_rf))
+
+
+        # Calculate layer's percentage position
+        total_layers = len(layers_rf)
+        target_layer_index = layers_rf.index(closest_layer) + 1  # +1 for 1-based indexing
+        percentage_position = (target_layer_index / total_layers) * 100
+    except:
+        closest_layer = ['UNCALCULATED']
+        target_layer_index = 'UNCALCULATED'
+        max_rf = 'UNCALCULATED'
+
+    name_altered = model_name.replace('-','')
+    family = get_model_family(name_altered)
+
+    if output_features == 1000 or output_features == 768 or output_features == 384:
+        dataset_used = 'ImageNet-1K'
+    elif output_features == 21841 or output_features == 21843:
+        dataset_used = 'ImageNet-21K'
+    elif output_features == 11221:
+        dataset_used = 'ImageNet-21K-P'
+    elif output_features == 512 or output_features == 1024:
+        dataset_used = 'LAION-2B'
+    else:
+        try:
+            if hubModels[model_name]["trainingSet"]:
+                dataset_used = hubModels[model_name]["trainingSet"]
+            else:
+                dataset_used = 'UNKNOWN'
+        except:
+            dataset_used = 'UNKNOWN'
+
+
+    summary = {
+        'Model': model_name,
+        'Parameters': total_params,
+        'Layers': num_layers,
+        'Residual Blocks': layer_counts['residual'],
+        'Conv Layers': layer_counts['conv'],
+        'Dense Layers': layer_counts['dense'],
+        'Bottlenecks': layer_counts['bottlenecks'],
+        'Pooling Layers': layer_counts['pooling'],
+        'Normalization Layers': layer_counts['normalization'],
+        'Recurrent Layers': layer_counts['recurrent'],
+        'Attention Layers': layer_counts['attention'],
+        'Output Features': output_features,
+        'Training Dataset': dataset_used,
+        'RF25 Layer Number': target_layer_index,
+        'RF25 Layer Name': closest_layer[0],
+        'MAX RF': max_rf,
+        'Family': family,
+        'Architecture': 'NA',
+        'Crop Percentage': 'NA',
+        #**param_stats,
+    }
+
+    return summary
+
+
+def give_summaries_pytorch():
+    all_model_summaries = []
+    model_file = '../data_storage/hubModel_storage/hubModels_pytorch.json'
+    with open(model_file, 'r') as file:
+        models_data = json.load(file)
+
+    for model_name, model_data in models_data.items():
+        if ('function' in model_data) and (model_name != 'unet_carvana'):
+            all_model_summaries.append(summarize_model_pytorch(model_name, model_file, models_data))
+
+
+    csv_columns = list(all_model_summaries[0].keys())  # Assuming all summaries have the same keys
+    csv_file = "../data_storage/results/models_summary_pytorch.csv"
+    write_csv(all_model_summaries, csv_columns, csv_file)
+
 
 print('\n\n\n\n', 'Start:', datetime.now(), '\n')
-give_summaries_tfhub()
+give_summaries_pytorch()
 print('\n\n\n\n', 'End:', datetime.now())
