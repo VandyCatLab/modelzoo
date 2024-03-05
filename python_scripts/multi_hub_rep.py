@@ -112,11 +112,20 @@ def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
 
 
 def learning_exemplar(
-    model_name, image_names, reps, csv_file, noise=0.0, memory_decay=0.0
+    model_name,
+    image_names,
+    reps,
+    csv_file,
+    noise=0.0,
+    learning_adv=0.0,
+    memory_decay=0.0,
+    relu_std=False,
 ):
-    # If noise is not 0, apply noise to the representations
-    if noise != 0:
-        reps, _ = apply_std_noise(reps, noise, include_zeros=False, relu=False)
+    # Calculate std deviation reps
+    repStd = np.std(reps[reps != 0] if relu_std else reps)
+
+    if memory_decay != 0.0:
+        raise NotImplementedError("Memory decay not implemented")
 
     # Get the target representations (they're just the nz* ones)
     targetIdxs = [
@@ -140,6 +149,13 @@ def learning_exemplar(
             i for i, name in enumerate(image_names) if name.split("_")[0] == str(trial)
         ]
         choiceReps = reps[idxs]
+
+        # Add noise to choice reps
+        choiceReps += np.random.normal(
+            loc=0,
+            scale=repStd * noise * np.exp(-learning_adv * trial),
+            size=choiceReps.shape,
+        )
 
         dists = cdist(choiceReps, targetReps, "euclidean")
         chosenIdx, _ = np.unravel_index(np.argmin(dists), dists.shape)
@@ -227,14 +243,18 @@ def many_oddball(
     return results
 
 
-def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise=0.0):
-    # Calculate std noise for encoding noise
-    if encoding_noise != 0.0:
-        repStd = np.std(reps[reps != 0])
-
-    # If noise is not 0, apply noise to the representations
-    if noise != 0.0:
-        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=False)
+def three_afc(
+    model_name,
+    image_names,
+    reps,
+    csv_file,
+    noise=0.0,
+    learning_adv=0.0,
+    encoding_noise=0.0,
+    relu_std=False,
+):
+    # Calculate std deviation reps
+    repStd = np.std(reps[reps != 0] if relu_std else reps)
 
     # Load csv
     trials = pd.read_csv(csv_file)
@@ -266,6 +286,12 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
         ]
         choiceReps = reps[choiceIdxs]
 
+        choiceReps += np.random.normal(
+            loc=0,
+            scale=repStd * noise * np.exp(-learning_adv * trial),
+            size=choiceReps.shape,
+        )
+
         # If encoding noise is not 0
         if encoding_noise != 0.0:
             # Calculate noise amount
@@ -274,9 +300,7 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
             )  # Scaling constant 2
 
             # Apply noise to target
-            targetRep = targetRep + np.random.normal(
-                loc=0, scale=encNoise, size=targetRep.shape
-            )
+            targetRep += np.random.normal(loc=0, scale=encNoise, size=targetRep.shape)
 
         # Calculate distance and find the choice with smallest distance
         dists = cdist(choiceReps, targetRep, "euclidean")
@@ -789,6 +813,12 @@ if __name__ == "__main__":
         help="amount of memory decay to add",
     )
     parser.add_argument(
+        "--learning_adv",
+        type=float,
+        default=0.0,
+        help="amount of learning advantage to add",
+    )
+    parser.add_argument(
         "--use_gpu", default=False, action="store_true", help="uses GPU"
     )
     args = parser.parse_args()
@@ -828,6 +858,9 @@ if __name__ == "__main__":
         resultsPath = f"../data_storage/results/results_{args.test}"
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
+
+            if args.learning_adv != 0:
+                resultsPath += f"_learnAdv-{args.learning_adv}"
 
         if args.encoding_noise != 0:
             resultsPath += f"_encNoise-{args.encoding_noise}"
@@ -944,6 +977,7 @@ if __name__ == "__main__":
                 reps,
                 "../data_storage/three_AFC_trials.csv",
                 noise=args.noise,
+                learning_adv=args.learning_adv,
                 encoding_noise=args.encoding_noise,
             )
             results = pd.concat([results, modelResults])
@@ -1085,6 +1119,10 @@ if __name__ == "__main__":
         resultsPath = f"../data_storage/results/results_{args.test}"
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
+
+            if args.learning_adv != 0:
+                resultsPath += f"_learnAdv-{args.learning_adv}"
+
         if args.memory_decay != 0:
             raise NotImplementedError("Memory decay not implemented")
             resultsPath += f"_memDecay-{args.memory_decay}"
@@ -1204,6 +1242,7 @@ if __name__ == "__main__":
                 reps,
                 "../data_storage/learning_exemplar_trials.csv",
                 noise=args.noise,
+                learning_adv=args.learning_adv,
                 memory_decay=args.memory_decay,
             )
             results = pd.concat([results, modelResults])
