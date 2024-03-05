@@ -95,7 +95,9 @@ def image_list(data_dir):
     return image_names
 
 
-def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
+def rep_maker(
+    data_dir, modelFile, model_name, modelData, model, batch_size, jitter_pixels=0
+):
     if "origin" in modelData.keys() and modelData["origin"] == "keras":
         # Override model input shape for keras models if input_shape isn't none
         inputShape = model.input_shape[1:]
@@ -103,7 +105,9 @@ def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
             modelData["shape"] = model.input_shape[1:]
 
     # get dataset from datasets.py
-    dataset = get_dataset(data_dir, modelFile, model_name, modelData, model, batch_size)
+    dataset = get_dataset(
+        data_dir, modelFile, model_name, modelData, model, batch_size, jitter_pixels
+    )
     # print('\nDataset size:', dataset, '\n')
 
     # get reps from hubReps.py
@@ -120,6 +124,7 @@ def learning_exemplar(
     learning_adv=0.0,
     memory_decay=0.0,
     relu_std=False,
+    jitter_pixels=0,
 ):
     # Calculate std deviation reps
     repStd = np.std(reps[reps != 0] if relu_std else reps)
@@ -131,6 +136,10 @@ def learning_exemplar(
     targetIdxs = [
         i for i, name in enumerate(image_names) if name.split("_")[0] == "nz1"
     ]
+
+    # If jitter, use the other one
+    if jitter_pixels != 0:
+        targetIdxs = [i + len(image_names) for i in targetIdxs]
     targetReps = reps[targetIdxs, :]
 
     # Load csv
@@ -177,7 +186,12 @@ def learning_exemplar(
 
 
 def many_oddball(
-    model_name, image_names, reps, csv_file, noise=0.0, encoding_noise=0.0
+    model_name,
+    image_names,
+    reps,
+    csv_file,
+    noise=0.0,
+    encoding_noise=0.0,
 ):
     # If noise is not 0, apply noise to the representations
     if encoding_noise != 0.0:
@@ -252,6 +266,7 @@ def three_afc(
     learning_adv=0.0,
     encoding_noise=0.0,
     relu_std=False,
+    jitter_pixels=0,
 ):
     # Calculate std deviation reps
     repStd = np.std(reps[reps != 0] if relu_std else reps)
@@ -276,6 +291,10 @@ def three_afc(
             for i, name in enumerate(image_names)
             if name.split("-")[0] == f"trial{trial}" and "target" in name
         ]
+        # If jitter, use jittered target
+        if jitter_pixels != 0:
+            targetIdxs += len(image_names)
+
         targetRep = reps[targetIdxs]
 
         # Get the choice indices and their reps
@@ -652,7 +671,9 @@ def get_model(modelName, modelFile, hubModels):
     return model
 
 
-def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64):
+def get_dataset(
+    data_dir, modelFile, modelName, modelData, model, batch_size=64, jitter_pixels=0
+):
     if (
         modelFile == "../data_storage/hubModel_storage/hubModels.json"
         or modelFile == "../data_storage/hubModel_storage/hubModels_keras.json"
@@ -661,7 +682,9 @@ def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64)
             **modelData,
             labels=False,
         )
-        dataset = datasets.get_flat_dataset(data_dir, preprocFun, batch_size=batch_size)
+        dataset = datasets.get_flat_dataset(
+            data_dir, preprocFun, batch_size=batch_size, jitter_pixels=jitter_pixels
+        )
 
     elif (
         modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json"
@@ -674,7 +697,12 @@ def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64)
         # using pytorch model
 
         dataset = datasets.get_pytorch_dataset(
-            data_dir, modelData, model, batch_size, modelName
+            data_dir,
+            modelData,
+            model,
+            batch_size,
+            modelName,
+            jitter_pixels=jitter_pixels,
         )
 
     else:
@@ -794,6 +822,12 @@ if __name__ == "__main__":
         help="which trial type to use",
     )
     parser.add_argument(
+        "--jitter_pixels",
+        type=int,
+        default=0,
+        help="number of pixels to jitter images left/right by",
+    )
+    parser.add_argument(
         "--noise",
         "-n",
         type=float,
@@ -856,6 +890,10 @@ if __name__ == "__main__":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
+
+        if args.jitter_pixels != 0:
+            resultsPath += f"_jitter{args.jitter_pixels}"
+
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
 
@@ -887,8 +925,8 @@ if __name__ == "__main__":
             modelData = hubModels[modelName]
             modelFile = modelData["modelFile"]
 
-            rep_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc.npy"
-            image_name_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc.txt"
+            rep_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.npy"
+            image_name_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.txt"
             ddir = "../data_storage/standalone/3AFC_set"
             if os.path.exists(rep_path):
                 print(f"Already have reps for {args.test} from {modelName}")
@@ -952,6 +990,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        args.jitter_pixels,
                     )
                 except Exception as e:
                     print(f"Error making reps for {modelName}: {e}")
@@ -964,6 +1003,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        args.jitter_pixels,
                     )
 
                 # Flatten reps
@@ -979,6 +1019,7 @@ if __name__ == "__main__":
                 noise=args.noise,
                 learning_adv=args.learning_adv,
                 encoding_noise=args.encoding_noise,
+                jitter_pixels=args.jitter_pixels,
             )
             results = pd.concat([results, modelResults])
 
@@ -989,6 +1030,10 @@ if __name__ == "__main__":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
+
+        if args.jitter_pixels != 0:
+            UserWarning(f"Jitter pixels does nothing for {args.test}")
+
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
 
@@ -1117,6 +1162,10 @@ if __name__ == "__main__":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
+
+        if args.jitter_pixels != 0:
+            resultsPath += f"_jitter{args.jitter_pixels}"
+
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
 
@@ -1152,8 +1201,8 @@ if __name__ == "__main__":
             modelData = hubModels[modelName]
             modelFile = modelData["modelFile"]
 
-            rep_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp.npy"
-            image_name_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp.txt"
+            rep_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.npy"
+            image_name_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.txt"
             ddir = "../data_storage/standalone/LE_set"
             if os.path.exists(rep_path):
                 print(f"Already have reps for {args.test} from {modelName}")
@@ -1217,6 +1266,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        jitter_pixels=args.jitter_pixels,
                     )
                 except Exception as e:
                     print(f"Error making reps for {modelName}: {e}")
@@ -1229,6 +1279,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        jitter_pixels=args.jitter_pixels,
                     )
 
                 # Flatten reps
