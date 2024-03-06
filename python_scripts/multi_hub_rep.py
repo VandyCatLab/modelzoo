@@ -865,6 +865,9 @@ if __name__ == "__main__":
         # Disable gpu for tensorflow
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+        # Disable gpu for torch
+        torch.set_default_tensor_type("torch.FloatTensor")
+
     badModels = ["nts-net"]
     # Get all model files and information
     fileList = args.model_files.split(", ")
