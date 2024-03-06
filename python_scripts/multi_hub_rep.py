@@ -862,6 +862,8 @@ if __name__ == "__main__":
 
         torch.set_default_tensor_type("torch.cuda.FloatTensor")
     else:
+        import torch
+
         # Disable gpu for tensorflow
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
