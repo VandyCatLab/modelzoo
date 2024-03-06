@@ -293,7 +293,7 @@ def three_afc(
         ]
         # If jitter, use jittered target
         if jitter_pixels != 0:
-            targetIdxs += len(image_names)
+            targetIdxs = [i + len(image_names) for i in targetIdxs]
 
         targetRep = reps[targetIdxs]
 
@@ -861,6 +861,9 @@ if __name__ == "__main__":
         import torch
 
         torch.set_default_tensor_type("torch.cuda.FloatTensor")
+    else:
+        # Disable gpu for tensorflow
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     badModels = ["nts-net"]
     # Get all model files and information
