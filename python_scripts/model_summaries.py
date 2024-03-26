@@ -170,18 +170,19 @@ def summarize_model_timm(model_name):
         'pooling': 0,
         'normalization': 0,
     }
-
+    '''''
     rf = 1  # Receptive field starts at 1
     stride_product = 1  # Cumulative product of strides
     layers_rf = []  # Store (layer_name, rf_value) tuples
     max_rf = 0  # Track the maximum receptive field
-
+    
     # Initialize counters and thresholds for parameter percentages
     cumulative_params = 0
     thresholds = [0.25 * total_params, 0.5 * total_params, 0.75 * total_params]
     percent_layers = {25: 'N/A', 50: 'N/A', 75: 'N/A'}
     current_threshold_index = 0
-    
+    '''''
+    cumulative_params = 0
     num_layers = 0
     output_features = get_output_features(model)
     for name, module in model.named_modules():
@@ -215,7 +216,7 @@ def summarize_model_timm(model_name):
         if has_recurrent_component(module):
             layer_counts['recurrent'] += 1
 
-
+    '''''
         while current_threshold_index < len(thresholds) and cumulative_params >= thresholds[current_threshold_index]:
             percent_layers[25 if current_threshold_index == 0 else 50 if current_threshold_index == 1 else 75] = name
             current_threshold_index += 1
@@ -241,7 +242,28 @@ def summarize_model_timm(model_name):
     total_layers = len(layers_rf)
     target_layer_index = layers_rf.index(closest_layer) + 1  # +1 for 1-based indexing
     percentage_position = (target_layer_index / total_layers) * 100
+    '''''
+    model_seq = torch.nn.Sequential(*list(model.children()))
+    first_layer_params = sum(p.numel() for p in model_seq[0].parameters())
+    last_layer_params = sum(p.numel() for p in model_seq[-1].parameters())
+    
+    def get_layer_params(layer):
+        if hasattr(layer, 'children') and len(list(layer.children())) > 0:
+            # Recursive case: layer has children, dive into them
+            return sum(get_layer_params(sub_layer) for sub_layer in layer.children())
+        else:
+            # Base case: layer has no children, directly count its parameters
+            return sum(p.numel() for p in layer.parameters())
 
+    # Apply get_layer_params to internal layers excluding the first and last
+    internal_layers_params = [get_layer_params(layer) for layer in list(model.children())[1:-1]]
+
+    # Now find highest and lowest, excluding zeros
+    non_zero_params = [p for p in internal_layers_params if p > 0]
+    highest_internal_layer_params = max(non_zero_params) if non_zero_params else 'N/A'
+    lowest_internal_layer_params = min(non_zero_params) if non_zero_params else 'N/A'
+
+    
     default = model.default_cfg
     family = get_model_family(model_name)
 
@@ -275,9 +297,10 @@ def summarize_model_timm(model_name):
         'Attention Layers': layer_counts['attention'],
         'Output Features': output_features,
         'Training Dataset': dataset_used,
-        'RF25 Layer Number': target_layer_index,
-        'RF25 Layer Name': closest_layer[0],
-        'MAX RF': max_rf,
+        'First Layer Parameters': first_layer_params,
+        'Highest Internal Layer Parameters': highest_internal_layer_params,
+        'Lowest Internal Layer Parameters': lowest_internal_layer_params,
+        'Last Layer Parameters': last_layer_params,
         'Family': family,
         'Architecture': default['architecture'],
         'Crop Percentage': crop,
@@ -356,6 +379,12 @@ def analyze_keras_model(model_name, model_data):
         output_shape = model.output_shape
         output_features = output_shape[-1]
 
+    first_layer_params = model.layers[0].count_params()
+    last_layer_params = model.layers[-1].count_params()
+    internal_layers_params = [layer.count_params() for layer in model.layers[1:-1]]
+    highest_internal_layer_params = max(internal_layers_params) if internal_layers_params else 0
+    lowest_internal_layer_params = min(internal_layers_params) if internal_layers_params else 0
+
     summary = {
         'Model': model_name,
         'Parameters': model.count_params(),
@@ -370,9 +399,10 @@ def analyze_keras_model(model_name, model_data):
         'Attention Layers': layer_counts['attention'],
         'Output Features': output_features,
         'Training Dataset': dataset_used,
-        'RF25 Layer Number': 'NA',
-        'RF25 Layer Name': 'NA',
-        'Max RF': 'NA',
+        'First Layer Parameters': first_layer_params,
+        'Highest Internal Layer Parameters': highest_internal_layer_params,
+        'Lowest Internal Layer Parameters': lowest_internal_layer_params,
+        'Last Layer Parameters': last_layer_params,
         'Family': family,
         #'Reduced Family': reduced_fam,
         #**param_stats,
@@ -389,7 +419,7 @@ def give_summaries_timm():
 
 
     csv_columns = list(model_summaries[0].keys())  # Assuming all summaries have the same keys
-    csv_file = "../data_storage/results/models_summary_timm.csv"
+    csv_file = "../data_storage/results/models_summary_timm_new.csv"
     write_csv(model_summaries, csv_columns, csv_file)
 
 
@@ -417,7 +447,7 @@ def give_summaries_keras():
 
 
     csv_columns = list(all_model_summaries[0].keys())  # Assuming all summaries have the same keys
-    csv_file = "../data_storage/results/models_summary_keras.csv"
+    csv_file = "../data_storage/results/models_summary_keras_new.csv"
     write_csv(all_model_summaries, csv_columns, csv_file)
             
 
@@ -516,7 +546,7 @@ def give_summaries_tfhub():
 
 
     csv_columns = list(all_model_summaries[0].keys())  # Assuming all summaries have the same keys
-    csv_file = "../data_storage/results/models_summary_tfhub.csv"
+    csv_file = "../data_storage/results/models_summary_tfhub_new.csv"
     write_csv(all_model_summaries, csv_columns, csv_file)
 
 def summarize_model_pytorch(model_name, model_file, hubModels):
@@ -681,5 +711,5 @@ def give_summaries_pytorch():
 
 
 print('\n\n\n\n', 'Start:', datetime.now(), '\n')
-give_summaries_pytorch()
+give_summaries_timm()
 print('\n\n\n\n', 'End:', datetime.now())
