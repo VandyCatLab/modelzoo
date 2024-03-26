@@ -95,7 +95,9 @@ def image_list(data_dir):
     return image_names
 
 
-def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
+def rep_maker(
+    data_dir, modelFile, model_name, modelData, model, batch_size, jitter_pixels=0
+):
     if "origin" in modelData.keys() and modelData["origin"] == "keras":
         # Override model input shape for keras models if input_shape isn't none
         inputShape = model.input_shape[1:]
@@ -103,7 +105,9 @@ def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
             modelData["shape"] = model.input_shape[1:]
 
     # get dataset from datasets.py
-    dataset = get_dataset(data_dir, modelFile, model_name, modelData, model, batch_size)
+    dataset = get_dataset(
+        data_dir, modelFile, model_name, modelData, model, batch_size, jitter_pixels
+    )
     # print('\nDataset size:', dataset, '\n')
 
     # get reps from hubReps.py
@@ -112,16 +116,30 @@ def rep_maker(data_dir, modelFile, model_name, modelData, model, batch_size):
 
 
 def learning_exemplar(
-    model_name, image_names, reps, csv_file, noise=0.0, memory_decay=0.0
+    model_name,
+    image_names,
+    reps,
+    csv_file,
+    noise=0.0,
+    learning_adv=0.0,
+    memory_decay=0.0,
+    relu_std=False,
+    jitter_pixels=0,
 ):
-    # If noise is not 0, apply noise to the representations
-    if noise != 0:
-        reps, _ = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+    # Calculate std deviation reps
+    repStd = np.std(reps[reps != 0] if relu_std else reps)
+
+    if memory_decay != 0.0:
+        raise NotImplementedError("Memory decay not implemented")
 
     # Get the target representations (they're just the nz* ones)
     targetIdxs = [
         i for i, name in enumerate(image_names) if name.split("_")[0] == "nz1"
     ]
+
+    # If jitter, use the other one
+    if jitter_pixels != 0:
+        targetIdxs = [i + len(image_names) for i in targetIdxs]
     targetReps = reps[targetIdxs, :]
 
     # Load csv
@@ -140,6 +158,13 @@ def learning_exemplar(
             i for i, name in enumerate(image_names) if name.split("_")[0] == str(trial)
         ]
         choiceReps = reps[idxs]
+
+        # Add noise to choice reps
+        choiceReps += np.random.normal(
+            loc=0,
+            scale=repStd * noise * np.exp(-learning_adv * trial),
+            size=choiceReps.shape,
+        )
 
         dists = cdist(choiceReps, targetReps, "euclidean")
         chosenIdx, _ = np.unravel_index(np.argmin(dists), dists.shape)
@@ -161,14 +186,19 @@ def learning_exemplar(
 
 
 def many_oddball(
-    model_name, image_names, reps, csv_file, noise=0.0, encoding_noise=0.0
+    model_name,
+    image_names,
+    reps,
+    csv_file,
+    noise=0.0,
+    encoding_noise=0.0,
 ):
     # If noise is not 0, apply noise to the representations
     if encoding_noise != 0.0:
         repStd = np.std(reps[reps != 0])
 
     if noise != 0.0:
-        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=False)
 
     # Load csv
     trials = pd.read_csv(csv_file)
@@ -203,9 +233,6 @@ def many_oddball(
                 loc=0, scale=encNoise, size=choiceReps.shape
             )
 
-            # Apply relu back to targetRep
-            choiceReps[choiceReps < 0] = 0
-
         dists = cdist(choiceReps, choiceReps, "euclidean")
         np.fill_diagonal(dists, np.inf)
 
@@ -230,14 +257,19 @@ def many_oddball(
     return results
 
 
-def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise=0.0):
-    # Calculate std noise for encoding noise
-    if encoding_noise != 0.0:
-        repStd = np.std(reps[reps != 0])
-
-    # If noise is not 0, apply noise to the representations
-    if noise != 0.0:
-        reps, repStd = apply_std_noise(reps, noise, include_zeros=False, relu=True)
+def three_afc(
+    model_name,
+    image_names,
+    reps,
+    csv_file,
+    noise=0.0,
+    learning_adv=0.0,
+    encoding_noise=0.0,
+    relu_std=False,
+    jitter_pixels=0,
+):
+    # Calculate std deviation reps
+    repStd = np.std(reps[reps != 0] if relu_std else reps)
 
     # Load csv
     trials = pd.read_csv(csv_file)
@@ -259,6 +291,10 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
             for i, name in enumerate(image_names)
             if name.split("-")[0] == f"trial{trial}" and "target" in name
         ]
+        # If jitter, use jittered target
+        if jitter_pixels != 0:
+            targetIdxs = [i + len(image_names) for i in targetIdxs]
+
         targetRep = reps[targetIdxs]
 
         # Get the choice indices and their reps
@@ -269,6 +305,12 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
         ]
         choiceReps = reps[choiceIdxs]
 
+        choiceReps += np.random.normal(
+            loc=0,
+            scale=repStd * noise * np.exp(-learning_adv * trial),
+            size=choiceReps.shape,
+        )
+
         # If encoding noise is not 0
         if encoding_noise != 0.0:
             # Calculate noise amount
@@ -277,12 +319,7 @@ def three_afc(model_name, image_names, reps, csv_file, noise=0.0, encoding_noise
             )  # Scaling constant 2
 
             # Apply noise to target
-            targetRep = targetRep + np.random.normal(
-                loc=0, scale=encNoise, size=targetRep.shape
-            )
-
-            # Apply relu back to targetRep
-            targetRep[targetRep < 0] = 0
+            targetRep += np.random.normal(loc=0, scale=encNoise, size=targetRep.shape)
 
         # Calculate distance and find the choice with smallest distance
         dists = cdist(choiceReps, targetRep, "euclidean")
@@ -531,7 +568,7 @@ def image_sets_maker(csv_file, image_names, reps, num_sets):
                     foil1_name = row[-2] + ".tif"
                     foil2_name = row[-1] + ".tif"
                     target_name = row[2] + ".tif"
-                    
+
                     foil1_idx = image_names.index(foil1_name)
                     foil2_idx = image_names.index(foil2_name)
                     target_idx = image_names.index(target_name)
@@ -634,7 +671,9 @@ def get_model(modelName, modelFile, hubModels):
     return model
 
 
-def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64):
+def get_dataset(
+    data_dir, modelFile, modelName, modelData, model, batch_size=64, jitter_pixels=0
+):
     if (
         modelFile == "../data_storage/hubModel_storage/hubModels.json"
         or modelFile == "../data_storage/hubModel_storage/hubModels_keras.json"
@@ -643,7 +682,9 @@ def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64)
             **modelData,
             labels=False,
         )
-        dataset = datasets.get_flat_dataset(data_dir, preprocFun, batch_size=batch_size)
+        dataset = datasets.get_flat_dataset(
+            data_dir, preprocFun, batch_size=batch_size, jitter_pixels=jitter_pixels
+        )
 
     elif (
         modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json"
@@ -656,7 +697,12 @@ def get_dataset(data_dir, modelFile, modelName, modelData, model, batch_size=64)
         # using pytorch model
 
         dataset = datasets.get_pytorch_dataset(
-            data_dir, modelData, model, batch_size, modelName
+            data_dir,
+            modelData,
+            model,
+            batch_size,
+            modelName,
+            jitter_pixels=jitter_pixels,
         )
 
     else:
@@ -776,6 +822,12 @@ if __name__ == "__main__":
         help="which trial type to use",
     )
     parser.add_argument(
+        "--jitter_pixels",
+        type=int,
+        default=0,
+        help="number of pixels to jitter images left/right by",
+    )
+    parser.add_argument(
         "--noise",
         "-n",
         type=float,
@@ -795,13 +847,28 @@ if __name__ == "__main__":
         help="amount of memory decay to add",
     )
     parser.add_argument(
+        "--learning_adv",
+        type=float,
+        default=0.0,
+        help="amount of learning advantage to add",
+    )
+    parser.add_argument(
         "--use_gpu", default=False, action="store_true", help="uses GPU"
     )
     args = parser.parse_args()
 
     if args.use_gpu:
         import torch
+
         torch.set_default_tensor_type("torch.cuda.FloatTensor")
+    else:
+        import torch
+
+        # Disable gpu for tensorflow
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+        # Disable gpu for torch
+        torch.set_default_tensor_type("torch.FloatTensor")
 
     badModels = ["nts-net"]
     # Get all model files and information
@@ -831,8 +898,15 @@ if __name__ == "__main__":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
+
+        if args.jitter_pixels != 0:
+            resultsPath += f"_jitter{args.jitter_pixels}"
+
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
+
+            if args.learning_adv != 0:
+                resultsPath += f"_learnAdv-{args.learning_adv}"
 
         if args.encoding_noise != 0:
             resultsPath += f"_encNoise-{args.encoding_noise}"
@@ -859,8 +933,8 @@ if __name__ == "__main__":
             modelData = hubModels[modelName]
             modelFile = modelData["modelFile"]
 
-            rep_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc.npy"
-            image_name_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc.txt"
+            rep_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.npy"
+            image_name_path = f"../data_storage/results/3afc_reps/{modelName.replace('/', '-')}-3afc{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.txt"
             ddir = "../data_storage/standalone/3AFC_set"
             if os.path.exists(rep_path):
                 print(f"Already have reps for {args.test} from {modelName}")
@@ -924,6 +998,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        args.jitter_pixels,
                     )
                 except Exception as e:
                     print(f"Error making reps for {modelName}: {e}")
@@ -936,6 +1011,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        args.jitter_pixels,
                     )
 
                 # Flatten reps
@@ -949,7 +1025,9 @@ if __name__ == "__main__":
                 reps,
                 "../data_storage/three_AFC_trials.csv",
                 noise=args.noise,
+                learning_adv=args.learning_adv,
                 encoding_noise=args.encoding_noise,
+                jitter_pixels=args.jitter_pixels,
             )
             results = pd.concat([results, modelResults])
 
@@ -960,6 +1038,10 @@ if __name__ == "__main__":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
+
+        if args.jitter_pixels != 0:
+            UserWarning(f"Jitter pixels does nothing for {args.test}")
+
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
 
@@ -1088,8 +1170,16 @@ if __name__ == "__main__":
         # Setup results file
         # Check if results already exists
         resultsPath = f"../data_storage/results/results_{args.test}"
+
+        if args.jitter_pixels != 0:
+            resultsPath += f"_jitter{args.jitter_pixels}"
+
         if args.noise != 0:
             resultsPath += f"_noise-{args.noise}"
+
+            if args.learning_adv != 0:
+                resultsPath += f"_learnAdv-{args.learning_adv}"
+
         if args.memory_decay != 0:
             raise NotImplementedError("Memory decay not implemented")
             resultsPath += f"_memDecay-{args.memory_decay}"
@@ -1119,8 +1209,8 @@ if __name__ == "__main__":
             modelData = hubModels[modelName]
             modelFile = modelData["modelFile"]
 
-            rep_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp.npy"
-            image_name_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp.txt"
+            rep_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.npy"
+            image_name_path = f"../data_storage/results/le_reps/{modelName.replace('/', '-')}-learnExemp{'' if args.jitter_pixels == 0 else '_jitter' + str(args.jitter_pixels)}.txt"
             ddir = "../data_storage/standalone/LE_set"
             if os.path.exists(rep_path):
                 print(f"Already have reps for {args.test} from {modelName}")
@@ -1184,6 +1274,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        jitter_pixels=args.jitter_pixels,
                     )
                 except Exception as e:
                     print(f"Error making reps for {modelName}: {e}")
@@ -1196,6 +1287,7 @@ if __name__ == "__main__":
                         modelData,
                         model,
                         batch_size,
+                        jitter_pixels=args.jitter_pixels,
                     )
 
                 # Flatten reps
@@ -1209,6 +1301,7 @@ if __name__ == "__main__":
                 reps,
                 "../data_storage/learning_exemplar_trials.csv",
                 noise=args.noise,
+                learning_adv=args.learning_adv,
                 memory_decay=args.memory_decay,
             )
             results = pd.concat([results, modelResults])

@@ -1,4 +1,4 @@
-Model,Parameters,Layers,Residual Blocks,Conv Layers,Dense Layers,Bottlenecks,Pooling Layers,Normalization Layers,Recurrent Layers,Attention Layers,Output Features,Training Dataset,RF25 Layer Number,RF25 Layer Name,MAX RF,Family,Architecture,Crop Percentage
+Model,Parameters,Layers,Residual Blocks,Conv Layers,Dense Layers,Bottlenecks,Pooling Layers,Normalization Layers,Recurrent Layers,Attention Layers,Output Features,Training Dataset,RF25 Layer Number,RF25 Layer Name,Max RF,Family,Architecture,Crop Percentage
 adv_inception_v3,23834568,300,0,94,1,0,2,94,0,0,1000,ImageNet-1K,48,Mixed_6c.branch7x7dbl_2.conv,4719,inception_v3,adv_inception_v3,0.875
 bat_resnext26ts,10731200,414,0,79,1,8,1,63,0,0,1000,ImageNet-1K,57,stages.2.1.attn.ba.conv_p,5799,resnext,bat_resnext26ts,0.9
 beit_base_patch16_224,86530984,189,0,1,49,0,0,25,0,12,1000,ImageNet-1K,1,patch_embed.proj,16,beit,beit_base_patch16_224,0.9
