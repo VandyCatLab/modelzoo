@@ -1,0 +1,94 @@
+Family,Convolutional Layers,Residual Blocks,Dense Layers,Bottlenecks,Recurrent Layers,Skip Connections,Attention Layers,Tokenized,Transformer,ReLU,GeLU,Other,Year Made,Learning Type,Primary Application,Key Distinguishing Feature,Pooling
+alexnet,1,0,1,0,0,0,0,0,0,1,0,0,2012,Supervised,Image Classification,Pioneering Convolutional Network,Max
+beit,0,0,1,1,0,1,1,1,1,0,1,0,2022,Self-Supervised,"Image Classification, Image Segmentation",Self-supervised Learning for Images,Average
+beitv2,0,0,1,0,0,1,1,1,1,0,1,0,2022,Self-Supervised,"Image Classification, Image Segmentation",Improvements in Self-Supervised Learning,Class Token
+botnet,1,1,1,1,0,1,1,0,1,1,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Transformer Blocks in ResNet,Average
+botnext,1,0,1,1,0,1,0,0,1,1,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Transformer Blocks in ResNeXt,Average
+cait,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Image Segmentation",Class Attention Mechanism,Average
+coat,1,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Co-Scale and Conv-Attentional Mechanisms,Class Token
+coatnet,1,1,1,0,0,1,1,0,1,0,1,0,2021,Supervised,Image Classification,Hybrid Convolution and Transformer Architecture,"Max, Average"
+convit,1,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,Image Classification,Combines Convolutions and Transformers,Class Token
+convmixer,1,0,1,0,0,1,0,0,0,0,1,0,2022,Supervised,Image Classification,Mixes Per-Patch Fully Connected and Depthwise Convolutions,Average
+convnext,1,1,1,1,0,1,0,0,0,0,1,0,2022,Supervised,"Image Classification, Object Detection, Image Segmentation",Transformer Design Principles in ConvNet,Average
+crossvit,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,Image Classification,Dual-branch Transformers for Multi-scale Processing,Class Token
+darknet,1,1,1,0,0,1,0,0,0,1,0,0,2018,Supervised,Object Detection,Efficiency and Performance in Object Detection,"Max, Average"
+deit,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,Image Classification,Data-efficient Learning with Transformers,Class Token
+deit3,0,0,1,0,0,1,1,1,1,0,1,0,2022,Self-Supervised,Image Classification,Advancements in Data Efficiency,Class Token
+densenet,1,0,1,1,0,1,0,0,0,1,0,0,2014,Supervised,Image Classification,Dense Connectivity,"Max, Average"
+dla,1,1,0,1,0,1,0,0,0,1,0,0,2019,Supervised,"Image Classification, Image Segmentation",Deep Layer Aggregation for Improved Representation,"Max, Average, Strided"
+dpn,1,1,0,0,0,1,0,0,0,1,0,0,2017,Supervised,"Image Classification, Object Detection, Image Segmentation",Combines ResNet and DenseNet paths,"Max, Average, Spatial Pyramid"
+edgenet,1,0,1,0,0,0,0,0,0,1,0,0,2019,Supervised,Object Detection,Specialized in Edge Detection,Max
+edgenext,1,0,1,0,0,1,0,1,1,0,1,0,2022,Supervised,"Image Classification, Object Detection, Image Segmentation",Efficiency on Edge Devices,"Average, Spatial Pyramid"
+efficientformer,1,0,1,0,0,1,1,1,1,0,1,0,2022,Supervised,"Image Classification, Object Detection, Image Segmentation",Efficiency in Image Processing for Transformers,Average
+efficientnet,1,1,1,1,0,1,0,0,0,1,0,0,2019,Supervised,Image Classification,Compound Scaling Method,Average
+efficientnetv2,1,1,1,0,0,1,0,0,0,1,0,0,2021,Supervised,Image Classification,Training-aware Optimizations,"Max, Average"
+fbnet,1,0,1,0,0,1,0,0,0,1,0,0,2019,Supervised,Mobile Optimization,Differentiable Neural Architecture Search,Average
+gcvit,0,0,1,0,0,1,1,1,1,0,1,0,2022,Supervised,Image Classification,Global Context in Self-Attention,"Average, Class Token"
+gernet,1,1,1,1,0,1,0,0,0,1,0,0,2020,Supervised,Image Classification,Efficiency on GPU,Average
+ghostnet,1,0,1,1,0,0,0,0,0,1,0,0,2019,Supervised,Image Classification,Ghost Modules for Efficiency,Average
+gmlp,1,0,1,0,0,1,0,1,0,0,1,0,2021,Supervised,Image Classification,Gated Multilayer Perceptron,None
+halonet,1,0,1,1,0,1,1,0,0,0,0,SiLU,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Halo Attention Mechanism,"Max, Average, Strided"
+halonext,1,0,1,1,0,1,0,0,0,0,0,SiLU,2022,Supervised,"Image Classification, Object Detection, Image Segmentation",Halo Attention with ResNeXt Backbone,"Max, Average, Strided"
+hardcorenas,1,0,1,0,0,1,0,0,0,1,0,Swish,2021,Supervised,Image Classification,NAS for Efficiency and Robustness,Average
+hrnet,1,1,1,1,0,1,0,0,0,1,0,0,2019,Supervised,"Image Classification, Object Detection, Image Segmentation",High-Resolution Representations,Average
+inception,1,0,1,1,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Inception Module,Max
+inception_resnet,1,1,1,1,0,1,0,0,0,1,0,0,2016,Supervised,Image Classification,Inception with Residual Connections,Average
+inception_v3,1,0,1,0,0,0,0,0,0,1,0,0,2015,Supervised,Image Classification,"Label Smoothing, Factorized Convolutions","Max, Average"
+inception_v4,1,0,1,0,0,0,0,0,0,1,0,0,2016,Supervised,Image Classification,Combining Inception with Residual Connections,"Max, Average"
+lcnet,1,0,1,0,0,0,0,0,0,0,0,Swish,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Lightweight and Efficient for CPU,Average
+levit,1,1,1,1,0,1,1,1,1,1,0,Swish,2021,Supervised,Image Classification,Fast Inference Image Classification,Average
+maxvit,1,0,1,0,0,1,1,1,1,0,1,0,2022,Supervised,"Image Classification, Object Detection, Image Segmentation",Global and Local Attention,Average
+mixer,0,0,1,0,0,1,0,0,0,0,1,0,2021,Supervised,Image Classification,Entirely MLP-based Image Processing,Average
+mixnet,1,0,1,0,0,0,0,0,0,1,0,0,2019,Supervised,Image Classification,Mixed Depthwise Convolutional Layers,Average
+mobilenet,1,0,1,0,0,1,0,0,0,1,0,0,2017,Supervised,"Image Classification, Object Detection",Efficiency on Mobile Devices,Average
+mobilenetv2,1,0,1,1,0,1,0,0,0,1,0,0,2018,Supervised,"Image Classification, Object Detection, Image Segmentation",Inverted Residuals and Linear Bottlenecks,"Average, Spatial Pyramid"
+mobilenetv3,1,0,1,1,0,1,0,0,0,1,0,0,2019,Supervised,"Image Classification, Object Detection, Image Segmentation",Hardware-aware Network Design,"Average, Spatial Pyramid"
+mobilevit,1,0,1,1,0,1,1,1,1,0,0,Swish,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",ViT for Mobile Applications,Average
+mobilevitv2,1,0,1,1,0,1,1,1,1,1,0,0,2022,Supervised,"Image Classification, Object Detection, Image Segmentation",Separable Self-Attention,"Average, Spatial Pyramid"
+mvitv2,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Multiscale Features in Vision Transformers With Pooling Attention,Class Token
+nasnet,1,1,1,0,0,1,0,0,0,1,0,0,2017,Supervised,"Image Classification, Object Detection",Neural Architecture Search,"Max, Average"
+nest,1,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,Image Classification,Nested Hierarchical Transformer,"Max, Average"
+nfnet,1,1,1,0,0,1,0,0,0,0,1,0,2021,Supervised,Image Classification,Normalization-Free ResNet with High Performance,Average
+ntsnet,1,1,1,1,0,1,0,0,0,1,0,0,2018,Self-Supervised,Image Classification,Navigator Teacher Scrutinizer,Max
+twins_pcpvt,1,1,1,0,0,1,1,1,1,1,0,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Pyramid Structure and Convolutional Layers in Transformer,Average
+pit,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detection",Learnable Pooling in Vision Transformer,Class Token
+poolformer,0,0,1,0,0,1,0,1,0,0,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Pooling Operations Instead of Attention,Average
+pvt_v2,1,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Optimized Pyramid Vision Transformer Structure,Average
+nf_regnet,1,0,1,1,0,1,0,0,0,0,0,SiLU,2021,Supervised,"Image Classification, Image Segmentation",Normalization-Free Regnet,Average
+regnetx,1,1,1,1,0,1,0,0,0,1,0,0,2020,Supervised,Image Classification,Systematic Network Design No Squeeze Excitation,Average
+regnety,1,1,1,1,0,1,0,0,0,0,0,SiLU,2020,Supervised,Image Classification,Regnet With Squeeze Excitation,Average
+regnetz,1,1,1,1,0,1,0,0,0,0,0,SiLU,2020,Supervised,Image Classification,Z Block with Inverted Bottlenecks,Average
+relpos,1,0,1,0,0,1,1,1,1,1,0,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",ViT architecture with Relative Position Embeddings,Average
+res2net,1,1,1,1,0,1,0,0,0,1,0,0,2019,Supervised,"Image Classification, Object Detection, Image Segmentation",Hierarchical Residual-Like Connections,Average
+res2next,1,1,1,1,0,1,0,0,0,1,0,0,2019,Supervised,"Image Classification, Object Detection, Image Segmentation",Enhanced Grouped Convolutions,Average
+resmlp,1,0,1,0,0,1,0,1,0,0,1,0,2021,Self-Supervised,Image Classification,Residual MLP for Image Classification,Average
+resnest,1,1,1,1,0,1,1,0,0,1,0,0,2020,Supervised,Image Classification,Split-Attention Mechanism,Average
+resnet,1,1,1,1,0,1,0,0,0,1,0,0,2015,Supervised,"Image Classification, Object Detection, Image Segmentation",Deep Residual Learning for Image Recognition,"Max, Average"
+resnetv2,1,1,0,1,0,1,0,0,0,1,0,0,2016,Supervised,Image Classification,Pre-activation Residual Units,"Max, Average"
+resnext,1,1,1,1,0,1,0,0,0,1,0,0,2017,Supervised,Image Classification,Grouped Convolutions,"Max, Average"
+rexnet,1,0,1,1,0,1,0,0,0,0,0,Swish,2020,Supervised,"Image Classification, Object Detection, Image Segmentation",Efficiency Improvements with Channel Design,Average
+senet,1,1,1,1,0,1,0,0,0,1,0,0,2017,Supervised,"Image Classification, Object Detection",Squeeze-and-Excitation Blocks,Average
+selecsls,1,0,1,1,0,1,0,0,0,1,0,0,2019,Supervised,"Image Classification, Object Detection",Long and Short Range Skip Connections,Average
+sequencer,1,0,1,0,1,1,1,1,0,0,1,0,2022,Supervised,Image Classification,Token Mixing in Vision with LSTM,Average
+seresnet,1,1,1,1,0,1,0,0,0,1,0,0,2017,Supervised,"Image Classification, Object Detection",Squeeze-and-Excitation Block ResNet,Average
+skresnext,1,1,1,1,0,1,0,0,0,1,0,0,2019,Supervised,Image Classification,Selective Kernel Units in ResNeXt,"Max, Average"
+twins_svt,1,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Separable Self-Attention in Transformers ,Average
+swin,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Shifted Windows for Hierarchical Vision Transformer,Average
+tinynet,1,1,1,1,0,1,0,0,0,1,0,0,2020,Supervised,"Image Classification, Object Detection",Efficiency and Compactness Modeling Scheme Applied to EfficientNet,Average
+tnt,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detection, Image Segmentation",Transformer Patches within Transformer Patches,Average
+tresnet,1,1,1,1,0,1,0,0,0,1,0,0,2020,Supervised,"Image Classification, Object Detection",ResNet optimized for GPU Architecture,"Max, Average"
+unet,1,0,0,0,0,1,0,0,0,1,0,0,2019,Supervised,Image Segmentation,U-shaped Architecture for Segmentation,Max
+repvgg,1,0,1,0,0,1,0,0,0,1,0,0,2021,Supervised,"Image Classification, Image Segmentation",Multi-Branch Topology for VGG,Average
+vgg11,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 11 Layers,Max
+vgg13,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 13 Layers,Max
+vgg16,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 16 Layers,Max
+vgg19,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 19 Layers,Max
+visformer,1,0,1,0,0,1,1,1,1,1,1,0,2021,Supervised,"Image Classification, Object Detection",Convolutional Token Embedding,Average
+vit,0,1,1,1,0,1,1,1,1,0,1,0,2021,Supervised,Image Classification,Transformer Architecture Applied to Image Patches,Average
+volo,0,0,1,0,0,1,1,1,1,1,1,0,2021,Supervised,"Image Classification, Image Segmentation",Outlook Attention Mechanism,Average
+vovnet,1,0,1,0,0,1,0,0,0,1,0,0,2019,Supervised,Object Detection,One shot aggregation,Max
+xception,1,1,1,0,0,1,0,0,0,1,0,0,2016,Supervised,Image Classification,Depthwise Separable Convolutions,"Max, Average"
+xception41,1,0,1,0,0,1,0,0,0,1,0,0,2018,Supervised,"Image Classification, Object Detection",Deep Aligned Xception,Average
+xception65,1,0,1,0,0,1,0,0,0,1,0,0,2018,Supervised,"Image Classification, Object Detection",Deep Aligned Xception,Average
+xception71,1,0,1,0,0,1,0,0,0,1,0,0,2018,Supervised,"Image Classification, Object Detection",Deep Aligned Xception,Average
+xcit,0,0,1,0,0,1,1,1,1,1,0,0,2021,Self-Supervised,"Image Classification, Object Detection, Image Segmentation",Feature Cross-Covariance Self-Attention Transformer,"Average, Class Token"
