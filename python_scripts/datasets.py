@@ -14,6 +14,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 import timm
 import utilities as utils
+from typing import Optional, Callable
 
 # Get training information
 (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = cifar10.load_data()
@@ -237,52 +238,38 @@ def get_imagenet_set(preprocFun, batch_size, data_dir, slice=None):
 
 
 def get_pytorch_dataset(
-    data_dir, info, model, bat_size=64, modelName=None, jitter_pixels=0
-):
+    data_dir: str,
+    model_data: dict,
+    model: torch.nn.Module,
+    batch_size: int = 64,
+) -> torch.utils.data.DataLoader:
     """
     Return a dataset where all images are from data_dir and uses torchvision preprocessing.
     Assumes that it all fits in memory.
     """
-
     files = os.listdir(data_dir)
     files.sort()
+
     nImgs = len(files)
-    if "shape" in info:
-        imgs = np.empty(
-            [nImgs if jitter_pixels == 0 else nImgs * 2] + list(info["shape"])
-        )
-    elif "input_size" in info:
-        imgs = np.empty(
-            [nImgs if jitter_pixels == 0 else nImgs * 2] + list(info["input_size"])
-        )
+    if "shape" in model_data:
+        imgs = np.empty([nImgs] + list(model_data["shape"]))
+    elif "input_size" in model_data:
+        imgs = np.empty([nImgs] + list(model_data["input_size"]))
 
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
-        # m, s used for default when normalize values not given
-        m, s = np.mean(img, axis=(0, 1)), np.std(img, axis=(0, 1))
-
-        # Jitter if needed
-        if jitter_pixels > 0:
-            img = PIL.ImageChops.offset(img, -jitter_pixels, 0)
 
         # using 'Compose' for general pytorch models
-        if "trans_params" in info:
-            py_pre = "transforms.Compose(" + info["trans_params"] + ")"
+        if "trans_params" in model_data:
+            py_pre = "transforms.Compose(" + model_data["trans_params"] + ")"
             py_preproc = eval(py_pre)
             img = py_preproc(img)
             img = img.unsqueeze(0)
             imgs[i] = img
 
         # using preprocessing function for transformers
-        elif "preproc_func" in info:
-            if info["preproc_func"] != "None":
-                pypre = (
-                    "transformers."
-                    + info["preproc_func"]
-                    + ".from_pretrained("
-                    + modelName
-                    + ")"
-                )
+        elif "preproc_func" in model_data:
+            if model_data["preproc_func"] != "None":
                 py_preproc = eval(py_pre)
                 img = py_preproc(img)
                 img = img.unsqueeze(0)
@@ -294,49 +281,14 @@ def get_pytorch_dataset(
             img = transform(img).unsqueeze(0)
             imgs[i] = img
 
-    if jitter_pixels > 0:
-        for i, file in enumerate(files):
-            img = PIL.Image.open(os.path.join(data_dir, file))
-            # m, s used for default when normalize values not given
-            m, s = np.mean(img, axis=(0, 1)), np.std(img, axis=(0, 1))
-
-            # jitter image
-            img = PIL.ImageChops.offset(img, jitter_pixels, 0)
-
-            # using 'Compose' for general pytorch models
-            if "trans_params" in info:
-                py_pre = "transforms.Compose(" + info["trans_params"] + ")"
-                py_preproc = eval(py_pre)
-                img = py_preproc(img)
-                img = img.unsqueeze(0)
-                imgs[i + nImgs] = img
-
-            # using preprocessing function for transformers
-            elif "preproc_func" in info:
-                if info["preproc_func"] != "None":
-                    pypre = (
-                        "transformers."
-                        + info["preproc_func"]
-                        + ".from_pretrained("
-                        + modelName
-                        + ")"
-                    )
-                    py_preproc = eval(py_pre)
-                    img = py_preproc(img)
-                    img = img.unsqueeze(0)
-                imgs[i + nImgs] = img
-
-            else:
-                config = timm.data.resolve_data_config({}, model=model)
-                transform = timm.data.transforms_factory.create_transform(**config)
-                img = transform(img).unsqueeze(0)
-                imgs[i + nImgs] = img
-
-    imgs = torch.utils.data.DataLoader(imgs, batch_size=bat_size)
-    return imgs
+    return torch.utils.data.DataLoader(imgs, batch_size=batch_size)
 
 
-def get_flat_dataset(data_dir, preprocFun=None, batch_size=64, jitter_pixels=0):
+def get_flat_dataset(
+    data_dir: str,
+    preprocFun: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+    batch_size=64,
+) -> tf.data.Dataset:
     """
     Return a dataset where all images are from data_dir. Assumes that it all
     fits in memory.
@@ -352,23 +304,9 @@ def get_flat_dataset(data_dir, preprocFun=None, batch_size=64, jitter_pixels=0):
 
     # Preallocate
     nImgs = len(files)
-    imgs = np.empty([nImgs if jitter_pixels == 0 else nImgs * 2] + list(img.shape))
+    imgs = np.empty([nImgs] + list(img.shape))
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
-        # Check if we need to jitter
-        if jitter_pixels > 0:
-            # Move to the right and then the left
-            img2 = PIL.ImageChops.offset(img, -jitter_pixels, 0)
-
-            img2 = np.array(img2)
-
-            if preprocFun is not None:
-                img2 = preprocFun(img2)
-
-            imgs[i + nImgs] = img2
-
-            img = PIL.ImageChops.offset(img, jitter_pixels, 0)
-
         img = np.array(img)
 
         if preprocFun is not None:

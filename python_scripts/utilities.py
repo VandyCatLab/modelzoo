@@ -11,8 +11,6 @@ import tensorflow as tf
 import gc
 
 
-
-
 def hub_rep_completion(repDir, hubInfo):
     """
     Return a list of missing Tensorflow Hub representations in repDir given
@@ -109,16 +107,10 @@ def compile_hub_sims(simDir):
     return df
 
 
-
-
-def clear_model():
+def clear_model(model_var="model"):
     # Check if model variable exists
-    if "model" in globals():
-        del globals()["model"]
+    if model_var in globals():
+        del globals()[model_var]
         tf.keras.backend.clear_session()
         gc.collect()
 
-
-
-if __name__ == "__main__":
-    print("Hello world!")
