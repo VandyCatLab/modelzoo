@@ -4,3 +4,4 @@ __pycache__
 .lintr
 torch_cache/
 .vscode/
+data_storage/RDMs/
