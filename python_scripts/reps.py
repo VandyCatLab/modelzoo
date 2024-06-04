@@ -130,7 +130,7 @@ def extract(
             model = get_model(modelData)
 
             # Move pretrained models to GPU if needed
-            if modelData["origin"] == "pretrainedmodels" and not no_gpu:
+            if "origin" in modelData and modelData["origin"] == "pretrainedmodels" and not no_gpu:
                 model = model.cuda()
         except Exception as e:
             print(f"Error loading model {model_name}: {e}")
@@ -139,15 +139,26 @@ def extract(
 
         # Determine batch size
         if not no_batch_scaling:
-            if not "num_params" in modelData:
+            if isinstance(model, torch.nn.Module):
+                # Get model parameters for pytorch models
+                nParams = np.sum([p.numel() for p in model.parameters()])
+            elif isinstance(model, tf.keras.Model) or isinstance(model, hub.KerasLayer):
+                # Get model parameters for keras models
+                nParams = np.sum([np.prod(p.shape) for p in model.get_weights()])
+            elif "num_params" in modelData:
+                nParams = modelData["num_params"]
+            else:
+                nParams = None
+
+            if nParams is None:
                 print("Cannot scale batch size, we don't know parameter count")
             else:
                 # TODO: Try different way to determine memory size of batches
                 batch_size = int(
-                    batch_size
-                    * (1 / 2 ** int(np.log10(int(modelData["num_params"])) - 3))
+                    batch_size * (1 / 2 ** int(np.log10(int(nParams)) - 3))
                 )
-                batch_size = 2 if batch_size < 2 else batch_size
+                # Clip batch size to 1
+                batch_size = 1 if batch_size < 1 else batch_size
 
         # Loop through datasets
         for dataDir, simPath in zip(dataDirs, simPaths):
@@ -206,12 +217,8 @@ def get_model(model_info: dict) -> Union[tf.keras.Model, torch.nn.Module]:
     """Load model given model_info"""
 
     if "hubModels.json" in model_info["modelFile"]:  # Original set of models
-        # Creating models
-        shape = model_info["shape"] if "shape" in model_info else [224, 224, 3]
-        # Create model from tfhub
-        inp = tf.keras.Input(shape=shape)
-        out = hub.KerasLayer(model_info["url"])(inp)
-        model = tf.keras.Model(inputs=inp, outputs=out)
+        # Creating models from tf hub
+        model = hub.KerasLayer(model_info["url"])
 
     elif "keras" in model_info["modelFile"]:  # Keras applications
         # Create model from keras function
