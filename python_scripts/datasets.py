@@ -141,6 +141,10 @@ def get_flat_dataset(
     imgs = np.empty([nImgs] + list(img.shape))
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
+        # Remove alpha channel if it exists
+        if img.mode == "RGBA":
+            img = img.convert("RGB")
+
         img = np.array(img)
 
         if preprocFun is not None:
