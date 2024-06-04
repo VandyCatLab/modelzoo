@@ -19,6 +19,7 @@ class preproc:
         preFun=None,
         origin=None,
         trans_params=None,
+        **kwargs
     ):
         self.origin = origin
         self.trans_params = trans_params
