@@ -128,6 +128,10 @@ def extract(
 
         try:
             model = get_model(modelData)
+
+            # Move pretrained models to GPU if needed
+            if modelData["origin"] == "pretrainedmodels" and not no_gpu:
+                model = model.cuda()
         except Exception as e:
             print(f"Error loading model {model_name}: {e}")
             missingModels.append(model_name)
@@ -259,9 +263,13 @@ def get_pytorch_model(model_info: dict) -> torch.nn.Module:
         function = model_info["function"]
         model = eval("torch.hub.load" + function)
     elif "origin" in model_info and model_info["origin"] == "pretrainedmodels":
-        model = pretrainedmodels.__dict__[model_info["name"]](
-            num_classes=1000, pretrained="imagenet"
-        )
+        # Make this model load first onto cpu
+        with torch.device("cpu"):
+            model = pretrainedmodels.__dict__[model_info["name"]](
+                num_classes=1000, pretrained="imagenet"
+            )
+
+        # Move to GPU if available
 
     return model
 
