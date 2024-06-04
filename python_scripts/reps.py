@@ -67,17 +67,17 @@ def extract(
     """
     zooModels = _get_model_dicts()
     if model_name == "all":
-        print("Working through all models")
+        click.echo("Working through all models")
         modelList = list(zooModels.keys())
     else:
         if model_name not in zooModels:
             raise ValueError(f"Model {model_name} not found")
 
-        print(f"Loading model {model_name}")
+        click.echo(f"Loading model {model_name}")
         modelList = [model_name]
 
     if dataset == "all":
-        print("Working through all known datasets")
+        click.echo("Working through all known datasets")
         dataDirs = []
         dataNames = []
         for name, directory in _DATA_DIRS.items():
@@ -98,7 +98,7 @@ def extract(
 
     torch.set_default_dtype(torch.float32)
     if no_gpu:
-        print("Disabling GPU ops")
+        click.echo("Disabling GPU ops")
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
         torch.set_default_device("cpu")
     else:
@@ -109,13 +109,13 @@ def extract(
     for model_name in modelList:
         # Make all data paths
         simPaths = [
-            f"../data_storage/RDMs/{model_name}_{dataName}.npy"
+            f"../data_storage/RDMs/{model_name.replace('/', '-')}_{dataName}.npy"
             for dataName in dataNames
         ]
 
         # Check if all data paths exist
         if all([os.path.exists(path) for path in simPaths]):
-            print(f"Skipping {model_name}, all sim files exists")
+            click.echo(f"Skipping {model_name}, all sim files exists")
             continue
 
         # Get model data
@@ -123,17 +123,21 @@ def extract(
 
         # Skip bad models
         if model_name in _BAD_MODELS:
-            print(f"Skipping bad model {model_name}")
+            click.echo(f"Skipping bad model {model_name}")
             continue
 
         try:
             model = get_model(modelData)
 
             # Move pretrained models to GPU if needed
-            if "origin" in modelData and modelData["origin"] == "pretrainedmodels" and not no_gpu:
+            if (
+                "origin" in modelData
+                and modelData["origin"] == "pretrainedmodels"
+                and not no_gpu
+            ):
                 model = model.cuda()
         except Exception as e:
-            print(f"Error loading model {model_name}: {e}")
+            click.echo(f"Error loading model {model_name}: {e}")
             missingModels.append(model_name)
             continue
 
@@ -151,7 +155,7 @@ def extract(
                 nParams = None
 
             if nParams is None:
-                print("Cannot scale batch size, we don't know parameter count")
+                click.echo("Cannot scale batch size, we don't know parameter count")
             else:
                 # TODO: Try different way to determine memory size of batches
                 batch_size = int(
@@ -164,10 +168,10 @@ def extract(
         for dataDir, simPath in zip(dataDirs, simPaths):
             # Check if simPath exists
             if os.path.exists(simPath):
-                print(f"Skipping {model_name} with {dataDir}, sim file exists")
+                click.echo(f"Skipping {model_name} with {dataDir}, sim file exists")
                 continue
 
-            print(f"Working on {model_name} with {dataDir}")
+            click.echo(f"Working on {model_name} with {dataDir}")
 
             # Override model input shape for keras models if input_shape isn't none
             if "origin" in modelData and modelData["origin"] == "keras":
@@ -190,6 +194,7 @@ def extract(
             )
 
             # Create an RDM
+            click.echo("Calculating RDM")
             reps = analysis.preprocess_eucRsaNumba(reps)
 
             # Save
@@ -361,45 +366,44 @@ def extract_reps(
 
     dataset = dataset.as_numpy_iterator()
 
-    if "outputIdx" in model_data.keys():
+    if "outputIdx" in model_data:
+        inpShape = dataset._dataset.element_spec.shape
         # Get output size of model
-        output_size = model.output_shape[model_data["outputIdx"]][1:]
+        output_size = model.compute_output_shape(inpShape)[model_data["outputIdx"]][1:]
 
     else:
+        inpShape = dataset._dataset.element_spec.shape
         # Get output size of model
-        output_size = model.output_shape[1:]
-        print("output size = ")
-        print(output_size)
-        print(model.output_shape)
+        output_size = model.compute_output_shape(inpShape)[1:]
 
     # Create empty array to store representations
     reps = np.zeros((nBatches * batch_size, *output_size), dtype="float32")
 
     numImgs = 0
-    for i, batch in enumerate(dataset):
-        # TODO: Implement click status bar here instead
-        print(f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True)
-        numImgs += len(batch)
-        res = model.predict(batch)
+    with click.progressbar(dataset, length=nBatches, label="Extracting reps") as bar:
+        for i, batch in enumerate(bar):
+            numImgs += len(batch)
+            res = model(batch, training=False)
 
-        if "outputIdx" in model_data.keys():
-            # Save representations
+            if "outputIdx" in model_data.keys():
+                # Save representations
 
-            if res[model_data["outputIdx"]].shape[0] == batch_size:
-                reps[i * batch_size : (i + 1) * batch_size] = res[
-                    model_data["outputIdx"]
-                ]
+                if res[model_data["outputIdx"]].shape[0] == batch_size:
+                    reps[i * batch_size : (i + 1) * batch_size] = res[
+                        model_data["outputIdx"]
+                    ]
+                else:
+                    reps[
+                        i * batch_size : i * batch_size
+                        + len(res[model_data["outputIdx"]])
+                    ] = res[model_data["outputIdx"]]
+
             else:
-                reps[
-                    i * batch_size : i * batch_size + len(res[model_data["outputIdx"]])
-                ] = res[model_data["outputIdx"]]
-
-        else:
-            # Save representations
-            if res.shape[0] == batch_size:
-                reps[i * batch_size : (i + 1) * batch_size] = res
-            else:
-                reps[i * batch_size : i * batch_size + len(res)] = res
+                # Save representations
+                if res.shape[0] == batch_size:
+                    reps[i * batch_size : (i + 1) * batch_size] = res
+                else:
+                    reps[i * batch_size : i * batch_size + len(res)] = res
 
     # Remove empty rows
     reps = reps[:numImgs]
@@ -444,22 +448,27 @@ def extract_pytorch_reps(
     # Create empty array to store representations
     reps = np.zeros((len(dataset.dataset), *outputSize), dtype="float32")
 
-    for i, batch in enumerate(dataset):
-        # Change to float32
-        batch = batch.float()
+    with click.progressbar(
+        dataset, length=len(dataset), label="Extracting reps"
+    ) as bar:
+        for i, batch in enumerate(bar):
+            # Change to float32
+            batch = batch.float()
 
-        # Extract representations
-        rep = model(batch)
+            # Extract representations
+            rep = model(batch)
 
-        if layer != None:
-            rep = rep[layer]
+            if layer != None:
+                rep = rep[layer]
 
-        # Save into numpy
-        rep = rep.detach().cpu().numpy()
-        if "outputIdx" in model_info.keys():
-            raise NotImplementedError("OutputIdx not implemented for pytorch models")
-        else:
-            reps[i * batch_size : i * batch_size + len(rep)] = rep
+            # Save into numpy
+            rep = rep.detach().cpu().numpy()
+            if "outputIdx" in model_info.keys():
+                raise NotImplementedError(
+                    "OutputIdx not implemented for pytorch models"
+                )
+            else:
+                reps[i * batch_size : i * batch_size + len(rep)] = rep
 
     return reps
 
