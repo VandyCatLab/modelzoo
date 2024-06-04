@@ -7,6 +7,58 @@ import timm
 from typing import Optional, Callable
 
 
+class preproc:
+    def __init__(
+        self,
+        shape=(224, 224, 3),
+        dtype="float32",
+        labels=False,
+        numCat=None,
+        scale=None,
+        offset=None,
+        preFun=None,
+        origin=None,
+        trans_params=None,
+    ):
+        self.origin = origin
+        self.trans_params = trans_params
+        self.shape = shape
+        self.dtype = dtype
+        self.preFun = preFun
+        self.scale = scale
+        self.offset = offset
+        self.numCat = numCat
+        self.labels = labels
+
+    def __call__(
+        self,
+        img,
+        label=None,
+    ):
+        # Rescale then cast to correct datatype
+        img = tf.keras.preprocessing.image.smart_resize(img, self.shape[:2])
+        img = tf.reshape(img, self.shape)
+        img = tf.cast(img, self.dtype)
+
+        # Apply override function
+        if self.preFun is not None:
+            if self.origin == "keras":
+                proc = self.preFun + "(img)"
+                img = eval(proc)
+            else:
+                img = self.preFun(img)
+
+        # Rescale
+        if self.scale is not None and self.offset is not None:
+            img = tf.math.multiply(img, self.scale)
+            img = tf.math.add(img, self.offset)
+
+        if self.labels:
+            return img, tf.one_hot(label, self.numCat)
+        else:
+            return img
+
+
 def get_pytorch_dataset(
     data_dir: str,
     model_data: dict,
