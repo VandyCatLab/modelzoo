@@ -14,6 +14,7 @@ import timm
 import datetime
 from torchvision.models.feature_extraction import create_feature_extractor
 import pretrainedmodels
+import analysis
 
 _BAD_MODELS = []
 
@@ -24,12 +25,12 @@ _MODEL_FILES = [
     "../data_storage/hubModel_storage/hubModels_pytorch.json",
 ]
 
-_DATA_DIRS = [
-    "../images/fribbles",
-    "../images/greebles",
-    "../images/yufos",
-    "../images/ziggerins",
-]
+_DATA_DIRS = {
+    "fribbles": "../images/fribbles",
+    "greebles": "../images/greebles",
+    "yufos": "../images/yufos",
+    "ziggerins": "../images/ziggerins",
+}
 
 # Set environment variable
 os.environ["TORCH_HOME"] = "./torch_cache"
@@ -43,7 +44,7 @@ def cli():
 
 @cli.command()
 @click.argument("model_name", type=str, required=True)
-@click.argument("dataset_name", type=str, required=True)
+@click.argument("dataset", type=str, required=True)
 @click.option("--batch_size", default=128, help="Initial batch size")
 @click.option(
     "--no_batch_scaling",
@@ -54,7 +55,7 @@ def cli():
 @click.option("--no_gpu", default=False, is_flag=True, help="Don't use GPU")
 def extract(
     model_name: str,
-    dataset_name: str,
+    dataset: str,
     batch_size: int = 128,
     no_batch_scaling: bool = False,
     no_gpu: bool = False,
@@ -75,15 +76,25 @@ def extract(
         print(f"Loading model {model_name}")
         modelList = [model_name]
 
-    if dataset_name == "all":
+    if dataset == "all":
         print("Working through all known datasets")
-        dataDirs = _DATA_DIRS
+        dataDirs = []
+        dataNames = []
+        for name, directory in _DATA_DIRS.items():
+            dataDirs.append(directory)
+            dataNames.append(name)
     else:
-        # Check if dataset_name is a valid directory
-        if not os.path.isdir(dataset_name):
-            raise ValueError(f"Dataset {dataset_name} not found")
+        # Check if dataset_name is a key in _DATA_DIRS
+        if dataset in _DATA_DIRS:
+            dataDirs = [_DATA_DIRS[dataset]]
+            dataNames = [dataset]
+        else:
+            # Check if dataset_name is a valid directory
+            if not os.path.isdir(dataset):
+                raise ValueError(f"Dataset {dataset} not found")
 
-        dataDirs = [dataset_name]
+            dataDirs = [dataset]
+            dataNames = [dataset.split("/")[-1]]
 
     torch.set_default_dtype(torch.float32)
     if no_gpu:
@@ -96,6 +107,18 @@ def extract(
     # Go through models
     missingModels = []
     for model_name in modelList:
+        # Make all data paths
+        simPaths = [
+            f"../data_storage/RDMs/{model_name}_{dataName}.npy"
+            for dataName in dataNames
+        ]
+
+        # Check if all data paths exist
+        if all([os.path.exists(path) for path in simPaths]):
+            print(f"Skipping {model_name}, all sim files exists")
+            continue
+
+        # Get model data
         modelData = zooModels[model_name]
 
         # Skip bad models
@@ -123,7 +146,12 @@ def extract(
                 batch_size = 2 if batch_size < 2 else batch_size
 
         # Loop through datasets
-        for dataDir in dataDirs:
+        for dataDir, simPath in zip(dataDirs, simPaths):
+            # Check if simPath exists
+            if os.path.exists(simPath):
+                print(f"Skipping {model_name} with {dataDir}, sim file exists")
+                continue
+
             print(f"Working on {model_name} with {dataDir}")
 
             # Override model input shape for keras models if input_shape isn't none
@@ -146,7 +174,11 @@ def extract(
                 batch_size=batch_size,
             )
 
-            reps
+            # Create an RDM
+            reps = analysis.preprocess_eucRsaNumba(reps)
+
+            # Save
+            np.save(simPath, reps)
 
 
 # MARK: Model functions
@@ -295,8 +327,6 @@ def get_reps(
         or "timm" in model_data["modelFile"]
         or "transformers" in model_data["modelFile"]
     ):
-
-        # TODO: Review this
         reps = extract_pytorch_reps(model, dataset, model_data, batch_size)
 
     utils.clear_model("model")
