@@ -2,3 +2,5 @@ logs/
 images/
 __pycache__
 .lintr
+torch_cache/
+.vscode/

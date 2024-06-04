@@ -1,16 +1,19 @@
+import torch.utils
+import torch.utils.data
 import datasets
 import tensorflow as tf
 import tensorflow_hub as hub
 import json
 import numpy as np
 import os
-import hubReps
-import pandas as pd
 import utilities as utils
 import click
 import torch
-from typing import Union
+from typing import Union, List
 import timm
+import datetime
+from torchvision.models.feature_extraction import create_feature_extractor
+import pretrainedmodels
 
 _BAD_MODELS = []
 
@@ -22,24 +25,17 @@ _MODEL_FILES = [
 ]
 
 _DATA_DIRS = [
-    "../images/fribbes",
-    "../images/greebes",
-    "../images/yugos",
+    "../images/fribbles",
+    "../images/greebles",
+    "../images/yufos",
     "../images/ziggerins",
 ]
 
-# Compile all models
-ZOOMODELS = {}
-for file in _MODEL_FILES:
-    with open(file, "r") as f:
-        tmp = json.loads(f.read())
-
-        for modelName in tmp.keys():
-            tmp[modelName]["modelFile"] = file
-
-        ZOOMODELS.update(tmp)
+# Set environment variable
+os.environ["TORCH_HOME"] = "./torch_cache"
 
 
+# MARK: CLI
 @click.group()
 def cli():
     pass
@@ -68,11 +64,12 @@ def extract(
     dataset can be set to "all" to extract representations for all models or
     all datasets.
     """
+    zooModels = _get_model_dicts()
     if model_name == "all":
         print("Working through all models")
-        modelList = list(ZOOMODELS.keys())
+        modelList = list(zooModels.keys())
     else:
-        if model_name not in ZOOMODELS:
+        if model_name not in zooModels:
             raise ValueError(f"Model {model_name} not found")
 
         print(f"Loading model {model_name}")
@@ -88,15 +85,18 @@ def extract(
 
         dataDirs = [dataset_name]
 
+    torch.set_default_dtype(torch.float32)
     if no_gpu:
         print("Disabling GPU ops")
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-        torch.set_default_tensor_type("torch.FloatTensor")
+        torch.set_default_device("cpu")
+    else:
+        torch.set_default_device("cuda")
 
     # Go through models
     missingModels = []
     for model_name in modelList:
-        modelData = ZOOMODELS[model_name]
+        modelData = zooModels[model_name]
 
         # Skip bad models
         if model_name in _BAD_MODELS:
@@ -139,46 +139,31 @@ def extract(
                 batch_size=batch_size,
             )
 
-            # TODO: Implement get reps
+            reps = get_reps(
+                model=model,
+                dataset=data,
+                model_data=modelData,
+                batch_size=batch_size,
+            )
+
+            reps
 
 
-def get_dataset(
-    data_dir: str,
-    model_data: dict,
-    model: Union[tf.keras.Model, torch.nn.Module],
-    batch_size=64,
-) -> Union[tf.data.Dataset, torch.utils.data.DataLoader]:
-    if (  # Keras
-        "hubModels.json" in model_data["modelFile"]
-        or "keras" in model_data["modelFile"]
-    ):
-        preprocFun = datasets.preproc(
-            **model_data,
-            labels=False,
-        )
-        dataset = datasets.get_flat_dataset(
-            data_dir,
-            preprocFun,
-            batch_size=batch_size,
-        )
+# MARK: Model functions
+def _get_model_dicts(model_files: List[str] = _MODEL_FILES) -> dict:
+    """Return model dictionary given the model files"""
+    zooModels = {}
+    for file in _MODEL_FILES:
+        with open(file, "r") as f:
+            tmp = json.loads(f.read())
 
-    elif (  # Pytorch
-        "pytorch" in model_data["modelFile"]
-        or "pretrainedmodels" in model_data["modelFile"]
-        or "timm" in model_data["modelFile"]
-        or "transformers" in model_data["modelFile"]
-    ):
-        dataset = datasets.get_pytorch_dataset(
-            data_dir,
-            model_data,
-            model,
-            batch_size,
-        )
+            for modelName in tmp.keys():
+                tmp[modelName]["modelFile"] = file
+                tmp[modelName]["name"] = modelName
 
-    else:
-        raise ValueError(f"Unknown models {model_data}")
+            zooModels.update(tmp)
 
-    return dataset
+    return zooModels
 
 
 def get_model(model_info: dict) -> Union[tf.keras.Model, torch.nn.Module]:
@@ -229,38 +214,207 @@ def get_pytorch_model(model_info: dict) -> torch.nn.Module:
     """Load pytorch models either from timm, transformers, or torchhub"""
 
     if "timm" in model_info["modelFile"]:
-        model = timm.create_model(modelName, pretrained=True, num_classes=0)
+        model = timm.create_model(
+            model_info["architecture"], pretrained=True, num_classes=0
+        )
 
     elif "transformers" in model_info["modelFile"]:
         function = model_info["func"]
-        model = eval("transformers." + function + f'.from_pretrained("{modelName}")')
-        # Currently unused but it's possible to access internals of some transformers models
-    else:
+        model = eval(
+            "transformers." + function + f'.from_pretrained("{model_info["name"]}")'
+        )
+    elif "function" in model_info:
         function = model_info["function"]
         model = eval("torch.hub.load" + function)
+    elif "origin" in model_info and model_info["origin"] == "pretrainedmodels":
+        model = pretrainedmodels.__dict__[model_info["name"]](
+            num_classes=1000, pretrained="imagenet"
+        )
 
     return model
 
 
-def get_reps(modelFile, model, dataset, modelData, batch_size=64):
-
-    if (
-        modelFile == "../data_storage/hubModel_storage/hubModels.json"
-        or modelFile == "../data_storage/hubModel_storage/hubModels_keras.json"
+# MARK: Dataset Functions
+def get_dataset(
+    data_dir: str,
+    model_data: dict,
+    model: Union[tf.keras.Model, torch.nn.Module],
+    batch_size: int = 128,
+) -> Union[tf.data.Dataset, torch.utils.data.DataLoader]:
+    """Return dataset based on model data."""
+    if (  # Keras
+        "hubModels.json" in model_data["modelFile"]
+        or "keras" in model_data["modelFile"]
     ):
-        reps = hubReps.get_reps(model, dataset, modelData, batch_size)
+        preprocFun = datasets.preproc(
+            **model_data,
+            labels=False,
+        )
+        dataset = datasets.get_flat_dataset(
+            data_dir,
+            preprocFun,
+            batch_size=batch_size,
+        )
 
-        utils.clear_model("model")
+    elif (  # Pytorch
+        "pytorch" in model_data["modelFile"]
+        or "pretrainedmodels" in model_data["modelFile"]
+        or "timm" in model_data["modelFile"]
+        or "transformers" in model_data["modelFile"]
+    ):
+        dataset = datasets.get_pytorch_dataset(
+            data_dir,
+            model_data,
+            model,
+            batch_size,
+        )
 
-    elif (
-        modelFile == "../data_storage/hubModel_storage/hubModels_pytorch.json"
-        or modelFile
-        == "../data_storage/hubModel_storage/hubModels_pretrainedmodels.json"
-        or modelFile == "../data_storage/hubModel_storage/hubModels_timm.json"
-        or modelFile == "../data_storage/hubModel_storage/hubModels_transformers.json"
+    else:
+        raise ValueError(f"Unknown models {model_data}")
+
+    return dataset
+
+
+# MARK: Reps functions
+def get_reps(
+    model: Union[tf.keras.Model, torch.nn.Module],
+    dataset: Union[tf.data.Dataset, torch.utils.data.DataLoader],
+    model_data: dict,
+    batch_size: int = 128,
+) -> np.ndarray:
+
+    if (  # Keras
+        "hubModels.json" in model_data["modelFile"]
+        or "keras" in model_data["modelFile"]
+    ):
+        reps = extract_reps(model, dataset, model_data, batch_size)
+
+    elif (  # Pytorch
+        "pytorch" in model_data["modelFile"]
+        or "pretrainedmodels" in model_data["modelFile"]
+        or "timm" in model_data["modelFile"]
+        or "transformers" in model_data["modelFile"]
     ):
 
-        reps = hubReps.get_pytorch_reps(model, dataset, modelData, batch_size)
+        # TODO: Review this
+        reps = extract_pytorch_reps(model, dataset, model_data, batch_size)
+
+    utils.clear_model("model")
+
+    return reps
+
+
+def extract_reps(
+    model: tf.keras.Model,
+    dataset: tf.data.Dataset,
+    model_data: dict,
+    batch_size: int = 128,
+) -> np.ndarray:
+    """Return representations from model, uses manual batching to avoid memory TF memory leak."""
+    # Num batches
+    nBatches = len(dataset)
+
+    dataset = dataset.as_numpy_iterator()
+
+    if "outputIdx" in model_data.keys():
+        # Get output size of model
+        output_size = model.output_shape[model_data["outputIdx"]][1:]
+
+    else:
+        # Get output size of model
+        output_size = model.output_shape[1:]
+        print("output size = ")
+        print(output_size)
+        print(model.output_shape)
+
+    # Create empty array to store representations
+    reps = np.zeros((nBatches * batch_size, *output_size), dtype="float32")
+
+    numImgs = 0
+    for i, batch in enumerate(dataset):
+        # TODO: Implement click status bar here instead
+        print(f"-- Working on batch {i} [{datetime.datetime.now()}]", flush=True)
+        numImgs += len(batch)
+        res = model.predict(batch)
+
+        if "outputIdx" in model_data.keys():
+            # Save representations
+
+            if res[model_data["outputIdx"]].shape[0] == batch_size:
+                reps[i * batch_size : (i + 1) * batch_size] = res[
+                    model_data["outputIdx"]
+                ]
+            else:
+                reps[
+                    i * batch_size : i * batch_size + len(res[model_data["outputIdx"]])
+                ] = res[model_data["outputIdx"]]
+
+        else:
+            # Save representations
+            if res.shape[0] == batch_size:
+                reps[i * batch_size : (i + 1) * batch_size] = res
+            else:
+                reps[i * batch_size : i * batch_size + len(res)] = res
+
+    # Remove empty rows
+    reps = reps[:numImgs]
+
+    return reps
+
+
+def extract_pytorch_reps(
+    model: torch.nn.Module,
+    dataset: torch.utils.data.DataLoader,
+    model_info: dict,
+    batch_size: int,
+) -> np.ndarray:
+    """Manual batching to avoid memory problems."""
+    # Generate temporary data for shape
+    if "shape" in model_info:
+        shape = model_info["shape"]
+    elif "input_size" in model_info:
+        shape = model_info["input_size"]
+    else:
+        shape = [3, 224, 224]
+
+    if len(shape) < 4:
+        shape.insert(0, 1)
+    tmpData = torch.rand(shape)
+
+    # Figure out output shape
+    layer = None
+    if "outputLayer" in model_info:  # Need to extract intermediate layer
+        if len(model_info["outputLayer"]) == 1:  # Layer within a block
+            block = model_info["outputLayer"][1]
+            layer = model_info["outputLayer"][0]
+            return_nodes = {block: layer}
+        else:  # Just a layer
+            return_nodes = model_info["outputLayer"]
+
+        model = create_feature_extractor(model, return_nodes=return_nodes)
+        outputSize = tuple(model(tmpData)[layer].shape)[1:]
+    else:
+        outputSize = tuple(model(tmpData).shape)[1:]
+
+    # Create empty array to store representations
+    reps = np.zeros((len(dataset.dataset), *outputSize), dtype="float32")
+
+    for i, batch in enumerate(dataset):
+        # Change to float32
+        batch = batch.float()
+
+        # Extract representations
+        rep = model(batch)
+
+        if layer != None:
+            rep = rep[layer]
+
+        # Save into numpy
+        rep = rep.detach().cpu().numpy()
+        if "outputIdx" in model_info.keys():
+            raise NotImplementedError("OutputIdx not implemented for pytorch models")
+        else:
+            reps[i * batch_size : i * batch_size + len(rep)] = rep
 
     return reps
 

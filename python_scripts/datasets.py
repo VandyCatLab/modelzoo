@@ -255,6 +255,8 @@ def get_pytorch_dataset(
         imgs = np.empty([nImgs] + list(model_data["shape"]))
     elif "input_size" in model_data:
         imgs = np.empty([nImgs] + list(model_data["input_size"]))
+    else:
+        imgs = np.empty([nImgs, 3, 224, 224])
 
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
