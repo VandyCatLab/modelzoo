@@ -31,6 +31,10 @@ def get_pytorch_dataset(
     for i, file in enumerate(files):
         img = PIL.Image.open(os.path.join(data_dir, file))
 
+        # Remove alpha channel if it exists
+        if img.mode == "RGBA":
+            img = img.convert("RGB")
+
         # using 'Compose' for general pytorch models
         if "trans_params" in model_data:
             py_pre = "transforms.Compose(" + model_data["trans_params"] + ")"
@@ -70,6 +74,11 @@ def get_flat_dataset(
 
     # Preprocess one image to see what size it is
     img = PIL.Image.open(os.path.join(data_dir, files[0]))
+
+    # Remove alpha channel if it exists
+    if img.mode == "RGBA":
+        img = img.convert("RGB")
+
     img = np.array(img)
     if preprocFun is not None:
         img = preprocFun(img)
