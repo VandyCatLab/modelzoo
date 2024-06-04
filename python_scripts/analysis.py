@@ -1,11 +1,8 @@
 import numpy as np
-import os
-import glob
-import pandas as pd
 import numba as nb
-import itertools
 
 
+# MARK: EucRSA Numba
 @nb.jit(nopython=True, parallel=True)
 def preprocess_eucRsaNumba(acts):
     assert acts.ndim in (2, 4)
@@ -97,3 +94,4 @@ def do_rsaNumba(rdm1, rdm2):
 
     # Return pearson coefficient
     return nb_cor(rdm1_flat, rdm2_flat)[0, 1]
+
