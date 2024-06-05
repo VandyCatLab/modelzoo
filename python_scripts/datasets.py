@@ -60,6 +60,52 @@ class preproc:
             return img
 
 
+def get_flat_dataset(
+    data_dir: str,
+    preprocFun: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+    batch_size=64,
+) -> tf.data.Dataset:
+    """
+    Return a dataset where all images are from data_dir. Assumes that it all
+    fits in memory.
+    """
+    files = os.listdir(data_dir)
+    files.sort()
+
+    # Preprocess one image to see what size it is
+    img = PIL.Image.open(os.path.join(data_dir, files[0]))
+
+    # Remove alpha channel if it exists
+    if img.mode == "RGBA":
+        img = img.convert("RGB")
+
+    img = np.array(img)
+    if preprocFun is not None:
+        img = preprocFun(img)
+
+    # Preallocate
+    nImgs = len(files)
+    imgs = np.empty([nImgs] + list(img.shape))
+    for i, file in enumerate(files):
+        img = PIL.Image.open(os.path.join(data_dir, file))
+        # Remove alpha channel if it exists
+        if img.mode == "RGBA":
+            img = img.convert("RGB")
+
+        img = np.array(img)
+
+        if preprocFun is not None:
+            img = preprocFun(img)
+
+        imgs[i] = img
+
+    imgs = tf.data.Dataset.from_tensor_slices(imgs)
+    imgs = imgs.batch(batch_size)
+    imgs = imgs.prefetch(tf.data.AUTOTUNE)
+
+    return imgs
+
+
 def get_pytorch_dataset(
     data_dir: str,
     model_data: dict,
@@ -111,49 +157,3 @@ def get_pytorch_dataset(
             imgs[i] = img
 
     return torch.utils.data.DataLoader(imgs, batch_size=batch_size)
-
-
-def get_flat_dataset(
-    data_dir: str,
-    preprocFun: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-    batch_size=64,
-) -> tf.data.Dataset:
-    """
-    Return a dataset where all images are from data_dir. Assumes that it all
-    fits in memory.
-    """
-    files = os.listdir(data_dir)
-    files.sort()
-
-    # Preprocess one image to see what size it is
-    img = PIL.Image.open(os.path.join(data_dir, files[0]))
-
-    # Remove alpha channel if it exists
-    if img.mode == "RGBA":
-        img = img.convert("RGB")
-
-    img = np.array(img)
-    if preprocFun is not None:
-        img = preprocFun(img)
-
-    # Preallocate
-    nImgs = len(files)
-    imgs = np.empty([nImgs] + list(img.shape))
-    for i, file in enumerate(files):
-        img = PIL.Image.open(os.path.join(data_dir, file))
-        # Remove alpha channel if it exists
-        if img.mode == "RGBA":
-            img = img.convert("RGB")
-
-        img = np.array(img)
-
-        if preprocFun is not None:
-            img = preprocFun(img)
-
-        imgs[i] = img
-
-    imgs = tf.data.Dataset.from_tensor_slices(imgs)
-    imgs = imgs.batch(batch_size)
-    imgs = imgs.prefetch(tf.data.AUTOTUNE)
-
-    return imgs
