@@ -11,7 +11,6 @@ import click
 import torch
 from typing import Union, List
 import timm
-import datetime
 from torchvision.models.feature_extraction import create_feature_extractor
 import pretrainedmodels
 import analysis
@@ -31,10 +30,6 @@ _DATA_DIRS = {
     "yufos": "../images/yufos",
     "ziggerins": "../images/ziggerins",
 }
-
-# Set environment variable
-os.environ["TORCH_HOME"] = "./torch_cache"
-torch.hub.set_dir("./torch_cache")
 
 
 # MARK: CLI
