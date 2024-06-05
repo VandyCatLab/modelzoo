@@ -34,6 +34,7 @@ _DATA_DIRS = {
 
 # Set environment variable
 os.environ["TORCH_HOME"] = "./torch_cache"
+torch.hub.set_dir("./torch_cache")
 
 
 # MARK: CLI
@@ -47,6 +48,11 @@ def cli():
 @click.argument("dataset", type=str, required=True)
 @click.option("--batch_size", default=128, help="Initial batch size")
 @click.option(
+    "--batch_magnitude",
+    default=3,
+    help="How many magnitude to go down while scaling batch size",
+)
+@click.option(
     "--no_batch_scaling",
     default=False,
     is_flag=True,
@@ -57,6 +63,7 @@ def extract(
     model_name: str,
     dataset: str,
     batch_size: int = 128,
+    batch_magnitude: int = 3,
     no_batch_scaling: bool = False,
     no_gpu: bool = False,
 ) -> None:
@@ -159,7 +166,8 @@ def extract(
             else:
                 # TODO: Try different way to determine memory size of batches
                 batch_size = int(
-                    batch_size * (1 / 2 ** int(np.log10(int(nParams)) - 3))
+                    batch_size
+                    * (1 / 2 ** int(np.log10(int(nParams)) - batch_magnitude))
                 )
                 # Clip batch size to 1
                 batch_size = 1 if batch_size < 1 else batch_size
@@ -199,6 +207,12 @@ def extract(
 
             # Save
             np.save(simPath, reps)
+
+        utils.clear_model()
+
+    # Print bad models
+    if len(missingModels) > 0:
+        click.echo(f"Missing models: {missingModels}")
 
 
 # MARK: Model functions
@@ -349,8 +363,6 @@ def get_reps(
     ):
         reps = extract_pytorch_reps(model, dataset, model_data, batch_size)
 
-    utils.clear_model("model")
-
     return reps
 
 
@@ -420,9 +432,9 @@ def extract_pytorch_reps(
     """Manual batching to avoid memory problems."""
     # Generate temporary data for shape
     if "shape" in model_info:
-        shape = model_info["shape"]
+        shape = model_info["shape"][:]
     elif "input_size" in model_info:
-        shape = model_info["input_size"]
+        shape = model_info["input_size"][:]
     else:
         shape = [3, 224, 224]
 
