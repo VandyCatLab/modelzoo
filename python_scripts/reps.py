@@ -138,6 +138,17 @@ def extract(
                 and not no_gpu
             ):
                 model = model.cuda()
+        except tf.errors.ResourceExhaustedError:
+            click.echo(f"Out of GPU memory for {model_name}")
+
+            # Attempt to load model in CPU
+            try:
+                with tf.device("cpu"):
+                    model = get_model(modelData)
+            except Exception as e:
+                click.echo(f"Error loading CPU model {model_name}: {e}")
+                missingModels.append(model_name)
+                continue
         except torch.cuda.OutOfMemoryError:
             click.echo(f"Out of GPU memory for {model_name}")
 
@@ -149,7 +160,6 @@ def extract(
                 click.echo(f"Error loading CPU model {model_name}: {e}")
                 missingModels.append(model_name)
                 continue
-        # Out GPU memory
         except Exception as e:
             click.echo(f"Error loading model {model_name}: {e}")
             missingModels.append(model_name)
