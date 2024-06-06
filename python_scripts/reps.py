@@ -377,7 +377,9 @@ def extract_reps(
         inpShape = dataset._dataset.element_spec.shape
         # Get output size of model
         output_size = model.compute_output_shape(inpShape)[model_data["outputIdx"]][1:]
-
+    elif "origin" in model_data and model_data["origin"] == "keras":
+        # Get output size of model
+        output_size = model.output.shape[1:]
     else:
         inpShape = dataset._dataset.element_spec.shape
         # Get output size of model
