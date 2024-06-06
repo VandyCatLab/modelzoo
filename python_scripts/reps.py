@@ -398,7 +398,7 @@ def get_reps(
 
     return reps
 
-
+@tf.function(reduce_retracing=True)
 def extract_reps(
     model: tf.keras.Model,
     dataset: tf.data.Dataset,
