@@ -424,11 +424,11 @@ def extract_pytorch_reps(
     if "outputLayer" in model_info:  # Need to extract intermediate layer
         if len(model_info["outputLayer"]) == 1:  # Layer within a block
             block = model_info["outputLayer"][1]
-            layer = model_info["outputLayer"][0]
             return_nodes = {block: layer}
         else:  # Just a layer
             return_nodes = model_info["outputLayer"]
 
+        layer = model_info["outputLayer"][0]
         model = create_feature_extractor(model, return_nodes=return_nodes)
         outputSize = tuple(model(tmpData)[layer].shape)[1:]
     else:
