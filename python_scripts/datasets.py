@@ -3,9 +3,10 @@ import os
 import tensorflow as tf
 import PIL
 import torch
-from torchvision import transforms  # Actually needed
 import timm
 from typing import Optional, Callable
+from torchvision import transforms  # Actually needed
+from PIL import Image  # Actually needed
 
 
 class preproc:
