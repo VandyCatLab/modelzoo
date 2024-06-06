@@ -138,6 +138,8 @@ def get_pytorch_dataset(
 
         # using 'Compose' for general pytorch models
         if "trans_params" in model_data:
+            # m, s used for default when normalize values not given, actually needed
+            m, s = np.mean(img, axis=(0, 1)), np.std(img, axis=(0, 1))
             py_pre = "transforms.Compose(" + model_data["trans_params"] + ")"
             py_preproc = eval(py_pre)
             img = py_preproc(img)
