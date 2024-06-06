@@ -181,7 +181,6 @@ def extract(
             if nParams is None:
                 click.echo("Cannot scale batch size, we don't know parameter count")
             else:
-                # TODO: Try different way to determine memory size of batches
                 batch_size = int(
                     batch_size
                     * (1 / 2 ** int(np.log10(int(nParams)) - batch_magnitude))
@@ -211,12 +210,45 @@ def extract(
                 batch_size=batch_size,
             )
 
-            reps = get_reps(
-                model=model,
-                dataset=data,
-                model_data=modelData,
-                batch_size=batch_size,
-            )
+            try:
+                reps = get_reps(
+                    model=model,
+                    dataset=data,
+                    model_data=modelData,
+                    batch_size=batch_size,
+                )
+            except tf.errors.ResourceExhaustedError:
+                click.echo("Out of memory during inference, minimize batch size")
+                # Notice this can error out again, just to avoid missing this data
+                data = get_dataset(
+                    data_dir=dataDir,
+                    model_data=modelData,
+                    model=model,
+                    batch_size=1,
+                )
+
+                reps = get_reps(
+                    model=model,
+                    dataset=data,
+                    model_data=modelData,
+                    batch_size=1,
+                )
+            except torch.cuda.OutOfMemoryError:
+                click.echo("Out of memory during inference, minimize batch size")
+                # Notice this can error out again, just to avoid missing this data
+                data = get_dataset(
+                    data_dir=dataDir,
+                    model_data=modelData,
+                    model=model,
+                    batch_size=1,
+                )
+
+                reps = get_reps(
+                    model=model,
+                    dataset=data,
+                    model_data=modelData,
+                    batch_size=1,
+                )
 
             # Create an RDM
             click.echo("Calculating RDM")
