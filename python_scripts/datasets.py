@@ -97,6 +97,10 @@ def get_flat_dataset(
         if img.mode == "RGBA":
             img = img.convert("RGB")
 
+        # If grayscale, turn image into 3 channel image
+        if img.mode == "L":
+            img = img.convert("RGB")
+
         img = np.array(img)
 
         if preprocFun is not None:
@@ -137,6 +141,10 @@ def get_pytorch_dataset(
 
         # Remove alpha channel if it exists
         if img.mode == "RGBA":
+            img = img.convert("RGB")
+
+        # If grayscale image, convert to 3 channel image
+        if img.mode == "L":
             img = img.convert("RGB")
 
         # using 'Compose' for general pytorch models
