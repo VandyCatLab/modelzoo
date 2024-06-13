@@ -29,6 +29,7 @@ _DATA_DIRS = {
     "greebles": "../images/greebles",
     "yufos": "../images/yufos",
     "ziggerins": "../images/ziggerins",
+    "ecoset": "../images/ecoset",
 }
 
 
