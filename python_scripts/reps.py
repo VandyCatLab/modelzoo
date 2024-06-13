@@ -387,8 +387,7 @@ def get_reps(
         "hubModels.json" in model_data["modelFile"]
         or "keras" in model_data["modelFile"]
     ):
-        # reps = extract_reps(model, dataset, model_data, batch_size)
-        reps = model.predict(dataset)
+        reps = extract_reps(model, dataset, model_data, batch_size)
 
     elif (  # Pytorch
         "pytorch" in model_data["modelFile"]
@@ -397,6 +396,65 @@ def get_reps(
         or "transformers" in model_data["modelFile"]
     ):
         reps = extract_pytorch_reps(model, dataset, model_data, batch_size)
+
+    return reps
+
+
+def extract_reps(
+    model: tf.keras.Model,
+    dataset: tf.data.Dataset,
+    model_data: dict,
+    batch_size: int = 128,
+) -> np.ndarray:
+    """Return representations from model, uses manual batching to avoid memory TF memory leak."""
+    # Num batches
+    nBatches = len(dataset)
+
+    dataset = dataset.as_numpy_iterator()
+
+    if "outputIdx" in model_data:
+        inpShape = dataset._dataset.element_spec.shape
+        # Get output size of model
+        output_size = model.compute_output_shape(inpShape)[model_data["outputIdx"]][1:]
+    elif "origin" in model_data and model_data["origin"] == "keras":
+        # Get output size of model
+        output_size = model.output.shape[1:]
+    else:
+        inpShape = dataset._dataset.element_spec.shape
+        # Get output size of model
+        output_size = model.compute_output_shape(inpShape)[1:]
+
+    # Create empty array to store representations
+    reps = np.zeros((nBatches * batch_size, *output_size), dtype="float32")
+
+    numImgs = 0
+    with click.progressbar(dataset, length=nBatches, label="Extracting reps") as bar:
+        for i, batch in enumerate(bar):
+            numImgs += len(batch)
+            res = model(batch, training=False)
+
+            if "outputIdx" in model_data.keys():
+                # Save representations
+
+                if res[model_data["outputIdx"]].shape[0] == batch_size:
+                    reps[i * batch_size : (i + 1) * batch_size] = res[
+                        model_data["outputIdx"]
+                    ]
+                else:
+                    reps[
+                        i * batch_size : i * batch_size
+                        + len(res[model_data["outputIdx"]])
+                    ] = res[model_data["outputIdx"]]
+
+            else:
+                # Save representations
+                if res.shape[0] == batch_size:
+                    reps[i * batch_size : (i + 1) * batch_size] = res
+                else:
+                    reps[i * batch_size : i * batch_size + len(res)] = res
+
+    # Remove empty rows
+    reps = reps[:numImgs]
 
     return reps
 
