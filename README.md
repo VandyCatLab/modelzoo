@@ -1,22 +1,22 @@
-# Individual Differences in Visual Object Recognition
+# Model Zoo
 
-## Data Science Insititute Summer Research Program 2020
+This repository requires an annoying combination of very specific dependencies
+to ensure that Tensorflow and Pytorch (and their respect model hubs) will work
+together.
 
-### Summary of Research
-Previous research has shown that people vary in visual object recognition abilities. We have a large-scale dataset to attest to this. The principle question that my project addresses is how this variability works, specifically focusing on how the brain represents visual objects. In other words, why do neural representations of the same object differ from person to person?
+## Installation
 
-We can replicate these representations with convolutional neural networks (CNNs), models inspired by primate vision. Recently, CNNs have enabled image recognition in consumer-grade electronics, matching and often exceeding human performance. My project examines why people differ in visual object recognition abilities by modeling the representation stage using CNNs. With computational models, we can test theories of vision with unprecedented control, complementing data from human participants. By leveraging analytical techniques from the neuroscience and computer science literatures, This project’s implications include insights into high-risk vision tasks (e.g. radiology) and the development of machines that emulate humans instead of merely outperforming them.
+```bash
+pip install -r requirements.txt
+```
+The requirements.txt probably works but if it doesn't, manually installing the
+important packages should work, provided the exact right versions are installed.
 
-### Currently referenced publications
-- **Individual differences among deep neural network models** - 
-  https://www.biorxiv.org/content/10.1101/2020.01.08.898288v1.full
-  - Using as a starting point, as it has a similar setup and intent to this project
-- **Striving for Simplicity: The All Convolutional Net** - 
-  https://arxiv.org/pdf/1412.6806.pdf
-  - Network architecture used for initial investigation
-- **SVCCA: Singular Vector Canonical Correlation Analysis for Deep Learning Dynamics and Interpretability** - 
-  http://papers.nips.cc/paper/7188-svcca-singular-vector-canonical-correlation-analysis-for-deep-learning-dynamics-and-interpretability.pdf
-  - One of the analysis techniques used in this project
-- **Insights on representational similarity in neural networks with canonical correlation** - 
-  http://papers.nips.cc/paper/7815-insights-on-representational-similarity-in-neural-networks-with-canonical-correlation.pdf
-  - Further insights on one of the analysis techniques used in this project
+Note that we use `torch==2.3.1+cu118` and `tensorflow==2.14.1` because both of
+these use CUDA 11.8, which should be supported by the `nvidia-driver-545`. CUDA
+11.8 should still probably be manually installed to avoid issues of dependencies
+crashing together (even if installing Tensorflow with the CUDA extras 
+`tensorflow[and-cuda]==2.14.1`). Importantly, Tensorflow Hub must be pinned
+for installation (e.g., `tensorflow-hub==0.15.0`) as later version will not work
+as it depends on the latest version of Keras, which is not compatible with our
+specific version of tensorflow. 
