@@ -54,14 +54,18 @@ def cli():
     is_flag=True,
     help="Don't scale batch size based on model size",
 )
-@click.option("--no_gpu", default=False, is_flag=True, help="Don't use GPU")
+@click.option(
+    "--gpu_id",
+    default=0,
+    help="GPU id to use, if -1, use CPU",
+)
 def extract(
     model_name: str,
     dataset: str,
     batch_size: int = 128,
     batch_magnitude: int = 3,
     no_batch_scaling: bool = False,
-    no_gpu: bool = False,
+    gpu_id: int = 0,
 ) -> None:
     """
     Extract representations for a given model and dataset. Either model and
@@ -100,12 +104,13 @@ def extract(
             dataNames = [dataset.split("/")[-1]]
 
     torch.set_default_dtype(torch.float32)
-    if no_gpu:
+    if gpu_id == -1:
         click.echo("Disabling GPU ops")
-        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
         torch.set_default_device("cpu")
     else:
-        torch.set_default_device("cuda")
+        torch.set_default_device(f"cuda:{gpu_id}")
+        tfDevices = tf.config.list_physical_devices("GPU")
+        tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
 
     # Go through models
     missingModels = []
@@ -136,7 +141,7 @@ def extract(
             if (
                 "origin" in modelData
                 and modelData["origin"] == "pretrainedmodels"
-                and not no_gpu
+                and not gpu_id == -1
             ):
                 model = model.cuda()
         except tf.errors.ResourceExhaustedError:
@@ -144,8 +149,7 @@ def extract(
 
             # Attempt to load model in CPU
             try:
-                with tf.device("cpu"):
-                    model = get_model(modelData)
+                model = get_model(modelData)
             except Exception as e:
                 click.echo(f"Error loading CPU model {model_name}: {e}")
                 missingModels.append(model_name)
@@ -156,7 +160,7 @@ def extract(
             # Attempt to load model in CPU
             try:
                 with torch.device("cpu"):
-                    model = get_model(modelData)
+                    model = get_model(modelData, gpu_id=-1)
             except Exception as e:
                 click.echo(f"Error loading CPU model {model_name}: {e}")
                 missingModels.append(model_name)
@@ -387,7 +391,9 @@ def get_reps(
         "hubModels.json" in model_data["modelFile"]
         or "keras" in model_data["modelFile"]
     ):
-        reps = extract_reps(model, dataset, model_data, batch_size)
+        # Maybe add try-catch to fallback on old method
+        reps = model.predict(dataset)
+        # reps = extract_reps(model, dataset, model_data, batch_size)
 
     elif (  # Pytorch
         "pytorch" in model_data["modelFile"]
@@ -431,7 +437,9 @@ def extract_reps(
     with click.progressbar(dataset, length=nBatches, label="Extracting reps") as bar:
         for i, batch in enumerate(bar):
             numImgs += len(batch)
-            res = model(batch, training=False)
+
+            with tf.device("gpu"):
+                res = model(batch, training=False)
 
             if "outputIdx" in model_data.keys():
                 # Save representations
@@ -465,7 +473,11 @@ def extract_pytorch_reps(
     model_info: dict,
     batch_size: int,
 ) -> np.ndarray:
-    """Manual batching to avoid memory problems."""
+    """Return an array of representations from a pytorch model. Careful to
+    move data to wherever the model is to handle low GPU memory cases."""
+    # Check where model is (CPU or GPU)
+    device = next(model.parameters()).device
+
     # Generate temporary data for shape
     if "shape" in model_info:
         shape = model_info["shape"][:]
@@ -477,6 +489,9 @@ def extract_pytorch_reps(
     if len(shape) < 4:
         shape.insert(0, 1)
     tmpData = torch.rand(shape)
+
+    # Make sure tmpData is on the same device as model
+    tmpData = tmpData.to(device)
 
     # Figure out output shape
     layer = None
@@ -502,6 +517,9 @@ def extract_pytorch_reps(
         for i, batch in enumerate(bar):
             # Change to float32
             batch = batch.float()
+
+            # Make sure batch is on the same device as model
+            batch = batch.to(device)
 
             # Extract representations
             rep = model(batch)
