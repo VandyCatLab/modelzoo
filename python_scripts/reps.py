@@ -59,6 +59,12 @@ def cli():
     default=0,
     help="GPU id to use, if -1, use CPU",
 )
+@click.option(
+    "--backwards",
+    default=False,
+    is_flag=True,
+    help="Work through models in reverse order (for parallel gpu usage)",
+)
 def extract(
     model_name: str,
     dataset: str,
@@ -66,6 +72,7 @@ def extract(
     batch_magnitude: int = 3,
     no_batch_scaling: bool = False,
     gpu_id: int = 0,
+    backwards: bool = False,
 ) -> None:
     """
     Extract representations for a given model and dataset. Either model and
@@ -111,6 +118,9 @@ def extract(
         torch.set_default_device(f"cuda:{gpu_id}")
         tfDevices = tf.config.list_physical_devices("GPU")
         tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
+
+    if backwards:
+        modelList = modelList[::-1]
 
     # Go through models
     missingModels = []
