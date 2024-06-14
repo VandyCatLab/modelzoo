@@ -7,7 +7,7 @@ together.
 ## Installation
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 ```
 The requirements.txt probably works but if it doesn't, manually installing the
 important packages should work, provided the exact right versions are installed.
