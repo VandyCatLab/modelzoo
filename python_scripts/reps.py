@@ -272,11 +272,21 @@ def extract(
 
 @cli.command()
 @click.argument("dataset", type=str, required=True)
-def sims(dataset: str) -> None:
+@click.option(
+    "--overwrite",
+    default=False,
+    is_flag=True,
+    help="Overwrite existing files",
+)
+def sims(dataset: str, overwrite: bool =False) -> None:
     """
     Calculate the pairwise similarity between all models on the dataset. Dataset
     can be set to all to do this for every dataset.
     """
+    if overwrite:
+        click.echo("Overwriting existing files")
+        click.confirm("Are you sure?", abort=True)
+        
     # If dataset is all, go through all datasets
     if dataset == "all":
         datasets = list(_DATA_DIRS.keys())
@@ -289,6 +299,12 @@ def sims(dataset: str) -> None:
 
     # Loop through datasets
     for dataName in datasets:
+        # Check if file already exists
+        outFile = f"../data_storage/sims/{dataName}.csv"
+        if os.path.exists(outFile) and not overwrite:
+            click.echo(f"Skipping {dataName}, file exists")
+            continue
+
         click.echo(f"Working on {dataName}")
         # Get RDMs for this dataset
         rdmFiles = [rdm for rdm in allRDMs if dataName + ".npy" == rdm.split("_")[-1]]
@@ -330,7 +346,7 @@ def sims(dataset: str) -> None:
                     simDf.loc[model2, model1] = sim
 
         # Save the dataframe
-        simDf.to_csv(f"../data_storage/sims/{dataName}.csv")
+        simDf.to_csv(outFile)
 
 
 # MARK: Model functions
