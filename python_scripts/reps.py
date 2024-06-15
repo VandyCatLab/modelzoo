@@ -1,5 +1,3 @@
-import torch.utils
-import torch.utils.data
 import datasets
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -14,6 +12,9 @@ import timm
 from torchvision.models.feature_extraction import create_feature_extractor
 import pretrainedmodels
 import analysis
+import ssl
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 _BAD_MODELS = []
 
