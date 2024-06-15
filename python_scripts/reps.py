@@ -30,6 +30,10 @@ _DATA_DIRS = {
     "yufos": "../images/yufos",
     "ziggerins": "../images/ziggerins",
     "ecoset": "../images/ecoset",
+    "CUB200": "../images/CUB_200",
+    "cars196": "../images/cars196",
+    "kiani": "../images/kiani",
+    "VGGFace": "../images/VGGFace",
 }
 
 
