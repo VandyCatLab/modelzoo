@@ -1,18 +1,20 @@
-import datasets
+import os
+import json
+from typing import Union, List
+import ssl
 import tensorflow as tf
 import tensorflow_hub as hub
-import json
-import numpy as np
-import os
-import utilities as utils
-import click
 import torch
-from typing import Union, List
 import timm
 from torchvision.models.feature_extraction import create_feature_extractor
 import pretrainedmodels
+import numpy as np
+import pandas as pd
+import click
 import analysis
-import ssl
+import datasets
+import utilities as utils
+
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -266,6 +268,69 @@ def extract(
     # Print bad models
     if len(missingModels) > 0:
         click.echo(f"Missing models: {missingModels}")
+
+
+@cli.command()
+@click.argument("dataset", type=str, required=True)
+def sims(dataset: str) -> None:
+    """
+    Calculate the pairwise similarity between all models on the dataset. Dataset
+    can be set to all to do this for every dataset.
+    """
+    # If dataset is all, go through all datasets
+    if dataset == "all":
+        datasets = list(_DATA_DIRS.keys())
+    else:
+        datasets = [dataset]
+
+    # List all RDMs
+    allRDMs = os.listdir("../data_storage/RDMs")
+    allRDMs.sort()
+
+    # Loop through datasets
+    for dataName in datasets:
+        click.echo(f"Working on {dataName}")
+        # Get RDMs for this dataset
+        rdmFiles = [rdm for rdm in allRDMs if dataName + ".npy" == rdm.split("_")[-1]]
+
+        # Get the model names from the RDMs
+        modelNames = [file.replace(f"_{dataName}.npy", "") for file in rdmFiles]
+
+        # Make a dataframe to store pairwise similarities
+        simDf = pd.DataFrame(index=modelNames, columns=modelNames, dtype="float32")
+
+        # Loop through columns
+        with click.progressbar(
+            length=len(modelNames) ** 2,
+            label="Calculating sims",
+            item_show_func=lambda x: x,
+        ) as bar:
+            for i, model1 in enumerate(modelNames):
+                # Load this RDM
+                rdm1 = np.load(f"../data_storage/RDMs/{model1}_{dataName}.npy")
+
+                # Get rows to not repeat calculations
+                for model2 in modelNames[i:]:
+                    # If the model is the same, just set to 1
+                    if model1 == model2:
+                        bar.update(1, current_item=f"{model1} - {model2}")
+                        simDf.loc[model1, model2] = 1
+                        continue
+
+                    bar.update(2, current_item=f"{model1} - {model2}")
+
+                    # Load RDM2
+                    rdm2 = np.load(f"../data_storage/RDMs/{model2}_{dataName}.npy")
+
+                    # Calculate similarity
+                    sim = analysis.do_rsaNumba(rdm1, rdm2)
+
+                    # Store in dataframe
+                    simDf.loc[model1, model2] = sim
+                    simDf.loc[model2, model1] = sim
+
+        # Save the dataframe
+        simDf.to_csv(f"../data_storage/sims/{dataName}.csv")
 
 
 # MARK: Model functions
