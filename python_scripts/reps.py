@@ -2,6 +2,7 @@ import os
 import json
 from typing import Union, List
 import ssl
+
 import tensorflow as tf
 import tensorflow_hub as hub
 import torch
@@ -11,6 +12,7 @@ import pretrainedmodels
 import numpy as np
 import pandas as pd
 import click
+
 import analysis
 import datasets
 import utilities as utils
@@ -278,7 +280,7 @@ def extract(
     is_flag=True,
     help="Overwrite existing files",
 )
-def sims(dataset: str, overwrite: bool =False) -> None:
+def sims(dataset: str, overwrite: bool = False) -> None:
     """
     Calculate the pairwise similarity between all models on the dataset. Dataset
     can be set to all to do this for every dataset.
@@ -286,7 +288,7 @@ def sims(dataset: str, overwrite: bool =False) -> None:
     if overwrite:
         click.echo("Overwriting existing files")
         click.confirm("Are you sure?", abort=True)
-        
+
     # If dataset is all, go through all datasets
     if dataset == "all":
         datasets = list(_DATA_DIRS.keys())

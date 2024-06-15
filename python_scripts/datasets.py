@@ -12,6 +12,77 @@ import shutil
 from typing import Union
 
 
+# MARK: CLI
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.argument("data_dir", type=str, required=True)
+@click.argument("out_dir", type=str, required=True)
+@click.option(
+    "--n_images", type=int, default=1, help="Number of images per category to pick"
+)
+@click.option(
+    "--seed",
+    default=None,
+    type=int,
+    help="Random seed for picking images, if none, the first image is picked",
+)
+@click.option("--overwrite", default=False, is_flag=True, help="Overwrite out_dir")
+def pickimages(
+    data_dir: str,
+    out_dir: str,
+    n_images: int = 1,
+    seed: Union[int, None] = None,
+    overwrite: bool = False,
+) -> None:
+    """
+    Copy images from each category in data_dir to out_dir, renaming each to
+    match the category name. Useful for picking images from real datasets.
+    """
+    # Check if out_dir exists
+    if os.path.exists(out_dir):
+        if overwrite:
+            # Get confirmation
+            click.echo(f"WARNING THIS DELETS EVERYTHING IN {out_dir}")
+            click.confirm(f"Overwrite {out_dir}?", abort=True)
+            shutil.rmtree(out_dir)
+        else:
+            raise ValueError(f"{out_dir} already exists, use --overwrite to overwrite")
+
+    os.makedirs(out_dir)
+
+    # Set seed if available
+    if seed is not None:
+        rng = np.random.default_rng(int(seed))
+
+    # Get list of categories
+    categories = os.listdir(data_dir)
+    categories.sort()
+
+    # Loop through categories
+    for cat in categories:
+        # Get list of images
+        cat_dir = os.path.join(data_dir, cat)
+        images = os.listdir(cat_dir)
+        images.sort()
+
+        # Pick images
+        if seed is not None:
+            images = rng.choice(images, n_images, replace=False)
+        else:
+            images = images[:n_images]
+
+        # Copy images
+        for img in images:
+            img_path = os.path.join(cat_dir, img)
+            out_path = os.path.join(out_dir, cat + "--" + img)
+            shutil.copy(img_path, out_path)
+
+
+# MARK: Model Datasets
 class preproc:
     def __init__(
         self,
@@ -172,75 +243,6 @@ def get_pytorch_dataset(
             imgs[i] = img
 
     return torch.utils.data.DataLoader(imgs, batch_size=batch_size)
-
-
-@click.group()
-def cli():
-    pass
-
-
-@cli.command()
-@click.argument("data_dir", type=str, required=True)
-@click.argument("out_dir", type=str, required=True)
-@click.option(
-    "--n_images", type=int, default=1, help="Number of images per category to pick"
-)
-@click.option(
-    "--seed",
-    default=None,
-    type=int,
-    help="Random seed for picking images, if none, the first image is picked",
-)
-@click.option("--overwrite", default=False, is_flag=True, help="Overwrite out_dir")
-def pickimages(
-    data_dir: str,
-    out_dir: str,
-    n_images: int = 1,
-    seed: Union[int, None] = None,
-    overwrite: bool = False,
-) -> None:
-    """
-    Copy images from each category in data_dir to out_dir, renaming each to
-    match the category name. Useful for picking images from real datasets.
-    """
-    # Check if out_dir exists
-    if os.path.exists(out_dir):
-        if overwrite:
-            # Get confirmation
-            click.echo(f"WARNING THIS DELETS EVERYTHING IN {out_dir}")
-            click.confirm(f"Overwrite {out_dir}?", abort=True)
-            shutil.rmtree(out_dir)
-        else:
-            raise ValueError(f"{out_dir} already exists, use --overwrite to overwrite")
-
-    os.makedirs(out_dir)
-
-    # Set seed if available
-    if seed is not None:
-        rng = np.random.default_rng(int(seed))
-
-    # Get list of categories
-    categories = os.listdir(data_dir)
-    categories.sort()
-
-    # Loop through categories
-    for cat in categories:
-        # Get list of images
-        cat_dir = os.path.join(data_dir, cat)
-        images = os.listdir(cat_dir)
-        images.sort()
-
-        # Pick images
-        if seed is not None:
-            images = rng.choice(images, n_images, replace=False)
-        else:
-            images = images[:n_images]
-
-        # Copy images
-        for img in images:
-            img_path = os.path.join(cat_dir, img)
-            out_path = os.path.join(out_dir, cat + "--" + img)
-            shutil.copy(img_path, out_path)
 
 
 if __name__ == "__main__":
