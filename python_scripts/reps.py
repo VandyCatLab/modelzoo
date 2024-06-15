@@ -30,7 +30,7 @@ _DATA_DIRS = {
     "yufos": "../images/yufos",
     "ziggerins": "../images/ziggerins",
     "ecoset": "../images/ecoset",
-    "CUB200": "../images/CUB_200",
+    "CUB200": "../images/CUB200",
     "cars196": "../images/cars196",
     "kiani": "../images/kiani",
     "VGGFace": "../images/VGGFace",
@@ -406,8 +406,10 @@ def get_reps(
         or "keras" in model_data["modelFile"]
     ):
         # Maybe add try-catch to fallback on old method
-        reps = model.predict(dataset)
-        # reps = extract_reps(model, dataset, model_data, batch_size)
+        try:
+            reps = model.predict(dataset)
+        except:
+            reps = extract_reps(model, dataset, model_data, batch_size)
 
     elif (  # Pytorch
         "pytorch" in model_data["modelFile"]
@@ -430,17 +432,15 @@ def extract_reps(
     # Num batches
     nBatches = len(dataset)
 
-    dataset = dataset.as_numpy_iterator()
-
     if "outputIdx" in model_data:
-        inpShape = dataset._dataset.element_spec.shape
+        inpShape = dataset.element_spec.shape
         # Get output size of model
         output_size = model.compute_output_shape(inpShape)[model_data["outputIdx"]][1:]
     elif "origin" in model_data and model_data["origin"] == "keras":
         # Get output size of model
         output_size = model.output.shape[1:]
     else:
-        inpShape = dataset._dataset.element_spec.shape
+        inpShape = dataset.element_spec.shape
         # Get output size of model
         output_size = model.compute_output_shape(inpShape)[1:]
 
