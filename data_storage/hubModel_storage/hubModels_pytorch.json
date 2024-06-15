@@ -41,20 +41,6 @@
     "task": "categorization reproduction",
     "trainingSet": "imagenet"
   },
-  "inceptionv4": {
-    "shape": [3, 229, 229],
-    "origin": "pretrainedmodels",
-    "parameters": "default",
-    "task": "categorization reproduction",
-    "trainingSet": "imagenet"
-  },
-  "inceptionresnetv2": {
-    "shape": [3, 229, 229],
-    "origin": "pretrainedmodels",
-    "parameters": "default",
-    "task": "categorization reproduction",
-    "trainingSet": "imagenet"
-  },
   "alexnet": {
     "origin": "pretrainedmodels",
     "parameters": "default",
