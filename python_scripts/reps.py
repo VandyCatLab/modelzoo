@@ -16,7 +16,7 @@ import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
-_BAD_MODELS = []
+_BAD_MODELS = ["nts-net"]
 
 _MODEL_FILES = [
     "../data_storage/hubModel_storage/hubModels.json",
