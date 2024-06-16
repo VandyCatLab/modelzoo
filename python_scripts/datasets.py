@@ -1,15 +1,27 @@
 import numpy as np
 import os
-import tensorflow as tf
 import PIL
 import torch
 import timm
 from typing import Optional, Callable
 from torchvision import transforms  # Actually needed
 from PIL import Image  # Actually needed
+import tensorflow as tf  # NOTE: TF MUST BE IMPORTED AFTER TORCH
 import click
 import shutil
 from typing import Union
+
+_DATA_DIRS = {
+    "fribbles": "../images/fribbles",
+    "greebles": "../images/greebles",
+    "yufos": "../images/yufos",
+    "ziggerins": "../images/ziggerins",
+    "ecoset": "../images/ecoset",
+    "CUB200": "../images/CUB200",
+    "cars196": "../images/cars196",
+    "kiani": "../images/kiani",
+    "VGGFace": "../images/VGGFace",
+}
 
 
 # MARK: CLI
