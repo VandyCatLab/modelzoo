@@ -2,13 +2,12 @@ import os
 import json
 from typing import Union, List
 import ssl
-
-import tensorflow as tf
-import tensorflow_hub as hub
 import torch
 import timm
 from torchvision.models.feature_extraction import create_feature_extractor
 import pretrainedmodels
+import tensorflow as tf # NOTE: TF MUST BE IMPORTED AFTER TORCH
+import tensorflow_hub as hub
 import numpy as np
 import pandas as pd
 import click
@@ -154,6 +153,7 @@ def extract(
             continue
 
         try:
+            click.echo(f"Loading {model_name}")
             model = get_model(modelData)
 
             # Move pretrained models to GPU if needed
@@ -227,6 +227,7 @@ def extract(
                 if not any([dim is None for dim in inputShape]):
                     modelData["shape"] = model.input_shape[1:]
 
+            click.echo("Loading dataset")
             data = get_dataset(
                 data_dir=dataDir,
                 model_data=modelData,
@@ -235,6 +236,7 @@ def extract(
             )
 
             try:
+                click.echo("Getting reps")
                 reps = get_reps(
                     model=model,
                     dataset=data,
