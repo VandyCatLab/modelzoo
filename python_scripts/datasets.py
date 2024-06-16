@@ -1,15 +1,16 @@
-import numpy as np
 import os
+from typing import Optional, Callable, Union
+import shutil
+
+import numpy as np
 import PIL
 import torch
 import timm
-from typing import Optional, Callable
 from torchvision import transforms  # Actually needed
 from PIL import Image  # Actually needed
 import tensorflow as tf  # NOTE: TF MUST BE IMPORTED AFTER TORCH
 import click
-import shutil
-from typing import Union
+
 
 _DATA_DIRS = {
     "fribbles": "../images/fribbles",

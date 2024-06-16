@@ -1,12 +1,12 @@
 import os
 import json
 from typing import Union, List
-import ssl
+
 import torch
 import timm
 from torchvision.models.feature_extraction import create_feature_extractor
 import pretrainedmodels
-import tensorflow as tf # NOTE: TF MUST BE IMPORTED AFTER TORCH
+import tensorflow as tf  # NOTE: TF MUST BE IMPORTED AFTER TORCH
 import tensorflow_hub as hub
 import numpy as np
 import pandas as pd
@@ -27,18 +27,6 @@ _MODEL_FILES = [
     "../data_storage/hubModel_storage/hubModels_keras.json",
     "../data_storage/hubModel_storage/hubModels_pytorch.json",
 ]
-
-_DATA_DIRS = {
-    "fribbles": "../images/fribbles",
-    "greebles": "../images/greebles",
-    "yufos": "../images/yufos",
-    "ziggerins": "../images/ziggerins",
-    "ecoset": "../images/ecoset",
-    "CUB200": "../images/CUB200",
-    "cars196": "../images/cars196",
-    "kiani": "../images/kiani",
-    "VGGFace": "../images/VGGFace",
-}
 
 
 # MARK: CLI
@@ -102,13 +90,13 @@ def extract(
         click.echo("Working through all known datasets")
         dataDirs = []
         dataNames = []
-        for name, directory in _DATA_DIRS.items():
+        for name, directory in datasets._DATA_DIRS.items():
             dataDirs.append(directory)
             dataNames.append(name)
     else:
         # Check if dataset_name is a key in _DATA_DIRS
-        if dataset in _DATA_DIRS:
-            dataDirs = [_DATA_DIRS[dataset]]
+        if dataset in datasets._DATA_DIRS:
+            dataDirs = [datasets._DATA_DIRS[dataset]]
             dataNames = [dataset]
         else:
             # Check if dataset_name is a valid directory
@@ -293,7 +281,7 @@ def sims(dataset: str, overwrite: bool = False) -> None:
 
     # If dataset is all, go through all datasets
     if dataset == "all":
-        datasets = list(_DATA_DIRS.keys())
+        datasets = list(datasets._DATA_DIRS.keys())
     else:
         datasets = [dataset]
 

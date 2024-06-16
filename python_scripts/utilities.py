@@ -1,14 +1,12 @@
 import glob
-from operator import index
-import pandas as pd
 import os
-import itertools
-import numpy as np
-import scipy.stats as stats
 import json
 import glob
-import tensorflow as tf
 import gc
+
+import pandas as pd
+import numpy as np
+import tensorflow as tf
 
 
 def hub_rep_completion(repDir, hubInfo):
@@ -113,4 +111,3 @@ def clear_model(model_var="model"):
         del globals()[model_var]
         tf.keras.backend.clear_session()
         gc.collect()
-
