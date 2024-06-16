@@ -6,7 +6,7 @@ import torch
 import timm
 from torchvision.models.feature_extraction import create_feature_extractor
 import pretrainedmodels
-import tensorflow as tf
+import tensorflow as tf # NOTE: TF MUST BE IMPORTED AFTER TORCH
 import tensorflow_hub as hub
 import numpy as np
 import pandas as pd
