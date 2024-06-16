@@ -1,5 +1,84 @@
+import os
+
 import numpy as np
 import numba as nb
+from rpy2.robjects.packages import importr
+from rpy2.robjects import numpy2ri, default_converter
+import click
+import pandas as pd
+import pickle
+
+import datasets
+
+
+numpy2ri.activate()
+
+
+# MARK: CLI
+@click.group()
+def cli():
+    pass
+
+
+@cli.command()
+@click.option("--dim_min", type=int, default=2, help="Minimum number of dimensions")
+@click.option("--dim_max", type=int, default=11, help="Maximum number of dimensions")
+@click.option("--eps", type=float, default=1.0, help="Convergence criterion")
+@click.option("--itmax", type=int, default=1500, help="Maximum number of iterations")
+@click.option("--verbose", default=True, is_flag=True, help="Print output")
+@click.option("--overwrite", default=False, is_flag=True, help="Overwrite existing")
+def computeindscal(
+    dim_min: int = 2,
+    dim_max: int = 11,
+    eps: float = 1.0,
+    itmax: int = 1500,
+    verbose: bool = True,
+    overwrite: bool = False,
+) -> None:
+    """
+    Compute INDSCAL with dimenions in the range [minDims, maxDims). Most
+    arguments are passed to the INDSCAL function.
+    """
+    dataNames = list(datasets._DATA_DIRS.keys())
+
+    # Load the first dataset to get info
+    data = pd.read_csv(f"../data_storage/sims/{dataNames[0]}.csv", index_col=0)
+    modelNames = data.columns
+    tmp = 1 - data.to_numpy() ** 2
+    tmp[tmp < 0] = 0
+    data = [tmp]
+
+    for dataset in dataNames[1:]:
+        tmp = pd.read_csv(f"../data_storage/sims/{dataset}.csv", index_col=0)
+
+        # Reorder columns to match original
+        tmp = tmp[modelNames]
+
+        # Reorder rows to match original
+        tmp = tmp.reindex(index=modelNames)
+
+        # Check if the columns are correct
+        if not np.array_equal(tmp.columns, modelNames):
+            raise ValueError(f"Columns do not match for {dataset}")
+
+        tmp = 1 - tmp.to_numpy() ** 2
+        tmp[tmp < 0] = 0
+
+        data += [tmp]
+
+    for nDims in range(dim_min, dim_max):
+        # Check if pickle of this solution exists
+        outFile = f"../data_storage/indscal/indscal_d{nDims}_eps{eps}_itmax{itmax}.pkl"
+        if os.path.exists(outFile) and not overwrite:
+            click.echo(f"Solution already exists, skipping {nDims} dimensions")
+            continue
+
+        print(f"Running {nDims} dimensions")
+        out = indscalR(data, nDims, eps=eps, itmax=itmax, verbose=verbose)
+
+        # Save the solution
+        with open(outFile, "wb") as f:
+            pickle.dump(out, f)
 
 
 # MARK: EucRSA Numba
@@ -95,3 +174,40 @@ def do_rsaNumba(rdm1, rdm2):
     # Return pearson coefficient
     return nb_cor(rdm1_flat, rdm2_flat)[0, 1]
 
+
+# MARK: R Functions
+def indscalR(
+    delta: np.ndarray,
+    ndim: int,
+    eps: float = 1.0,
+    itmax: int = 1500,
+    verbose: bool = True,
+) -> dict:
+    """
+    Return INDSCAL results where X is the distance cube and nfac is the number
+    of factors. This function is a wrapper around the R indscal function.
+    """
+    smacof = importr("smacof")
+    npConverter = default_converter + numpy2ri.converter
+
+    with npConverter.context():
+        solution = smacof.indscal(
+            delta=delta, ndim=ndim, eps=eps, itmax=itmax, verbose=verbose, type="ratio"
+        )
+
+    # Just keep the relevant data, these objects are huge
+    conf = np.stack([value for key, value in list(solution["conf"].items())], axis=2)
+    cweights = np.stack(
+        [value for key, value in list(solution["cweights"].items())], axis=2
+    )
+    out = {
+        "gspace": solution["gspace"],
+        "cweights": cweights,
+        "conf": conf,
+        "stress": solution["stress"],
+    }
+    return out
+
+
+if __name__ == "__main__":
+    cli()
