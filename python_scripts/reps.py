@@ -223,6 +223,7 @@ def extract(
                 if not any([dim is None for dim in inputShape]):
                     modelData["shape"] = model.input_shape[1:]
 
+            click.echo("Loading dataset")
             data = get_dataset(
                 data_dir=dataDir,
                 model_data=modelData,
@@ -231,6 +232,7 @@ def extract(
             )
 
             try:
+                click.echo("Getting reps")
                 reps = get_reps(
                     model=model,
                     dataset=data,
