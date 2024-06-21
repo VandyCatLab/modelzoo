@@ -18,12 +18,12 @@ def cli():
 
 @cli.command()
 @click.option("--conv", type=int, default=4, help="Number of convolutional layers")
-@click.option("--dense", type=int, default=2, help="Number of dense layers")
+@click.option("--dense", type=int, default=1, help="Number of dense layers")
 @click.option("--augment", default=False, is_flag=True, help="Augment data")
 @click.option("--seed", type=int, default=0, help="Random seed")
 def cnn(
     conv: int = 4,
-    dense: int = 2,
+    dense: int = 1,
     augment: bool = False,
     seed: int = 0,
 ):
@@ -60,7 +60,7 @@ def cnn(
 
     # Save model
     model.save(
-        "../data_storage/models/all_cnn",
+        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}",
         save_format="tf",
         include_optimizer=True,
     )
