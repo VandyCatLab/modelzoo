@@ -152,11 +152,9 @@ def multiple(
         model = train(trainData, testData, model, conv, dense, augment, seed)
 
         # Delete model to attempt to preserve gpu memory
-        del "model"
+        del model
         tf.keras.backend.clear_session()
         gc.collect()
-
-
 
 
 def make_cnn(
