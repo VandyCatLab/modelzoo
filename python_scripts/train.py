@@ -1,6 +1,8 @@
 from typing import Tuple
 import os
 import random
+from itertools import product
+import gc
 
 import numpy as np
 import tensorflow as tf
@@ -90,6 +92,9 @@ def cnn(
     is_flag=True,
     help="Go through parameter combinations backwards (for multi-gpu)",
 )
+@click.option(
+    "--overwrite", default=False, is_flag=True, help="Overwrite existing model"
+)
 def multiple(
     conv_range: Tuple[int, int] = [4, 13],
     dense_range: Tuple[int, int] = [1, 10],
@@ -97,7 +102,17 @@ def multiple(
     seed: int = 0,
     gpu_id: int = 0,
     backwards: bool = False,
+    overwrite: bool = False,
 ):
+    """
+    Train multiple cnn models given ranges of conv and dense. Use backwards to
+    go through parameter combinations backwards.
+    """
+    if overwrite:
+        click.confirm(
+            "Are you sure you want to overwrite models while training?", abort=True
+        )
+
     if gpu_id == -1:
         click.echo("Disabling GPU ops")
         tf.config.set_visible_devices([], "GPU")
@@ -105,8 +120,43 @@ def multiple(
         tfDevices = tf.config.list_physical_devices("GPU")
         tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
 
-    trainData, testData = datasets.make_train_data(shuffle_seed=seed)
-    testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
+    # Make ranges
+    convRange = range(conv_range[0], conv_range[1] + 1)
+    denseRange = range(dense_range[0], dense_range[1] + 1)
+    combos = list(product(convRange, denseRange))
+
+    if backwards:
+        combos = combos[::-1]
+
+    # Loop through combos
+    for conv, dense in combos:
+        if not overwrite and os.path.exists(
+            f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{'_augment' if augment else ''}"
+        ):
+            click.echo("Model already exists, skipping training")
+            continue
+
+        trainData, testData = datasets.make_train_data(shuffle_seed=seed)
+        testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
+
+        model = make_cnn(
+            input_shape=(32, 32, 3),
+            output_shape=10,
+            conv=conv,
+            dense=dense,
+            augment=augment,
+            seed=seed,
+        )
+        model.summary()
+
+        model = train(trainData, testData, model, conv, dense, augment, seed)
+
+        # Delete model to attempt to preserve gpu memory
+        del "model"
+        tf.keras.backend.clear_session()
+        gc.collect()
+
+
 
 
 def make_cnn(
