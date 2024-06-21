@@ -21,19 +21,36 @@ def cli():
 @click.option("--augment", default=False, is_flag=True, help="Augment data")
 @click.option("--seed", type=int, default=0, help="Random seed")
 @click.option("--gpu_id", type=int, default=0, help="GPU ID, -1 for no GPU")
+@click.option(
+    "--overwrite", default=False, is_flag=True, help="Overwrite existing model"
+)
 def cnn(
     conv: int = 4,
     dense: int = 1,
     augment: bool = False,
     seed: int = 0,
     gpu_id: int = 0,
+    overwrite: bool = False,
 ):
+    """
+    Train a single cnn model given conv, dense, augment, and seed.
+    """
+    if overwrite:
+        click.confirm("Are you sure you want to overwrite the model?", abort=True)
+
     if gpu_id == -1:
         click.echo("Disabling GPU ops")
         tf.config.set_visible_devices([], "GPU")
     else:
         tfDevices = tf.config.list_physical_devices("GPU")
         tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
+
+    # Check if the model already exists
+    if not overwrite and os.path.exists(
+        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{'_augment' if augment else ''}"
+    ):
+        click.echo("Model already exists, skipping training")
+        return
 
     trainData, testData = datasets.make_train_data(shuffle_seed=seed)
     testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
@@ -273,7 +290,7 @@ def train(
     # Setup CSV logger
     csvLogger = tf.keras.callbacks.CSVLogger(
         f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{'_augment' if augment else ''}.csv",
-        append=True,
+        append=False,
     )
 
     model.fit(
@@ -288,6 +305,7 @@ def train(
         f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{'_augment' if augment else ''}",
         save_format="tf",
         include_optimizer=True,
+        overwrite=True,
     )
 
     return model
