@@ -261,7 +261,7 @@ def train(
     seed: int = 0,
 ):
     """
-    Return a trained model using the given data. The finished model is saved 
+    Return a trained model using the given data. The finished model is saved
     with a training log. The conv, dense, augment, and seed arguments don't do
     anything except for saving the model with the correct name.
     """
@@ -272,7 +272,8 @@ def train(
 
     # Setup CSV logger
     csvLogger = tf.keras.callbacks.CSVLogger(
-        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{"_augment" if augment else ""}.csv", append=True
+        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{'_augment' if augment else ''}.csv",
+        append=True,
     )
 
     model.fit(
@@ -284,7 +285,7 @@ def train(
 
     # Save model
     model.save(
-        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{"_augment" if augment else ""}",
+        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{'_augment' if augment else ''}",
         save_format="tf",
         include_optimizer=True,
     )
