@@ -258,5 +258,121 @@ def get_pytorch_dataset(
     return torch.utils.data.DataLoader(imgs, batch_size=batch_size)
 
 
+# MARK: Training Dataset
+def make_train_data(
+    shuffle_seed=None,
+    data_seed=2024,
+    item_max=None,
+    cat_max=None,
+):
+    """
+    Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
+    """
+    # TODO: Review this function
+    # Get training information
+    (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = (
+        tf.keras.datasets.cifar10.load_data()
+    )
+    mean = np.mean(x_trainRaw)
+    sd = np.std(x_trainRaw)
+
+    print("Making train data...")
+    print("GCN...")
+    y_train = np.copy(y_trainRaw)
+    # Apply global contrast normalization
+    x_train = (x_trainRaw - mean) / sd
+    x_test = (x_testRaw - mean) / sd
+    print("ZCA...")
+    # Do ZCA whitening
+    x_flat = x_train.reshape(x_train.shape[0], -1)
+
+    vec, val, _ = np.linalg.svd(np.cov(x_flat, rowvar=False))
+    prinComps = np.dot(vec, np.dot(np.diag(1.0 / np.sqrt(val + 0.00001)), vec.T))
+
+    x_train = np.dot(x_flat, prinComps).reshape(x_train.shape)
+    testFlat = x_test.reshape(x_test.shape[0], -1)
+    x_test = np.dot(testFlat, prinComps).reshape(x_test.shape)
+
+    if item_max is not None or cat_max is not None:
+        item_max = item_max if item_max is not None else 1
+
+        print(f"Generating dataset for item-level differences, max items {item_max}")
+        np.random.seed(data_seed)
+        weights = np.random.randint(1, item_max + 1, x_train.shape[0])
+
+        if cat_max is not None:
+            print(f"Adding category level weighting, max weight {cat_max}")
+            catWeight = np.random.randint(1, cat_max + 1, len(np.unique(y_train)))
+            catWeight = catWeight / np.sum(catWeight)
+
+            # Generate category counts with category weight
+            catCounts = np.zeros(len(np.unique(y_train)))
+            for i in range(len(np.unique(y_train))):
+                catCounts[i] = int(catWeight[i] * x_train.shape[0])
+
+        else:
+            catCounts = np.array(
+                [int(y_train.shape[0] / len(np.unique(y_train)))]
+                * len(np.unique(y_train))
+            )
+
+        # Loop through each category and sample images
+        newTrain = np.zeros((0, x_train.shape[1], x_train.shape[2], x_train.shape[3]))
+        newLabels = np.zeros((0, 1))
+        for i in range(np.max(y_trainRaw) + 1):
+            indices = np.where(y_trainRaw == i)[0]
+            indWeight = weights[indices] / np.sum(weights[indices])
+            newIndices = np.random.choice(indices, size=int(catCounts[i]), p=indWeight)
+            newTrain = np.concatenate((newTrain, x_train[newIndices]))
+            newLabels = np.concatenate((newLabels, y_train[newIndices]))
+
+        # Shuffle the new data and assign back
+        shuffleIndices = np.random.permutation(newTrain.shape[0])
+        x_train = newTrain[shuffleIndices]
+        y_train = newLabels[shuffleIndices]
+
+    # Convert to one hot vector
+    y_train = tf.keras.utils.to_categorical(y_train, 10)
+    y_test = tf.keras.utils.to_categorical(y_testRaw, 10)
+
+    trainData = tf.data.Dataset.from_tensor_slices((x_train, y_train))
+    testData = tf.data.Dataset.from_tensor_slices((x_test, y_test))
+
+    trainData = (
+        trainData.prefetch(tf.data.experimental.AUTOTUNE)
+        .shuffle(x_train.shape[0], seed=shuffle_seed)
+        .batch(128)
+    )
+
+    print("Done!")
+    return trainData, testData
+
+
+def make_predict_data(x, y, dtype=None):
+    """
+    Curate prediction set with 1000 images, 100 images for
+    all 10 categories of CIFAR10
+    """
+    print("Making test data...")
+    counts = [0] * 10
+    x_predict = np.empty((1000, 32, 32, 3))
+    if dtype is not None:
+        x_predict = x_predict.astype(dtype)
+    y_predict = np.empty((1000, 10))
+    for img, label in zip(x, y):
+        index = np.argmax(label)
+        cur_count = counts[index]
+        if cur_count != 100:
+            x_predict[100 * index + cur_count] = img
+            y_predict[100 * index + cur_count] = label
+            counts[index] += 1
+        # Finish once all 10 categories are full
+        if all(count == 100 for count in counts):
+            break
+
+    print("Done!")
+    return x_predict, y_predict
+
+
 if __name__ == "__main__":
     cli()
