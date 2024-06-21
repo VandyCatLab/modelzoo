@@ -136,6 +136,12 @@ def multiple(
             click.echo("Model already exists, skipping training")
             continue
 
+        # Reset seeds
+        os.environ["PYTHONHASHSEED"] = str(0)
+        np.random.seed(0)
+        tf.random.set_seed(0)
+        random.seed(0)
+
         trainData, testData = datasets.make_train_data(shuffle_seed=seed)
         testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
 
