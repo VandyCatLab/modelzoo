@@ -53,7 +53,7 @@ def cnn(
 
     model.fit(
         trainData,
-        epochs=1,
+        epochs=350,
         validation_data=testData,
         callbacks=[lrSchedule],
     )
