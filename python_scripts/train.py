@@ -46,10 +46,16 @@ def all_cnn_c(
     )
     model.summary()
 
+    # Setup learning rate schedule
+    lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
+        monitor="val_loss", factor=0.1, patience=20, min_lr=1e-6
+    )
+
     model.fit(
         trainData,
         epochs=350,
         validation_data=testData,
+        callbacks=[lrSchedule],
     )
 
 
@@ -232,102 +238,6 @@ def make_all_cnn(
     )
 
     return model
-
-
-# Scheduler callback
-def scheduler(epoch, lr):
-    if epoch == 200 or epoch == 250 or epoch == 300:
-        return lr * 0.1
-    return lr
-
-
-LR_Callback = LearningRateScheduler(scheduler)
-
-
-# Trajectory callback
-class Trajectory_Callback(Callback):
-    """
-    Pre: Must define i, x_predict
-    """
-
-    def __init__(self, modelName, actDir, predictData):
-        super().__init__()
-        self.modelName = modelName
-        self.actDir = actDir
-        self.predictData = predictData
-
-        # Create directory if it doesn't exist
-        if not os.path.exists(self.actDir):
-            print("Creating directory: " + self.actDir)
-            os.makedirs(self.actDir)
-
-    def get_acts(self, model, layer_arr, x_predict):
-        """
-        Pre: model exists, layer_arr contains valid layer numbers, x_predict is organized
-        Post: Returns list of activations over x_predict for relevant layers in this particular model instance
-        """
-        inp = model.input
-        acts_list = []
-
-        for layer in layer_arr:
-            print("Layer", str(layer))
-            out = model.layers[layer].output
-            temp_model = tf.keras.Model(inputs=inp, outputs=out)
-            # Predict on x_predict, transpose for spearman
-            print("Getting activations...")
-            acts = temp_model.predict(x_predict)
-            acts_list.append(acts)
-
-        return acts_list
-
-    def on_epoch_end(self, epoch, logs=None):
-        layer_arr = [-2]
-        if epoch in [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            49,
-            99,
-            149,
-            199,
-            249,
-            299,
-            349,
-        ]:
-            print(
-                "\n\nModel:",
-                self.modelName,
-                " at epoch ",
-                str(int(epoch) + 1),
-            )
-            acts = self.get_acts(self.model, layer_arr, self.predictData)
-
-            np.save(
-                self.actDir + "/" + self.modelName + "e" + str(int(epoch) + 1) + ".npy",
-                acts,
-            )
-            print("\n")
-
-
-# Cut off training if local minimum hit
-class Early_Abort_Callback(Callback):
-    """
-    Pre: abort is set to False at the beginning of each training instance
-    """
-
-    def on_epoch_end(self, epoch, logs=None):
-        global abort
-        if epoch > 100 and logs.get("accuracy") <= 0.8:
-            abort = True
-            print("Acc:", logs.get("accuracy"))
-            self.model.stop_training = True
 
 
 if __name__ == "__main__":
