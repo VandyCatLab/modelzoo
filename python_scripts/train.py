@@ -336,10 +336,14 @@ def train(
     with a training log. The conv, dense, augment, and seed arguments don't do
     anything except for saving the model with the correct name.
     """
+
     # Setup learning rate schedule
-    lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
-        monitor="val_loss", factor=0.1, patience=10, min_delta=0.0001, min_lr=1e-6
-    )
+    def _scheduler(epoch, lr):
+        if epoch == 200 or epoch == 250 or epoch == 300:
+            return lr * 0.1
+        return lr
+
+    lrSchedule = tf.keras.callbacks.LearningRateScheduler(_scheduler)
 
     # Setup CSV logger
     csvLogger = tf.keras.callbacks.CSVLogger(
