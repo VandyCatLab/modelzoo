@@ -311,14 +311,6 @@ def make_cnn(
 
     model = tf.keras.Model(inputs=inputs, outputs=x)
 
-    model.compile(
-        optimizer=tf.keras.optimizers.SGD(
-            learning_rate=0.01, momentum=0.9, clipnorm=500
-        ),
-        loss="categorical_crossentropy",
-        metrics=["accuracy"],
-    )
-
     return model
 
 
@@ -336,6 +328,14 @@ def train(
     with a training log. The conv, dense, augment, and seed arguments don't do
     anything except for saving the model with the correct name.
     """
+    model.compile(
+        optimizer=tf.keras.optimizers.SGD(
+            learning_rate=0.1, momentum=0.9, clipnorm=500
+        ),
+        loss="categorical_crossentropy",
+        metrics=["accuracy"],
+    )
+
     # Setup learning rate schedule
     lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
         monitor="val_loss", factor=0.1, patience=10, min_delta=0.001, min_lr=1e-6
