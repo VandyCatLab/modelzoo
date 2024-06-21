@@ -50,7 +50,7 @@ def cnn(
 
     # Setup learning rate schedule
     lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
-        monitor="val_loss", factor=0.1, patience=10, min_delta=0.001, min_lr=1e-6
+        monitor="val_loss", factor=0.1, patience=10, min_delta=0.0001, min_lr=1e-6
     )
 
     model.fit(
