@@ -48,24 +48,7 @@ def cnn(
     )
     model.summary()
 
-    # Setup learning rate schedule
-    lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
-        monitor="val_loss", factor=0.1, patience=10, min_delta=0.0001, min_lr=1e-6
-    )
-
-    model.fit(
-        trainData,
-        epochs=350,
-        validation_data=testData,
-        callbacks=[lrSchedule],
-    )
-
-    # Save model
-    model.save(
-        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}",
-        save_format="tf",
-        include_optimizer=True,
-    )
+    model = train(trainData, testData, model, conv, dense, augment, seed)
 
 
 @cli.command()
@@ -78,20 +61,35 @@ def cnn(
 @click.option(
     "--dense_range",
     type=int,
-    default=2,
+    nargs=2,
     help="Inclusive range of number of dense layers",
 )
 @click.option("--augment", default=False, is_flag=True, help="Augment data")
 @click.option("--seed", type=int, default=0, help="Random seed")
 @click.option("--gpu_id", type=int, default=0, help="GPU ID, -1 for no GPU")
+@click.option(
+    "--backwards",
+    default=False,
+    is_flag=True,
+    help="Go through parameter combinations backwards (for multi-gpu)",
+)
 def multiple(
     conv_range: Tuple[int, int] = [4, 13],
     dense_range: Tuple[int, int] = [1, 10],
     augment: bool = False,
     seed: int = 0,
     gpu_id: int = 0,
+    backwards: bool = False,
 ):
-    pass
+    if gpu_id == -1:
+        click.echo("Disabling GPU ops")
+        tf.config.set_visible_devices([], "GPU")
+    else:
+        tfDevices = tf.config.list_physical_devices("GPU")
+        tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
+
+    trainData, testData = datasets.make_train_data(shuffle_seed=seed)
+    testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
 
 
 def make_cnn(
@@ -167,18 +165,6 @@ def make_cnn(
             name=f"block1_conv{i + 1}",
         )(x)
 
-    # x = layers.Conv2D(
-    #     96,
-    #     (3, 3),
-    #     strides=2,
-    #     padding="same",
-    #     bias_regularizer=l2Reg,
-    #     kernel_regularizer=l2Reg,
-    #     kernel_initializer=kernelInit,
-    #     bias_initializer="zeros",
-    #     activation="relu",
-    #     name="block1_pool",
-    # )(x)
     x = layers.MaxPooling2D((3, 3), strides=2, padding="same", name="block1_pool")(x)
     x = layers.Dropout(0.5, name="block1_drop")(x)
 
@@ -209,18 +195,6 @@ def make_cnn(
             name=f"block2_conv{i + 1}",
         )(x)
 
-    # x = layers.Conv2D(
-    #     192,
-    #     (3, 3),
-    #     strides=2,
-    #     padding="same",
-    #     bias_regularizer=l2Reg,
-    #     kernel_regularizer=l2Reg,
-    #     kernel_initializer=kernelInit,
-    #     bias_initializer="zeros",
-    #     activation="relu",
-    #     name="block2_pool",
-    # )(x)
     x = layers.MaxPooling2D((3, 3), strides=2, padding="same", name="block2_pool")(x)
     x = layers.Dropout(0.5, name="block2_drop")(x)
 
@@ -272,6 +246,47 @@ def make_cnn(
         ),
         loss="categorical_crossentropy",
         metrics=["accuracy"],
+    )
+
+    return model
+
+
+def train(
+    trainData,
+    testData,
+    model,
+    conv: int = 4,
+    dense: int = 1,
+    augment: bool = True,
+    seed: int = 0,
+):
+    """
+    Return a trained model using the given data. The finished model is saved 
+    with a training log. The conv, dense, augment, and seed arguments don't do
+    anything except for saving the model with the correct name.
+    """
+    # Setup learning rate schedule
+    lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
+        monitor="val_loss", factor=0.1, patience=10, min_delta=0.0001, min_lr=1e-6
+    )
+
+    # Setup CSV logger
+    csvLogger = tf.keras.callbacks.CSVLogger(
+        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{"_augment" if augment else ""}.csv", append=True
+    )
+
+    model.fit(
+        trainData,
+        epochs=350,
+        validation_data=testData,
+        callbacks=[lrSchedule, csvLogger],
+    )
+
+    # Save model
+    model.save(
+        f"../data_storage/models/cnn{seed:02d}_dense{dense}_conv{conv}{"_augment" if augment else ""}",
+        save_format="tf",
+        include_optimizer=True,
     )
 
     return model
