@@ -36,12 +36,6 @@ def cnn(
         tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
 
     trainData, testData = datasets.make_train_data(shuffle_seed=seed)
-
-    # TODO: Review how necessary this was
-    # x_predict = np.array([x for x, _ in testData.as_numpy_iterator()])
-    # y_predict = np.array([y for _, y in testData.as_numpy_iterator()])
-    # x_predict, y_predict = datasets.make_predict_data(x_predict, y_predict)
-
     testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
 
     model = make_cnn(
@@ -56,7 +50,7 @@ def cnn(
 
     # Setup learning rate schedule
     lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
-        monitor="val_loss", factor=0.1, patience=20, min_lr=1e-6
+        monitor="val_loss", factor=0.1, patience=10, min_delta=0.001, min_lr=1e-6
     )
 
     model.fit(
@@ -72,6 +66,32 @@ def cnn(
         save_format="tf",
         include_optimizer=True,
     )
+
+
+@cli.command()
+@click.option(
+    "--conv_range",
+    type=int,
+    nargs=2,
+    help="Inclusive range of number of convolutional layers",
+)
+@click.option(
+    "--dense_range",
+    type=int,
+    default=2,
+    help="Inclusive range of number of dense layers",
+)
+@click.option("--augment", default=False, is_flag=True, help="Augment data")
+@click.option("--seed", type=int, default=0, help="Random seed")
+@click.option("--gpu_id", type=int, default=0, help="GPU ID, -1 for no GPU")
+def multiple(
+    conv_range: Tuple[int, int] = [4, 13],
+    dense_range: Tuple[int, int] = [1, 10],
+    augment: bool = False,
+    seed: int = 0,
+    gpu_id: int = 0,
+):
+    pass
 
 
 def make_cnn(
