@@ -261,9 +261,6 @@ def get_pytorch_dataset(
 # MARK: Training Dataset
 def make_train_data(
     shuffle_seed=None,
-    data_seed=2024,
-    item_max=None,
-    cat_max=None,
 ):
     """
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
@@ -293,43 +290,6 @@ def make_train_data(
     testFlat = x_test.reshape(x_test.shape[0], -1)
     x_test = np.dot(testFlat, prinComps).reshape(x_test.shape)
 
-    if item_max is not None or cat_max is not None:
-        item_max = item_max if item_max is not None else 1
-
-        print(f"Generating dataset for item-level differences, max items {item_max}")
-        np.random.seed(data_seed)
-        weights = np.random.randint(1, item_max + 1, x_train.shape[0])
-
-        if cat_max is not None:
-            print(f"Adding category level weighting, max weight {cat_max}")
-            catWeight = np.random.randint(1, cat_max + 1, len(np.unique(y_train)))
-            catWeight = catWeight / np.sum(catWeight)
-
-            # Generate category counts with category weight
-            catCounts = np.zeros(len(np.unique(y_train)))
-            for i in range(len(np.unique(y_train))):
-                catCounts[i] = int(catWeight[i] * x_train.shape[0])
-
-        else:
-            catCounts = np.array(
-                [int(y_train.shape[0] / len(np.unique(y_train)))]
-                * len(np.unique(y_train))
-            )
-
-        # Loop through each category and sample images
-        newTrain = np.zeros((0, x_train.shape[1], x_train.shape[2], x_train.shape[3]))
-        newLabels = np.zeros((0, 1))
-        for i in range(np.max(y_trainRaw) + 1):
-            indices = np.where(y_trainRaw == i)[0]
-            indWeight = weights[indices] / np.sum(weights[indices])
-            newIndices = np.random.choice(indices, size=int(catCounts[i]), p=indWeight)
-            newTrain = np.concatenate((newTrain, x_train[newIndices]))
-            newLabels = np.concatenate((newLabels, y_train[newIndices]))
-
-        # Shuffle the new data and assign back
-        shuffleIndices = np.random.permutation(newTrain.shape[0])
-        x_train = newTrain[shuffleIndices]
-        y_train = newLabels[shuffleIndices]
 
     # Convert to one hot vector
     y_train = tf.keras.utils.to_categorical(y_train, 10)
