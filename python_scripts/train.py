@@ -21,7 +21,7 @@ def cli():
 @click.option("--dense", type=int, default=2, help="Number of dense layers")
 @click.option("--augment", default=False, is_flag=True, help="Augment data")
 @click.option("--seed", type=int, default=0, help="Random seed")
-def all_cnn_c(
+def cnn(
     conv: int = 4,
     dense: int = 2,
     augment: bool = False,
@@ -36,7 +36,7 @@ def all_cnn_c(
 
     testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
 
-    model = make_all_cnn(
+    model = make_cnn(
         input_shape=(32, 32, 3),
         output_shape=10,
         conv=conv,
@@ -53,13 +53,20 @@ def all_cnn_c(
 
     model.fit(
         trainData,
-        epochs=350,
+        epochs=1,
         validation_data=testData,
         callbacks=[lrSchedule],
     )
 
+    # Save model
+    model.save(
+        "../data_storage/models/all_cnn",
+        save_format="tf",
+        include_optimizer=True,
+    )
 
-def make_all_cnn(
+
+def make_cnn(
     input_shape: Tuple[int, int, int] = (32, 32, 3),
     output_shape: int = 10,
     dense: int = 2,
@@ -132,18 +139,19 @@ def make_all_cnn(
             name=f"block1_conv{i + 1}",
         )(x)
 
-    x = layers.Conv2D(
-        96,
-        (3, 3),
-        strides=2,
-        padding="same",
-        bias_regularizer=l2Reg,
-        kernel_regularizer=l2Reg,
-        kernel_initializer=kernelInit,
-        bias_initializer="zeros",
-        activation="relu",
-        name="block1_pool",
-    )(x)
+    # x = layers.Conv2D(
+    #     96,
+    #     (3, 3),
+    #     strides=2,
+    #     padding="same",
+    #     bias_regularizer=l2Reg,
+    #     kernel_regularizer=l2Reg,
+    #     kernel_initializer=kernelInit,
+    #     bias_initializer="zeros",
+    #     activation="relu",
+    #     name="block1_pool",
+    # )(x)
+    x = layers.MaxPooling2D((3, 3), strides=2, padding="same", name="block1_pool")(x)
     x = layers.Dropout(0.5, name="block1_drop")(x)
 
     # Add the first convolutional layer of the second block
@@ -173,18 +181,19 @@ def make_all_cnn(
             name=f"block2_conv{i + 1}",
         )(x)
 
-    x = layers.Conv2D(
-        192,
-        (3, 3),
-        strides=2,
-        padding="same",
-        bias_regularizer=l2Reg,
-        kernel_regularizer=l2Reg,
-        kernel_initializer=kernelInit,
-        bias_initializer="zeros",
-        activation="relu",
-        name="block2_pool",
-    )(x)
+    # x = layers.Conv2D(
+    #     192,
+    #     (3, 3),
+    #     strides=2,
+    #     padding="same",
+    #     bias_regularizer=l2Reg,
+    #     kernel_regularizer=l2Reg,
+    #     kernel_initializer=kernelInit,
+    #     bias_initializer="zeros",
+    #     activation="relu",
+    #     name="block2_pool",
+    # )(x)
+    x = layers.MaxPooling2D((3, 3), strides=2, padding="same", name="block2_pool")(x)
     x = layers.Dropout(0.5, name="block2_drop")(x)
 
     x = layers.Conv2D(
