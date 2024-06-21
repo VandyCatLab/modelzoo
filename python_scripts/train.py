@@ -5,7 +5,6 @@ import random
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers
-from tensorflow.keras.callbacks import LearningRateScheduler, Callback
 import click
 
 import datasets
@@ -21,12 +20,21 @@ def cli():
 @click.option("--dense", type=int, default=1, help="Number of dense layers")
 @click.option("--augment", default=False, is_flag=True, help="Augment data")
 @click.option("--seed", type=int, default=0, help="Random seed")
+@click.option("--gpu_id", type=int, default=0, help="GPU ID, -1 for no GPU")
 def cnn(
     conv: int = 4,
     dense: int = 1,
     augment: bool = False,
     seed: int = 0,
+    gpu_id: int = 0,
 ):
+    if gpu_id == -1:
+        click.echo("Disabling GPU ops")
+        tf.config.set_visible_devices([], "GPU")
+    else:
+        tfDevices = tf.config.list_physical_devices("GPU")
+        tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
+
     trainData, testData = datasets.make_train_data(shuffle_seed=seed)
 
     # TODO: Review how necessary this was
