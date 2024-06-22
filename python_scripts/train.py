@@ -175,7 +175,6 @@ def make_cnn(
     Create the All-CNN-C model.
     """
     kernelInit = tf.keras.initializers.HeNormal(seed)
-    l2Reg = tf.keras.regularizers.l2(1e-5)
 
     if conv < 2:
         raise ValueError("Number of convolutional layers must be at least 2")
@@ -201,8 +200,6 @@ def make_cnn(
             96,
             (3, 3),
             padding="same",
-            bias_regularizer=l2Reg,
-            kernel_regularizer=l2Reg,
             kernel_initializer=kernelInit,
             bias_initializer="zeros",
             activation="relu",
@@ -214,8 +211,6 @@ def make_cnn(
             96,
             (3, 3),
             padding="same",
-            bias_regularizer=l2Reg,
-            kernel_regularizer=l2Reg,
             kernel_initializer=kernelInit,
             bias_initializer="zeros",
             activation="relu",
@@ -228,15 +223,22 @@ def make_cnn(
             96,
             (3, 3),
             padding="same",
-            bias_regularizer=l2Reg,
-            kernel_regularizer=l2Reg,
             kernel_initializer=kernelInit,
             bias_initializer="zeros",
             activation="relu",
             name=f"block1_conv{i + 1}",
         )(x)
 
-    x = layers.MaxPooling2D((3, 3), strides=2, padding="same", name="block1_pool")(x)
+    x = layers.Conv2D(
+        96,
+        (3, 3),
+        strides=2,
+        padding="same",
+        kernel_initializer=kernelInit,
+        bias_initializer="zeros",
+        activation="relu",
+        name="block1_pool",
+    )(x)
     x = layers.Dropout(0.5, name="block1_drop")(x)
 
     # Add the first convolutional layer of the second block
@@ -244,8 +246,6 @@ def make_cnn(
         192,
         (3, 3),
         padding="same",
-        bias_regularizer=l2Reg,
-        kernel_regularizer=l2Reg,
         kernel_initializer=kernelInit,
         bias_initializer="zeros",
         activation="relu",
@@ -258,23 +258,28 @@ def make_cnn(
             192,
             (3, 3),
             padding="same",
-            bias_regularizer=l2Reg,
-            kernel_regularizer=l2Reg,
             kernel_initializer=kernelInit,
             bias_initializer="zeros",
             activation="relu",
             name=f"block2_conv{i + 1}",
         )(x)
 
-    x = layers.MaxPooling2D((3, 3), strides=2, padding="same", name="block2_pool")(x)
+    x = layers.Conv2D(
+        192,
+        (3, 3),
+        strides=2,
+        padding="same",
+        kernel_initializer=kernelInit,
+        bias_initializer="zeros",
+        activation="relu",
+        name="block2_pool",
+    )(x)
     x = layers.Dropout(0.5, name="block2_drop")(x)
 
     x = layers.Conv2D(
         192,
         (3, 3),
         padding="valid",
-        bias_regularizer=l2Reg,
-        kernel_regularizer=l2Reg,
         kernel_initializer=kernelInit,
         bias_initializer="zeros",
         activation="relu",
@@ -286,8 +291,6 @@ def make_cnn(
             192,
             (1, 1),
             padding="valid",
-            bias_regularizer=l2Reg,
-            kernel_regularizer=l2Reg,
             kernel_initializer=kernelInit,
             bias_initializer="zeros",
             activation="relu",
@@ -298,8 +301,6 @@ def make_cnn(
         output_shape,
         (1, 1),
         padding="valid",
-        bias_regularizer=l2Reg,
-        kernel_regularizer=l2Reg,
         kernel_initializer=kernelInit,
         bias_initializer="zeros",
         activation="relu",
@@ -328,17 +329,21 @@ def train(
     with a training log. The conv, dense, augment, and seed arguments don't do
     anything except for saving the model with the correct name.
     """
+    optimizer = tf.keras.optimizers.SGD(
+        learning_rate=0.01, momentum=0.9, clipnorm=500, weight_decay=1e-5
+    )
+    # optimizer = tf.keras.optimizers.Adam(
+    #     learning_rate=0.01, clipnorm=500, weight_decay=1e-5
+    # )
     model.compile(
-        optimizer=tf.keras.optimizers.SGD(
-            learning_rate=0.1, momentum=0.9, clipnorm=500
-        ),
+        optimizer=optimizer,
         loss="categorical_crossentropy",
         metrics=["accuracy"],
     )
 
     # Setup learning rate schedule
     lrSchedule = tf.keras.callbacks.ReduceLROnPlateau(
-        monitor="val_loss", factor=0.1, patience=10, min_delta=0.001, min_lr=1e-6
+        monitor="val_loss", factor=0.1, patience=50, min_delta=0.001, min_lr=1e-6
     )
 
     # Setup CSV logger
