@@ -628,7 +628,7 @@ def extract_pytorch_reps(
     return reps
 
 
-# MARK: Extract from trained models
+# MARK: Trained models
 @cli.command()
 @click.option("--layer_idx", type=int, default=-4, help="Layer index to extract from")
 def trained_extract(layer_idx: int = -4) -> None:
@@ -637,6 +637,7 @@ def trained_extract(layer_idx: int = -4) -> None:
     """
     # Get a list of models, based on directories
     models = os.listdir("../data_storage/models")
+    models = sorted(models)
     models = [
         model for model in models if os.path.isdir(f"../data_storage/models/{model}")
     ]
@@ -665,6 +666,49 @@ def trained_extract(layer_idx: int = -4) -> None:
 
         # Save
         np.save(rdmFile, reps)
+
+
+@cli.command()
+def trained_sims() -> None:
+    """
+    Calculate similarity between all trained models.
+    """
+    # Get a list of models, based on directories
+    models = os.listdir("../data_storage/trainedRDMs")
+    models = sorted(models)
+
+    # Create dataframe to store similarities
+    simDf = pd.DataFrame(index=models, columns=models, dtype="float32")
+
+    # Loop through models
+    with click.progressbar(
+        len(models) ** 2, label="Calculating sims", item_show_func=lambda x: x
+    ) as bar:
+        for i, model1 in enumerate(models):
+            # Load this rdm
+            rdm1 = np.load(f"../data_storage/trainedRDMs/{model1}")
+
+            # Get rows to note repeat calculations
+            for model2 in models[i:]:
+                if model1 == model2:
+                    bar.update(1, current_item=f"{model1} - {model2}")
+                    simDf.loc[model1, model2] = 1
+                    continue
+
+                bar.update(2, current_item=f"{model1} - {model2}")
+
+                # Load second rdm
+                rdm2 = np.load(f"../data_storage/trainedRDMs/{model2}")
+
+                # Calculate
+                sim = analysis.do_rsaNumba(rdm1, rdm2)
+
+                # Save both triangles
+                simDf.loc[model1, model2] = sim
+                simDf.loc[model2, model1] = sim
+
+    # Save
+    simDf.to_csv("../data_storage/trainedSims.csv")
 
 
 if __name__ == "__main__":
