@@ -682,7 +682,7 @@ def trained_sims() -> None:
 
     # Loop through models
     with click.progressbar(
-        len(models) ** 2, label="Calculating sims", item_show_func=lambda x: x
+        length=len(models) ** 2, label="Calculating sims", item_show_func=lambda x: x
     ) as bar:
         for i, model1 in enumerate(models):
             # Load this rdm
