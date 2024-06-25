@@ -628,5 +628,44 @@ def extract_pytorch_reps(
     return reps
 
 
+# MARK: Extract from trained models
+@cli.command()
+@click.option("--layer_idx", type=int, default=-4, help="Layer index to extract from")
+def trained_extract(layer_idx: int = -4) -> None:
+    """
+    Extract features from the trained models.
+    """
+    # Get a list of models, based on directories
+    models = os.listdir("../data_storage/models")
+    models = [
+        model for model in models if os.path.isdir(f"../data_storage/models/{model}")
+    ]
+
+    # Get dataset
+    _, testData = datasets.make_train_data(batch_size=256)
+
+    for modelDir in models:
+        rdmFile = f"../data_storage/trainedRDMs/{modelDir}.npy"
+
+        # Check if file exists
+        if os.path.exists(rdmFile):
+            click.echo(f"Skipping {modelDir}, file exists")
+            continue
+
+        model = tf.keras.models.load_model(f"../data_storage/models/{modelDir}")
+        model = tf.keras.Model(
+            inputs=model.input, outputs=model.layers[layer_idx].output
+        )
+
+        # Get representations
+        reps = model.predict(testData)
+
+        # Calculate RDMs
+        reps = analysis.preprocess_eucRsaNumba(reps)
+
+        # Save
+        np.save(rdmFile, reps)
+
+
 if __name__ == "__main__":
     cli()
