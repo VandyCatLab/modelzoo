@@ -1,5 +1,6 @@
 logs/
 images/
+models/
 __pycache__
 .lintr
 torch_cache/
