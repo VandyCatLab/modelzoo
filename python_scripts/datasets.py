@@ -261,6 +261,7 @@ def get_pytorch_dataset(
 # MARK: Training Dataset
 def make_train_data(
     shuffle_seed: int = None,
+    batch_size: int = 128,
 ) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     """
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
@@ -298,36 +299,12 @@ def make_train_data(
     trainData = (
         trainData.prefetch(tf.data.experimental.AUTOTUNE)
         .shuffle(x_train.shape[0], seed=shuffle_seed)
-        .batch(128)
+        .batch(batch_size)
     )
 
+    testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(batch_size)
+
     return trainData, testData
-
-
-def make_predict_data(x, y, dtype=None):
-    """
-    Curate prediction set with 1000 images, 100 images for
-    all 10 categories of CIFAR10
-    """
-    print("Making test data...")
-    counts = [0] * 10
-    x_predict = np.empty((1000, 32, 32, 3))
-    if dtype is not None:
-        x_predict = x_predict.astype(dtype)
-    y_predict = np.empty((1000, 10))
-    for img, label in zip(x, y):
-        index = np.argmax(label)
-        cur_count = counts[index]
-        if cur_count != 100:
-            x_predict[100 * index + cur_count] = img
-            y_predict[100 * index + cur_count] = label
-            counts[index] += 1
-        # Finish once all 10 categories are full
-        if all(count == 100 for count in counts):
-            break
-
-    print("Done!")
-    return x_predict, y_predict
 
 
 if __name__ == "__main__":
