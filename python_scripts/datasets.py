@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Callable, Union
+from typing import Optional, Callable, Union, Tuple
 import shutil
 
 import numpy as np
@@ -260,26 +260,24 @@ def get_pytorch_dataset(
 
 # MARK: Training Dataset
 def make_train_data(
-    shuffle_seed=None,
-):
+    shuffle_seed: int = None,
+) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     """
     Apply ZCA Whitening and Global Contrast Normalization to CIFAR10 dataset
     """
-    # TODO: Review this function
-    # Get training information
+    # Get training dataset info
     (x_trainRaw, y_trainRaw), (x_testRaw, y_testRaw) = (
         tf.keras.datasets.cifar10.load_data()
     )
     mean = np.mean(x_trainRaw)
     sd = np.std(x_trainRaw)
 
-    print("Making train data...")
-    print("GCN...")
     y_train = np.copy(y_trainRaw)
+
     # Apply global contrast normalization
     x_train = (x_trainRaw - mean) / sd
     x_test = (x_testRaw - mean) / sd
-    print("ZCA...")
+
     # Do ZCA whitening
     x_flat = x_train.reshape(x_train.shape[0], -1)
 
@@ -289,7 +287,6 @@ def make_train_data(
     x_train = np.dot(x_flat, prinComps).reshape(x_train.shape)
     testFlat = x_test.reshape(x_test.shape[0], -1)
     x_test = np.dot(testFlat, prinComps).reshape(x_test.shape)
-
 
     # Convert to one hot vector
     y_train = tf.keras.utils.to_categorical(y_train, 10)
@@ -304,7 +301,6 @@ def make_train_data(
         .batch(128)
     )
 
-    print("Done!")
     return trainData, testData
 
 
