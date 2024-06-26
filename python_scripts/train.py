@@ -144,7 +144,6 @@ def multiple(
         random.seed(0)
 
         trainData, testData = datasets.make_train_data(shuffle_seed=seed)
-        testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
 
         model = make_cnn(
             input_shape=(32, 32, 3),
@@ -210,11 +209,11 @@ def retry(
 
             # Load the model log with the highest seed
             log = pd.read_csv(
-                f"../data_storage/models/{models[-1]}", index_col=0, header=None
+                f"../data_storage/models/{models[-1]}", index_col=0
             )
 
             # Check the last accuracy
-            acc = [log["val_accuracy"].values()[-1]]
+            acc = log["val_accuracy"].values[-1]
 
             # Get the seed from this log
             seed = int(models[-1].split("_")[0].replace("cnn", ""))
@@ -247,7 +246,6 @@ def retry(
 
         # Train the model
         trainData, testData = datasets.make_train_data(shuffle_seed=seed)
-        testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
 
         model = make_cnn(
             input_shape=(32, 32, 3),
