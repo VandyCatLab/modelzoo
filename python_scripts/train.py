@@ -8,6 +8,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers
 import click
+import pandas as pd
 
 import datasets
 
@@ -156,6 +157,117 @@ def multiple(
         model.summary()
 
         model = train(trainData, testData, model, conv, dense, augment, seed)
+
+        # Delete model to attempt to preserve gpu memory
+        del model
+        tf.keras.backend.clear_session()
+        gc.collect()
+
+
+@cli.command()
+@click.option(
+    "--conv_range",
+    type=int,
+    nargs=2,
+    help="Inclusive range of number of convolutional layers",
+)
+@click.option(
+    "--dense_range",
+    type=int,
+    nargs=2,
+    help="Inclusive range of number of dense layers",
+)
+@click.option("--augment", default=False, is_flag=True, help="Augment data")
+@click.option("--patience", type=int, default=10, help="Number of epochs to wait")
+def retry(
+    conv_range: Tuple[int, int] = [4, 13],
+    dense_range: Tuple[int, int] = [1, 10],
+    augment: bool = False,
+    patience: int = 10,
+):
+    """
+    Retry training models that failed to train.
+    """
+    # Make every combination of conv and dense
+    convRange = range(conv_range[0], conv_range[1] + 1)
+    denseRange = range(dense_range[0], dense_range[1] + 1)
+    combos = list(product(convRange, denseRange))
+
+    # This essentially will infinitely loop until we get everything
+    while True:
+        # Go through every combo and find bad combos
+        badCombos = []
+        for conv, dense in combos:
+            # Get all the model files with this conv and dense
+            models = os.listdir("../data_storage/models")
+            models = [model for model in models if model.endswith(".csv")]
+            models = [
+                model
+                for model in models
+                if f"dense{dense}_conv{conv}{'_augment' if augment else ''}" in model
+            ]
+            models = sorted(models)
+
+            # Load the model log with the highest seed
+            log = pd.read_csv(
+                f"../data_storage/models/{models[-1]}", index_col=0, header=None
+            )
+
+            # Check the last accuracy
+            acc = [log["val_accuracy"].values()[-1]]
+
+            # Get the seed from this log
+            seed = int(models[-1].split("_")[0].replace("cnn", ""))
+
+            # If the acc is lower than .12 save this as a badCombo
+            if acc < 0.12:
+                badCombos.append((conv, dense, seed))
+
+        # If there are no bad combos, break
+        if len(badCombos) == 0:
+            break
+        else:
+            click.echo(f"Found {len(badCombos)} bad combos")
+
+        # Pick a bad combo at random
+        conv, dense, seed = random.choice(badCombos)
+
+        # Increment seed
+        seed += 1
+
+        click.echo(
+            f"Retraining cnn{seed:02d}_dense{dense}_conv{conv}{'_augment' if augment else ''}"
+        )
+
+        # Reset seeds
+        os.environ["PYTHONHASHSEED"] = str(0)
+        np.random.seed(0)
+        tf.random.set_seed(0)
+        random.seed(0)
+
+        # Train the model
+        trainData, testData = datasets.make_train_data(shuffle_seed=seed)
+        testData = testData.prefetch(tf.data.experimental.AUTOTUNE).batch(128)
+
+        model = make_cnn(
+            input_shape=(32, 32, 3),
+            output_shape=10,
+            conv=conv,
+            dense=dense,
+            augment=augment,
+            seed=seed,
+        )
+
+        model = train(
+            trainData=trainData,
+            testData=testData,
+            model=model,
+            conv=conv,
+            dense=dense,
+            augment=augment,
+            seed=seed,
+            patience=patience,
+        )
 
         # Delete model to attempt to preserve gpu memory
         del model
@@ -323,7 +435,8 @@ def train(
     dense: int = 1,
     augment: bool = True,
     seed: int = 0,
-):
+    patience: Tuple[int, None] = None,
+) -> None:
     """
     Return a trained model using the given data. The finished model is saved
     with a training log. The conv, dense, augment, and seed arguments don't do
@@ -332,9 +445,6 @@ def train(
     optimizer = tf.keras.optimizers.SGD(
         learning_rate=0.01, momentum=0.9, clipnorm=500, weight_decay=1e-5
     )
-    # optimizer = tf.keras.optimizers.Adam(
-    #     learning_rate=0.01, clipnorm=500, weight_decay=1e-5
-    # )
     model.compile(
         optimizer=optimizer,
         loss="categorical_crossentropy",
@@ -352,11 +462,23 @@ def train(
         append=False,
     )
 
+    callbacks = [lrSchedule, csvLogger]
+
+    # If patience is set, add early stopping
+    if patience is not None:
+        earlyStop = tf.keras.callbacks.EarlyStopping(
+            monitor="val_accuracy",
+            patience=patience,
+            baseline=0.12,
+            restore_best_weights=False,
+        )
+        callbacks += [earlyStop]
+
     model.fit(
         trainData,
         epochs=350,
         validation_data=testData,
-        callbacks=[lrSchedule, csvLogger],
+        callbacks=callbacks,
     )
 
     # Save model
