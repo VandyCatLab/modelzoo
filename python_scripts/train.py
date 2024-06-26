@@ -177,16 +177,31 @@ def multiple(
     help="Inclusive range of number of dense layers",
 )
 @click.option("--augment", default=False, is_flag=True, help="Augment data")
-@click.option("--patience", type=int, default=10, help="Number of epochs to wait")
+@click.option(
+    "--patience",
+    type=int,
+    default=10,
+    help="Number of epochs to wait for early stopping",
+)
+@click.option("--gpu_id", type=int, default=0, help="GPU ID, -1 for no GPU")
 def retry(
     conv_range: Tuple[int, int] = [4, 13],
     dense_range: Tuple[int, int] = [1, 10],
     augment: bool = False,
     patience: int = 10,
+    gpu_id: int = 0,
 ):
     """
     Retry training models that failed to train.
     """
+    # Make specific gpu visible
+    if gpu_id == -1:
+        click.echo("Disabling GPU ops")
+        tf.config.set_visible_devices([], "GPU")
+    else:
+        tfDevices = tf.config.list_physical_devices("GPU")
+        tf.config.set_visible_devices(tfDevices[gpu_id], "GPU")
+
     # Make every combination of conv and dense
     convRange = range(conv_range[0], conv_range[1] + 1)
     denseRange = range(dense_range[0], dense_range[1] + 1)
@@ -208,9 +223,7 @@ def retry(
             models = sorted(models)
 
             # Load the model log with the highest seed
-            log = pd.read_csv(
-                f"../data_storage/models/{models[-1]}", index_col=0
-            )
+            log = pd.read_csv(f"../data_storage/models/{models[-1]}", index_col=0)
 
             # Check the last accuracy
             acc = log["val_accuracy"].values[-1]
