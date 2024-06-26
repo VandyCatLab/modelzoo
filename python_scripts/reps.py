@@ -642,10 +642,31 @@ def trained_extract(layer_idx: int = -4) -> None:
         model for model in models if os.path.isdir(f"../data_storage/models/{model}")
     ]
 
+    # Fine the extents of the parameters
+    minDense = min([int(model.split("_")[1].replace("dense", "")) for model in models])
+    maxDense = max([int(model.split("_")[1].replace("dense", "")) for model in models])
+    minConv = min([int(model.split("_")[2].replace("conv", "")) for model in models])
+    maxConv = max([int(model.split("_")[2].replace("conv", "")) for model in models])
+
+    denseRange = range(minDense, maxDense + 1)
+    convRange = range(minConv, maxConv + 1)
+
+    # For each combination, select the model with the highest seed
+    bestModels = []
+    for dense in denseRange:
+        for conv in convRange:
+            comboModels = [
+                model
+                for model in models
+                if f"dense{dense}_" in model and f"conv{conv}_" in model
+            ]
+            comboModels = sorted(comboModels)
+            bestModels.append(comboModels[-1])
+
     # Get dataset
     _, testData = datasets.make_train_data(batch_size=256)
 
-    for modelDir in models:
+    for modelDir in bestModels:
         rdmFile = f"../data_storage/trainedRDMs/{modelDir}.npy"
 
         # Check if file exists
@@ -677,19 +698,42 @@ def trained_sims() -> None:
     models = os.listdir("../data_storage/trainedRDMs")
     models = sorted(models)
 
+    # Fine the extents of the parameters
+    minDense = min([int(model.split("_")[1].replace("dense", "")) for model in models])
+    maxDense = max([int(model.split("_")[1].replace("dense", "")) for model in models])
+    minConv = min([int(model.split("_")[2].replace("conv", "")) for model in models])
+    maxConv = max([int(model.split("_")[2].replace("conv", "")) for model in models])
+
+    denseRange = range(minDense, maxDense + 1)
+    convRange = range(minConv, maxConv + 1)
+
+    # For each combination, select the model with the highest seed
+    bestModels = []
+    for dense in denseRange:
+        for conv in convRange:
+            comboModels = [
+                model
+                for model in models
+                if f"dense{dense}_" in model and f"conv{conv}_" in model
+            ]
+            comboModels = sorted(comboModels)
+            bestModels.append(comboModels[-1])
+
     # Create dataframe to store similarities
-    simDf = pd.DataFrame(index=models, columns=models, dtype="float32")
+    simDf = pd.DataFrame(index=bestModels, columns=bestModels, dtype="float32")
 
     # Loop through models
     with click.progressbar(
-        length=len(models) ** 2, label="Calculating sims", item_show_func=lambda x: x
+        length=len(bestModels) ** 2,
+        label="Calculating sims",
+        item_show_func=lambda x: x,
     ) as bar:
-        for i, model1 in enumerate(models):
+        for i, model1 in enumerate(bestModels):
             # Load this rdm
             rdm1 = np.load(f"../data_storage/trainedRDMs/{model1}")
 
             # Get rows to note repeat calculations
-            for model2 in models[i:]:
+            for model2 in bestModels[i:]:
                 if model1 == model2:
                     bar.update(1, current_item=f"{model1} - {model2}")
                     simDf.loc[model1, model2] = 1
