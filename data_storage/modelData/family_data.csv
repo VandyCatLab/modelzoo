@@ -79,16 +79,10 @@ tnt,0,0,1,0,0,1,1,1,1,0,1,0,2021,Supervised,"Image Classification, Object Detect
 tresnet,1,1,1,1,0,1,0,0,0,1,0,0,2020,Supervised,"Image Classification, Object Detection",ResNet optimized for GPU Architecture,"Max, Average"
 unet,1,0,0,0,0,1,0,0,0,1,0,0,2019,Supervised,Image Segmentation,U-shaped Architecture for Segmentation,Max
 repvgg,1,0,1,0,0,1,0,0,0,1,0,0,2021,Supervised,"Image Classification, Image Segmentation",Multi-Branch Topology for VGG,Average
-vgg11,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 11 Layers,Max
-vgg13,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 13 Layers,Max
-vgg16,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 16 Layers,Max
-vgg19,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 19 Layers,Max
+vgg,1,0,1,0,0,0,0,0,0,1,0,0,2014,Supervised,Image Classification,Deep Architecture with 11 Layers,Max
 visformer,1,0,1,0,0,1,1,1,1,1,1,0,2021,Supervised,"Image Classification, Object Detection",Convolutional Token Embedding,Average
 vit,0,1,1,1,0,1,1,1,1,0,1,0,2021,Supervised,Image Classification,Transformer Architecture Applied to Image Patches,Average
 volo,0,0,1,0,0,1,1,1,1,1,1,0,2021,Supervised,"Image Classification, Image Segmentation",Outlook Attention Mechanism,Average
 vovnet,1,0,1,0,0,1,0,0,0,1,0,0,2019,Supervised,Object Detection,One shot aggregation,Max
 xception,1,1,1,0,0,1,0,0,0,1,0,0,2016,Supervised,Image Classification,Depthwise Separable Convolutions,"Max, Average"
-xception41,1,0,1,0,0,1,0,0,0,1,0,0,2018,Supervised,"Image Classification, Object Detection",Deep Aligned Xception,Average
-xception65,1,0,1,0,0,1,0,0,0,1,0,0,2018,Supervised,"Image Classification, Object Detection",Deep Aligned Xception,Average
-xception71,1,0,1,0,0,1,0,0,0,1,0,0,2018,Supervised,"Image Classification, Object Detection",Deep Aligned Xception,Average
 xcit,0,0,1,0,0,1,1,1,1,1,0,0,2021,Self-Supervised,"Image Classification, Object Detection, Image Segmentation",Feature Cross-Covariance Self-Attention Transformer,"Average, Class Token"
