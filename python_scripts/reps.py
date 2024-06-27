@@ -12,6 +12,7 @@ import tensorflow_hub as hub
 import numpy as np
 import pandas as pd
 import click
+import numba as nb
 
 import analysis
 import datasets
@@ -690,10 +691,13 @@ def trained_extract(layer_idx: int = -4) -> None:
 
 
 @cli.command()
-def trained_sims() -> None:
+@click.option("--num_threads", type=int, default=4, help="Number of threads to use")
+def trained_sims(num_threads: int = 4) -> None:
     """
     Calculate similarity between all trained models.
     """
+    nb.set_num_threads(num_threads)
+
     # Get a list of models, based on directories
     models = os.listdir("../data_storage/trainedRDMs")
     models = sorted(models)
