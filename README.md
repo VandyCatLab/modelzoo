@@ -1,3 +1,6 @@
+# Yinuo
+This is the branch for Yinuo's exploration of Model Zoo. 
+
 # Model Zoo
 
 This repository requires an annoying combination of very specific dependencies
