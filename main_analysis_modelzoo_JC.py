@@ -1,20 +1,4 @@
 # %%
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import os
-
-import seaborn as sns
-
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
-
-# %%
-# NOTE: directly using model_summary csv files of /data/modelzoo/data_storage by Jason: 
-# ../../../../../../data/modelzoo/data_storage
-
-# %%
 # Log my print statements to a log file
 import sys
 import datetime
@@ -41,6 +25,24 @@ sys.stdout = Logger("log.txt")
 # Log start time
 print(f"\n===== Workflow Started: {datetime.datetime.now()} =====\n")
 
+# %%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+import seaborn as sns
+
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# %%
+# NOTE: directly using model_summary csv files of /data/modelzoo/data_storage by Jason: 
+# data_storage_path = "../../../../data/modelzoo/data_storage"
+
+# copied from this path, and use it locally in project directory
+
 # %% [markdown]
 # # Generate Model Summaries CSV Files
 
@@ -49,7 +51,7 @@ print(f"\n===== Workflow Started: {datetime.datetime.now()} =====\n")
 # The generated model summary csv files will be defaultly saved in the data_storage/results folder.
 # takes a while to run the following commands
 
-# TODO: currently, didn't re-run these commands and use the existing csv files in the ../../../../../../data/modelzoo/data_storage/modelData folder
+# currently, didn't re-run these commands and use the existing csv files here
 # if you want to re-run these commands, please uncomment the following lines
 
 # !python model_summaries.py give_summaries_timm
@@ -64,16 +66,23 @@ print(f"\n===== Workflow Started: {datetime.datetime.now()} =====\n")
 folder_save_plot = "plots"
 
 # Read in the model_summaries csv files
-# change to new csv files if the previous JSON files are updated
+# Use new csv files if the previous JSON files are updated
 # right now it uses existing csv files
 
+# combine data_storage_path with file relative paths (/modelData/models_summary_*.csv)
 models_summaries_file_paths = [
-   "../../../../../../data/modelzoo/data_storage/modelData/models_summary_keras.csv",
-    "../../../../../../data/modelzoo/data_storage/modelData/models_summary_pytorch.csv",
-    "../../../../../../data/modelzoo/data_storage/modelData/models_summary_tfhub.csv",
-    "../../../../../../data/modelzoo/data_storage/modelData/models_summary_timm_new.csv"
+    "data/models_summaries/models_summary_keras.csv",
+    "data/models_summaries/models_summary_pytorch.csv",
+    "data/models_summaries/models_summary_tfhub.csv",
+    "data/models_summaries/models_summary_timm_new.csv"
 ]
+#     "../../../../data/modelzoo/data_storage/modelData/models_summary_keras.csv",
+#     "../../../../data/modelzoo/data_storage/modelData/models_summary_pytorch.csv",
+#     "../../../../data/modelzoo/data_storage/modelData/models_summary_tfhub.csv",
+#     "../../../../data/modelzoo/data_storage/modelData/models_summary_timm_new.csv"
 
+print(models_summaries_file_paths[0])
+print(os.path.exists(models_summaries_file_paths[0]))
 
 # %% [markdown]
 # ## Concatenate all the model summaries CSV files into one
@@ -174,8 +183,9 @@ models_summaries_all = pd.concat(models_summaries_all, ignore_index=True)
 # %%
 # check if the total amount of models == 774 showed in the sims files
 
-# read in the sims data
-sims_data = pd.read_csv("../../../../../../data/modelzoo/data_storage/sims/yufos.csv")
+# read in a sims data
+sims_file_path = "data/sims/yufos.csv"
+sims_data = pd.read_csv(sims_file_path)
 
 # check if the models in sims are in the models_summaries_all
 sims_data_models = sims_data.columns[1:]
@@ -252,9 +262,6 @@ if duplicated_models.any():
 
 
 # Only include models if they are both in the model summaries and the sims data
-
-# read in the sims data
-sims_data = pd.read_csv("../../../../../../data/modelzoo/data_storage/sims/CUB200.csv", index_col=0)
 sims_data_models = sims_data.columns
 print(len(sims_data_models), "models in sims data")
 
@@ -267,47 +274,12 @@ print("Number of unique models:", len(models_summaries_all["Model"].unique()))
 print("Yes, Models are all unique" if len(models_summaries_all) == len(models_summaries_all["Model"].unique()) else "Still have duplicates: Models are not all unique")
 
 # %% [markdown]
-# ### Check if the amount of models align with existing sims file
-
-# %%
-# check if the total amount of models == 774 showed in the sims files
-
-# read in the sims data
-sims_data = pd.read_csv("../../../../../../data/modelzoo/data_storage/sims/yufos.csv")
-
-# check if the models in sims are in the models_summaries_all
-sims_data_models = sims_data.columns[1:]
-models_summaries_all_models = models_summaries_all["Model"].values
-print("Number of models in sims data:", len(sims_data_models))
-print("Number of models in models_summaries_all:", len(models_summaries_all_models))
-print()
-print("Number of models in sims but not in models_summaries_all:", len(set(sims_data_models) - set(models_summaries_all_models)))
-print("Number of models in models_summaries_all but not in sims:", len(set(models_summaries_all_models) - set(sims_data_models)))
-print()
-
-
-# print the models in models_summaries_all but not in sims
-print("Models in models_summaries_all but not in sims:")
-for model in set(models_summaries_all_models) - set(sims_data_models):
-    # print these models in a list
-    print(model)
-print()
-
-    
-# print the models in sims but not in models_summaries_all
-# print("Models in sims but not in models_summaries_all:")
-# for model in set(sims_data_models) - set(models_summaries_all_models):
-#     print(model)
-# print()
-
-    
-
-# %% [markdown]
-# ### Add family data (Jason)
+# ### Add family data from previous framework
 
 # %%
 # Load family and left join
-family_data = pd.read_csv(f"../../../../../../data/modelzoo/data_storage/modelData/family_data.csv")
+family_data_path = "data/models_summaries/family_data.csv"
+family_data = pd.read_csv(family_data_path)
 
 # Add binary attributes
 attributes_binary = [
@@ -346,14 +318,14 @@ models_summaries_all = models_summaries_all.rename(columns={"Pooling": "Pooling 
 
 # %%
 # Save the concatenated dataframe
-models_summaries_all.to_csv(f"modelData/models_summary_all.csv", index=False)
+models_summaries_all.to_csv(f"data/models_summary_all.csv", index=False)
 
 # %% [markdown]
 # ## Pre-Analysis on the concatenated file of all models' attributes
 
 # %%
 # Read the combined CSV file
-models_summaries_all = pd.read_csv("modelData/models_summary_all.csv")
+models_summaries_all = pd.read_csv("data/models_summary_all.csv")
 
 # %% [markdown]
 # ### Get attributes' types
@@ -449,33 +421,7 @@ attribute_table = attribute_table.sort_values(by="Empty data", ascending=True)
 print(attribute_table.to_string(index=False))
 
 # save the table
-attribute_table.to_csv("modelData/attribute_table.csv", index=False)
-
-# %%
-# for the "Training Dataset == ImageNet-1K", we want to have a bar plot based on family
-
-# filter the data
-models_summaries_all_imagenet = models_summaries_all[models_summaries_all["Training Dataset"] == "ImageNet-1K"]
-
-# group by family
-models_summaries_all_imagenet_family = models_summaries_all_imagenet.groupby("Family").size().reset_index(name="Count")
-
-# sort by count
-models_summaries_all_imagenet_family = models_summaries_all_imagenet_family.sort_values(by="Count", ascending=True)
-
-# plot the bar plot
-plt.figure(figsize=(10, 15))
-plt.barh(models_summaries_all_imagenet_family["Family"], models_summaries_all_imagenet_family["Count"])
-# mark the number of models
-for i, v in enumerate(models_summaries_all_imagenet_family["Count"]):
-    plt.text(v, i, str(v), color='black', va='center')
-plt.title("Number of models in ImageNet-1K by Family")
-plt.xlabel("Number of models")
-plt.ylabel("Family")
-plt.tight_layout()
-plt.savefig("plots/imagenet_family.png")
-plt.show()
-
+attribute_table.to_csv("data/attribute_table.csv", index=False)
 
 # %% [markdown]
 # ### fill in empty data
@@ -588,7 +534,7 @@ for column in models_summaries_all.columns:
             plt.xticks(rotation=10, ha='right')
         plt.grid(axis='y', alpha=0.4)
         plt.gca().set_xticks(range(num_unique))
-        plt.savefig(f'{folder_save}/categorical_{column}_model_distribution.png')
+        plt.savefig(f'{folder_save}/hist_categorical_{column}_model_distribution.png')
         plt.close()
 
     # Continuous columns
@@ -603,7 +549,7 @@ for column in models_summaries_all.columns:
         plt.axvline(models_summaries_all[column].mean(), linestyle='dashed', color='red', alpha=0.5, linewidth=1)
         models_summaries_all[column].plot(kind='kde', secondary_y=True, color="red", linewidth=1, alpha=0.5, label='KDE Density')
         plt.gca().xaxis.set_major_locator(plt.MaxNLocator(integer=True))
-        plt.savefig(f'{folder_save}/continuous_{column}_model_distribution.png')
+        plt.savefig(f'{folder_save}/hist_continuous_{column}_model_distribution.png')
         plt.close()
 
     # Binary columns
@@ -615,11 +561,40 @@ for column in models_summaries_all.columns:
         plt.title(f'Distribution of models by {column}')
         plt.xticks(rotation=0, ha='center')
         plt.grid(axis='y', alpha=0.4)
-        plt.savefig(f'{folder_save}/binary_{column}_model_distribution.png')
+        # add number above each bar
+        for i in range(2):
+            plt.text(i, models_summaries_all[column].value_counts().iloc[i], models_summaries_all[column].value_counts().iloc[i], ha='center', va='bottom')
+        plt.savefig(f'{folder_save}/hist_binary_{column}_model_distribution.png')
         plt.close()
         
     else:
         print(f"--> Skipping {column} because it's not categorical or numerical. The type is {models_summaries_all[column].dtype}")
+
+
+# %%
+# for the "Training Dataset == ImageNet-1K", we want to have a bar plot based on family
+
+# filter the data
+models_summaries_all_imagenet = models_summaries_all[models_summaries_all["Training Dataset"] == "ImageNet-1K"]
+
+# group by family
+models_summaries_all_imagenet_family = models_summaries_all_imagenet.groupby("Family").size().reset_index(name="Count")
+
+# sort by count
+models_summaries_all_imagenet_family = models_summaries_all_imagenet_family.sort_values(by="Count", ascending=True)
+
+# plot the bar plot
+plt.figure(figsize=(10, 15))
+plt.barh(models_summaries_all_imagenet_family["Family"], models_summaries_all_imagenet_family["Count"])
+# mark the number of models
+for i, v in enumerate(models_summaries_all_imagenet_family["Count"]):
+    plt.text(v, i, str(v), color='black', va='center')
+plt.title("Number of models in ImageNet-1K by Family")
+plt.xlabel("Number of models")
+plt.ylabel("Family")
+plt.tight_layout()
+plt.savefig("plots/family_distribution_imagenet1k.png")
+plt.close()
 
 
 # %% [markdown]
@@ -657,13 +632,13 @@ plt.show()
 
 # %%
 # Standardize the continuous attributes
-X = StandardScaler().fit_transform(models_summaries_all[attribute_continuous_cleanned])
+Xs_continuous = StandardScaler().fit_transform(models_summaries_all[attribute_continuous_cleanned])
 
 
 # Calculate the VIF (Variance Inflation Factor) for each continuous attribute
 vif_data = pd.DataFrame({
     "Attributes": attribute_continuous_cleanned,
-    "VIF": [variance_inflation_factor(X, i) for i in range(X.shape[1])]
+    "VIF": [variance_inflation_factor(Xs_continuous, i) for i in range(Xs_continuous.shape[1])]
 })
 
 # sort the VIF from largest to smallest
@@ -687,13 +662,13 @@ plt.savefig(f'{folder_save_plot}/continuous_attributes_vif.png')
 plt.show()
 
 # %% [markdown]
-# ### Use PCA to find the most important attributes
+# ### Use PCA to find the most important continuous attributes
 
 # %%
 # PCA
 
 pca = PCA()
-pca_result = pca.fit_transform(X)
+pca_result = pca.fit_transform(Xs_continuous)
 
 # explained variance ratio: how much variance each principal component explains 
 explained_variance_ratio = pca.explained_variance_ratio_ # PC1 to n explains the most to the least variance
@@ -718,6 +693,7 @@ plt.title('Explained Variance: Scree Plot')
 plt.xticks(range(1, len(explained_variance_ratio) + 1))
 plt.legend(loc='best')
 plt.grid(True)
+plt.savefig(f'{folder_save_plot}/continuous_attributes_pca_scree_plot.png')
 plt.show()
 
 
@@ -739,7 +715,7 @@ sns.heatmap(pca_loadings.T,
 plt.title('PCA Loadings Heatmap')
 plt.xlabel('Principal Components')
 plt.ylabel('Attributes')
-plt.savefig(f'{folder_save_plot}/pca_loadings_heatmap.png')
+plt.savefig(f'{folder_save_plot}/continuous_attributes_pca_loadings_heatmap.png')
 plt.show()
 
 
@@ -762,7 +738,7 @@ plt.xlim(-5, 5)
 plt.ylim(-5, 5)
 plt.title('PCA Biplot: Samples and Attribute Influences')
 plt.grid(True)
-plt.savefig(f'{folder_save_plot}/pca_biplot.png')
+plt.savefig(f'{folder_save_plot}/continuous_attributes_pca_biplot.png')
 plt.show()
 
 

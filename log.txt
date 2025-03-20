@@ -1,0 +1,831 @@
+
+===== Workflow Started: 2025-03-20 17:19:49.937419 =====
+
+
+===== Workflow Started: 2025-03-20 17:27:22.861019 =====
+
+
+===== Workflow Started: 2025-03-20 17:28:42.997068 =====
+
+[{"variableName": "models_summaries_file_paths", "type": "list", "supportedEngines": ["pandas"], "isLocalVariable": false, "rawType": "builtins.list"}]
+['/modelData/models_summary_keras.csv', '/modelData/models_summary_pytorch.csv', '/modelData/models_summary_tfhub.csv', '/modelData/models_summary_timm_new.csv']
+
+===== Workflow Started: 2025-03-20 17:35:33.829188 =====
+
+
+===== Workflow Started: 2025-03-20 17:48:44.408717 =====
+
+data/models_summaries/models_summary_keras.csv
+True
+Number of models in sims data: 774
+Number of models in models_summaries_all: 928
+
+Number of models in sims but not in models_summaries_all: 100
+Number of models in models_summaries_all but not in sims: 239
+
+Models in models_summaries_all but not in sims:
+tf_efficientnetv2_m_in21k
+beit_base_patch16_224_in22k
+imagenet/efficientnet_v2_imagenet21k_b1/feature_vector
+experts/bit/r50x1/in21k/tree
+convnext_large_in22ft1k
+experts/bit/r50x1/in21k/animal
+imagenet/mobilenet_v2_035_160/feature_vector
+tf_efficientnet_b0_ap
+imagenet/efficientnet_v2_imagenet1k_l/feature_vector
+resnetrs420
+tf_efficientnetv2_s
+resnetv2_50x3_bitm
+tf_efficientnet_b8
+resnetblur50
+imagenet/efficientnet_v2_imagenet21k_b2/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector
+vgg11
+imagenet/inception_v3/feature_vector
+tf_efficientnet_cc_b1_8e
+efficientnet/b1/feature-vector
+tf_efficientnet_b0
+resnetrs101
+convnext_femto
+bit/m-r50x1
+resnet18d
+efficientnet/b7/feature-vector
+convnext_tiny_in22k
+imagenet/mobilenet_v3_large_075_224/feature_vector
+tf_efficientnet_b3
+tf_mobilenetv3_large_100
+imagenet/efficientnet_v2_imagenet21k_l/feature_vector
+convnext_pico
+experts/bit/r50x1/in21k/whole
+resnetv2_101x1_bitm_in21k
+experts/bit/r50x1/in21k/instrument
+tf_efficientnetv2_b2
+tf_efficientnet_b7_ap
+gluon_xception65
+imagenet/mobilenet_v2_035_96/feature_vector
+tf_efficientnet_b4
+imagenet/mobilenet_v1_100_128/feature_vector
+convnext_base_in22ft1k
+imagenet/efficientnet_v2_imagenet1k_s/feature_vector
+efficientnet_em
+experts/bit/r50x1/in21k/arthropod
+imagenet/nasnet_mobile/feature_vector
+beitv2_base_patch16_224_in22k
+efficientnet_es_pruned
+imagenet/mobilenet_v2_100_128/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector
+tf_efficientnetv2_l_in21ft1k
+beit_large_patch16_224_in22k
+imagenet/resnet_v2_152/feature_vector
+experts/bit/r50x1/in21k/part
+imagenet/inception_v1/feature_vector
+imagenet/inception_resnet_v2/feature_vector
+pvt_v2_b5
+imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector
+efficientnet/b4/feature-vector
+tf_efficientnetv2_s_in21ft1k
+experts/bit/r50x1/in21k/food
+tf_efficientnet_el
+imagenet/mobilenet_v1_050_160/feature_vector
+resnet26t
+tf_efficientnet_l2_ns
+experts/bit/r50x1/in21k/vehicle
+tf_efficientnet_lite4
+imagenet/resnet_v2_101/feature_vector
+resnetv2_101x3_bitm
+mobilenetv2_120d
+efficientnetv2_rw_t
+convnext_small_in22ft1k
+resnet200d
+tf_efficientnetv2_l
+tf_efficientnet_l2_ns_475
+experts/bit/r50x1/in21k/structure
+resnetv2_101
+imagenet/efficientnet_v2_imagenet1k_b3/feature_vector
+tf_efficientnetv2_s_in21k
+resnet50d
+imagenet/resnet_v1_101/feature_vector
+tf_efficientnet_b1_ns
+efficientnet/b0/feature-vector
+experts/bit/r50x1/in21k/flower
+tf_efficientnet_b5_ns
+bit/s-r50x1
+mobilenetv2_110d
+imagenet/efficientnet_v2_imagenet21k_m/feature_vector
+convnext_atto
+imagenet/nasnet_large/feature_vector
+imagenet/resnet_v1_50/feature_vector
+resnet34
+tf_mobilenetv3_small_100
+imagenet/mobilenet_v1_100_224/feature_vector
+tf_efficientnetv2_xl_in21k
+efficientnetv2_rw_m
+resnetv2_152x2_bitm_in21k
+imagenet/mobilenet_v1_050_224/feature_vector
+tf_efficientnet_b4_ap
+tf_efficientnetv2_xl_in21ft1k
+convnext_xlarge_in22ft1k
+tf_mobilenetv3_large_minimal_100
+tf_efficientnet_lite0
+experts/bit/r50x1/in21k/spermatophyte
+resnet26
+efficientnet_b3_pruned
+experts/bit/r50x1/in21k/conveyance
+imagenet/resnet_v1_152/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector
+efficientnet_el
+imagenet/mobilenet_v2_100_224/feature_vector
+deit3_medium_patch16_224_in21ft1k
+mobilenetv2_100
+resnet50_gn
+vit_base_patch32_224_sam
+efficientnet_b1
+tf_efficientnetv2_m
+imagenet/mobilenet_v2_100_160/feature_vector
+densenet161
+resnet_50/feature_vector
+beitv2_large_patch16_224_in22k
+resnetrs350
+tf_mobilenetv3_small_minimal_100
+cropnet/feature_vector/concat
+mobilenetv2_140
+resnetrs200
+tf_efficientnet_lite3
+resnetv2_152x2_bit_teacher
+mobilenetv2_050
+imagenet/resnet_v2_50/feature_vector
+vgg16_bn
+bit/m-r101x1
+imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector
+imagenet/mobilenet_v3_small_100_224/feature_vector
+experts/bit/r50x1/in21k/artifact
+resnetv2_152x2_bitm
+imagenet/efficientnet_v2_imagenet1k_b2/feature_vector
+experts/bit/r50x1/in21k/consumer_goods
+tf_efficientnet_b6_ns
+xcit_small_24_p16_384_dist
+tf_efficientnet_b6_ap
+efficientnet/b5/feature-vector
+imagenet/mobilenet_v2_050_192/feature_vector
+mobilenetv3_large_100_miil
+tf_efficientnet_b7
+imagenet/efficientnet_v2_imagenet21k_xl/feature_vector
+xcit_medium_24_p16_224_dist
+resnet26d
+tf_efficientnet_b3_ap
+resnet33ts
+tf_efficientnet_b6
+efficientnet/b3/feature-vector
+vgg11_bn
+resnet10t
+imagenet/efficientnet_v2_imagenet21k_b3/feature_vector
+experts/bit/r50x1/in21k/plant
+efficientnet_el_pruned
+cropnet/feature_vector/imagenet
+tf_efficientnet_b1
+cropnet/feature_vector/cassava_disease_V1
+imagenet/efficientnet_v2_imagenet21k_s/feature_vector
+mobilenetv3_large_100
+mobilenetv3_small_100
+tf_efficientnet_cc_b0_4e
+tf_efficientnet_b5_ap
+imagenet/mobilenet_v2_140_224/feature_vector
+resnet51q
+imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector
+experts/bit/r50x1/in21k/abstraction
+resnetv2_101x3_bitm_in21k
+mobilenetv3_rw
+inaturalist/inception_v3/feature_vector
+efficientnet_es
+tf_efficientnet_b0_ns
+efficientnet_b1_pruned
+tf_efficientnet_b8_ap
+resnetv2_50x1_bitm_in21k
+vgg13_bn
+resnetv2_50x1_bit_distilled
+tf_efficientnet_b1_ap
+tf_efficientnet_b3_ns
+imagenet/mobilenet_v2_130_224/feature_vector
+mobilenetv3_small_050
+resnetv2_50x1_bitm
+imagenet/mobilenet_v2_050_160/feature_vector
+tf_efficientnet_b2_ns
+vit_giant_patch14_224_clip_laion2b
+densenetblur121d
+tf_efficientnet_cc_b0_8e
+tf_efficientnet_lite2
+resnet34d
+resnetrs270
+resnetv2_152x4_bitm_in21k
+tf_efficientnet_b4_ns
+tf_efficientnetv2_b3
+convnext_xlarge_in22k
+tf_efficientnet_em
+resnetrs152
+tf_mobilenetv3_small_075
+mobilenetv3_small_075
+resnetv2_152x2_bit_teacher_384
+efficientnet/b2/feature-vector
+tf_efficientnet_lite1
+tf_efficientnetv2_l_in21k
+imagenet/mobilenet_v3_small_075_224/feature_vector
+experts/bit/r50x1/in21k/object
+imagenet/mobilenet_v1_025_192/feature_vector
+imagenet/efficientnet_v2_imagenet1k_b0/feature_vector
+resnetaa50
+nts-net
+resnet152d
+efficientnet_b2_pruned
+imagenet/pnasnet_large/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector
+efficientnet_lite0
+imagenet/efficientnet_v2_imagenet1k_m/feature_vector
+resnetv2_50d_gn
+imagenet/mobilenet_v2_075_160/feature_vector
+efficientnet_b3
+imagenet/mobilenet_v2_075_96/feature_vector
+convnext_tiny_hnf
+vit_base_patch16_224_sam
+imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector
+imagenet/inception_v2/feature_vector
+vgg13
+resnet18
+imagenet/mobilenet_v3_large_100_224/feature_vector
+convnext_nano
+imagenet/efficientnet_v2_imagenet21k_b0/feature_vector
+efficientnet_b2
+efficientnet_b0
+tf_efficientnetv2_b1
+tv_densenet121
+resnet101d
+resnetv2_50x3_bitm_in21k
+tf_efficientnet_b2
+tf_mobilenetv3_large_075
+resnetv2_50
+resnet14t
+
+Duplicated models: ['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']
+Dropped 15 duplicated models from keras
+775 models in sims data
+Dropped models that are not in sims data 674 models left
+Number of models: 674
+Number of unique models: 674
+Yes, Models are all unique
+All 42 attributes: Index(['Training Dataset', 'Highest Internal Layer Parameters', 'Dense Layers',
+       'Normalization Layers', 'Architecture', 'MAX RF', 'Origin',
+       'Crop Percentage', 'Family', 'Output Features', 'Pooling Layers',
+       'Max RF', 'Bottlenecks', 'Residual Blocks',
+       'Lowest Internal Layer Parameters', 'RF25 Layer Number',
+       'Attention Layers', 'Layers', 'Recurrent Layers', 'Model',
+       'Conv Layers', 'Parameters', 'RF25 Layer Name', 'Last Layer Parameters',
+       'First Layer Parameters', 'Has Convolutional Layers',
+       'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks',
+       'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers',
+       'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU', 'Other',
+       'Year Made', 'Learning Type', 'Primary Application',
+       'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')
+
+Finished checking columns
+                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0
+
+Analyzing 15 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Output Features', 'Residual Blocks']
+...Plotting Training Dataset...
+Number of unique models: 6
+Total rows: 674
+...Plotting Highest Internal Layer Parameters...
+...Plotting Dense Layers...
+...Plotting Normalization Layers...
+...Plotting Architecture...
+Number of unique models: 614
+Total rows: 674
+Number of unique models after combining: 30
+Total rows after combining: 614
+Skipping MAX RF because more than half of the rows are missing.
+...Plotting Origin...
+Number of unique models: 4
+Total rows: 674
+...Plotting Crop Percentage...
+--> Skipping Crop Percentage because it's not categorical or numerical. The type is float64
+...Plotting Family...
+Number of unique models: 81
+Total rows: 674
+...Plotting Output Features...
+...Plotting Pooling Layers...
+Skipping Max RF because more than half of the rows are missing.
+...Plotting Bottlenecks...
+...Plotting Residual Blocks...
+...Plotting Lowest Internal Layer Parameters...
+Skipping RF25 Layer Number because more than half of the rows are missing.
+...Plotting Attention Layers...
+...Plotting Layers...
+...Plotting Recurrent Layers...
+...Plotting Model...
+Number of unique models: 674
+Total rows: 674
+Alert: Model has unique values for each row. Skipping for plotting.
+...Plotting Conv Layers...
+...Plotting Parameters...
+Skipping RF25 Layer Name because more than half of the rows are missing.
+...Plotting Last Layer Parameters...
+...Plotting First Layer Parameters...
+...Plotting Has Convolutional Layers...
+...Plotting Has Residual Blocks...
+...Plotting Has Dense Layers...
+...Plotting Has Bottlenecks...
+...Plotting Has Recurrent Layers...
+...Plotting Has Skip Connections...
+...Plotting Has Attention Layers...
+...Plotting Tokenized...
+...Plotting Transformer...
+...Plotting Has ReLU...
+...Plotting Has GeLU...
+...Plotting Other...
+Number of unique models: 3
+Total rows: 674
+...Plotting Year Made...
+--> Skipping Year Made because it's not categorical or numerical. The type is float64
+...Plotting Learning Type...
+Number of unique models: 2
+Total rows: 674
+...Plotting Primary Application...
+Number of unique models: 7
+Total rows: 674
+...Plotting Key Distinguishing Feature...
+Number of unique models: 77
+Total rows: 674
+...Plotting Pooling Type...
+Number of unique models: 8
+Total rows: 674
+
+Variance Inflation Factor (VIF):
+                           Attributes        VIF
+2   Highest Internal Layer Parameters  23.384935
+0                          Parameters  22.410949
+5                              Layers  11.524502
+7                         Conv Layers   9.622511
+3               Last Layer Parameters   5.303537
+13                    Output Features   5.166853
+8                        Dense Layers   4.762500
+9                Normalization Layers   4.197365
+14                    Residual Blocks   2.369301
+6                    Attention Layers   1.971996
+12                        Bottlenecks   1.367791
+4    Lowest Internal Layer Parameters   1.310685
+1              First Layer Parameters   1.136770
+10                     Pooling Layers   1.132071
+11                   Recurrent Layers   1.020614
+Number of Principal Components to capture 90% of the variance: 9
+
+===== Workflow Started: 2025-03-20 17:53:17.796309 =====
+
+data/models_summaries/models_summary_keras.csv
+True
+Number of models in sims data: 774
+Number of models in models_summaries_all: 928
+
+Number of models in sims but not in models_summaries_all: 100
+Number of models in models_summaries_all but not in sims: 239
+
+Models in models_summaries_all but not in sims:
+experts/bit/r50x1/in21k/artifact
+efficientnet_b3_pruned
+tf_efficientnetv2_xl_in21k
+experts/bit/r50x1/in21k/arthropod
+resnetrs420
+convnext_small_in22ft1k
+densenet161
+resnet51q
+imagenet/mobilenet_v1_100_224/feature_vector
+convnext_pico
+resnet34d
+tf_efficientnetv2_l
+convnext_atto
+resnetv2_50x1_bitm_in21k
+beit_base_patch16_224_in22k
+resnet18
+mobilenetv2_100
+efficientnet/b7/feature-vector
+imagenet/mobilenet_v2_050_160/feature_vector
+tf_efficientnet_b2_ns
+vit_giant_patch14_224_clip_laion2b
+resnetaa50
+resnet34
+resnetv2_152x4_bitm_in21k
+imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector
+tf_efficientnet_b0
+resnetv2_101x3_bitm
+experts/bit/r50x1/in21k/abstraction
+tf_efficientnet_l2_ns_475
+efficientnet/b4/feature-vector
+imagenet/efficientnet_v2_imagenet1k_s/feature_vector
+imagenet/efficientnet_v2_imagenet21k_l/feature_vector
+mobilenetv2_120d
+imagenet/mobilenet_v2_100_128/feature_vector
+resnet10t
+densenetblur121d
+imagenet/mobilenet_v2_075_96/feature_vector
+tf_mobilenetv3_small_100
+mobilenetv2_110d
+convnext_femto
+resnetblur50
+tf_efficientnet_lite2
+efficientnet/b3/feature-vector
+tf_efficientnet_b8
+vgg13
+tf_efficientnet_b7_ap
+experts/bit/r50x1/in21k/part
+efficientnet_lite0
+tf_efficientnet_b3
+xcit_small_24_p16_384_dist
+tf_mobilenetv3_large_minimal_100
+resnetrs200
+imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector
+resnetv2_152x2_bitm
+tf_efficientnet_b7
+imagenet/efficientnet_v2_imagenet21k_s/feature_vector
+resnet26t
+imagenet/resnet_v1_152/feature_vector
+efficientnetv2_rw_m
+resnetrs350
+imagenet/mobilenet_v3_small_100_224/feature_vector
+imagenet/mobilenet_v2_035_160/feature_vector
+experts/bit/r50x1/in21k/whole
+experts/bit/r50x1/in21k/tree
+inaturalist/inception_v3/feature_vector
+imagenet/inception_v3/feature_vector
+resnetv2_101
+imagenet/mobilenet_v1_050_224/feature_vector
+imagenet/mobilenet_v2_035_96/feature_vector
+imagenet/efficientnet_v2_imagenet1k_m/feature_vector
+resnet_50/feature_vector
+convnext_xlarge_in22ft1k
+deit3_medium_patch16_224_in21ft1k
+imagenet/inception_v2/feature_vector
+imagenet/mobilenet_v3_large_075_224/feature_vector
+tf_efficientnet_cc_b0_8e
+mobilenetv2_050
+tf_mobilenetv3_large_075
+experts/bit/r50x1/in21k/spermatophyte
+resnet101d
+imagenet/efficientnet_v2_imagenet21k_b3/feature_vector
+imagenet/efficientnet_v2_imagenet21k_m/feature_vector
+mobilenetv3_small_050
+tf_efficientnetv2_s_in21ft1k
+mobilenetv3_large_100_miil
+resnetv2_152x2_bit_teacher
+vgg11
+resnet14t
+tf_efficientnetv2_s_in21k
+experts/bit/r50x1/in21k/food
+tf_efficientnetv2_l_in21k
+beit_large_patch16_224_in22k
+resnetrs101
+tf_efficientnet_b1_ns
+tf_efficientnet_b6_ns
+efficientnet/b2/feature-vector
+gluon_xception65
+resnet26
+mobilenetv3_small_075
+imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector
+tf_efficientnet_lite1
+tf_efficientnet_b2
+imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector
+efficientnet_b2
+imagenet/mobilenet_v2_050_192/feature_vector
+vgg11_bn
+imagenet/nasnet_mobile/feature_vector
+imagenet/resnet_v2_101/feature_vector
+convnext_tiny_in22k
+tf_efficientnetv2_s
+efficientnet/b0/feature-vector
+imagenet/resnet_v2_50/feature_vector
+convnext_tiny_hnf
+tf_efficientnet_b3_ns
+tf_efficientnet_cc_b1_8e
+imagenet/resnet_v1_50/feature_vector
+imagenet/resnet_v2_152/feature_vector
+imagenet/mobilenet_v2_130_224/feature_vector
+imagenet/resnet_v1_101/feature_vector
+resnetv2_50x3_bitm_in21k
+imagenet/mobilenet_v2_100_224/feature_vector
+resnet200d
+experts/bit/r50x1/in21k/instrument
+convnext_nano
+tf_efficientnet_b1
+tf_efficientnet_cc_b0_4e
+nts-net
+experts/bit/r50x1/in21k/consumer_goods
+resnetv2_50x3_bitm
+tf_efficientnet_el
+bit/m-r101x1
+efficientnet_el_pruned
+resnetv2_50x1_bit_distilled
+imagenet/mobilenet_v3_small_075_224/feature_vector
+imagenet/efficientnet_v2_imagenet21k_b2/feature_vector
+tf_mobilenetv3_small_075
+tf_efficientnetv2_b1
+efficientnet_el
+efficientnet_b1_pruned
+tf_efficientnet_b3_ap
+imagenet/efficientnet_v2_imagenet21k_b0/feature_vector
+efficientnet_b3
+imagenet/mobilenet_v3_large_100_224/feature_vector
+vit_base_patch32_224_sam
+imagenet/mobilenet_v2_100_160/feature_vector
+tf_efficientnet_b4_ap
+resnet18d
+tf_efficientnet_b6
+tf_efficientnet_lite4
+experts/bit/r50x1/in21k/plant
+pvt_v2_b5
+experts/bit/r50x1/in21k/conveyance
+resnetv2_152x2_bitm_in21k
+xcit_medium_24_p16_224_dist
+tf_efficientnet_l2_ns
+tf_efficientnetv2_m
+tf_efficientnetv2_l_in21ft1k
+efficientnet/b5/feature-vector
+tf_efficientnet_b5_ap
+efficientnet_es_pruned
+experts/bit/r50x1/in21k/animal
+imagenet/inception_resnet_v2/feature_vector
+beitv2_large_patch16_224_in22k
+resnetv2_152x2_bit_teacher_384
+imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector
+experts/bit/r50x1/in21k/object
+imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector
+resnet152d
+imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector
+resnetv2_50x1_bitm
+tf_efficientnet_lite3
+mobilenetv3_small_100
+vgg16_bn
+imagenet/mobilenet_v1_025_192/feature_vector
+imagenet/inception_v1/feature_vector
+tf_efficientnet_b5_ns
+resnetv2_101x3_bitm_in21k
+tf_efficientnet_b1_ap
+efficientnet_b1
+imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector
+imagenet/efficientnet_v2_imagenet21k_xl/feature_vector
+resnet50_gn
+tf_efficientnet_b6_ap
+tf_efficientnet_b8_ap
+tf_efficientnet_b4_ns
+cropnet/feature_vector/concat
+beitv2_base_patch16_224_in22k
+imagenet/mobilenet_v2_140_224/feature_vector
+imagenet/efficientnet_v2_imagenet1k_b0/feature_vector
+resnet26d
+mobilenetv3_rw
+tf_efficientnetv2_b3
+imagenet/efficientnet_v2_imagenet1k_b3/feature_vector
+convnext_xlarge_in22k
+imagenet/pnasnet_large/feature_vector
+tv_densenet121
+tf_efficientnetv2_xl_in21ft1k
+experts/bit/r50x1/in21k/flower
+imagenet/mobilenet_v1_050_160/feature_vector
+resnet50d
+experts/bit/r50x1/in21k/structure
+efficientnet/b1/feature-vector
+efficientnet_b2_pruned
+convnext_base_in22ft1k
+resnetv2_50
+imagenet/efficientnet_v2_imagenet1k_l/feature_vector
+tf_efficientnet_em
+imagenet/efficientnet_v2_imagenet21k_b1/feature_vector
+efficientnet_b0
+tf_efficientnet_lite0
+imagenet/nasnet_large/feature_vector
+bit/m-r50x1
+convnext_large_in22ft1k
+resnetv2_101x1_bitm_in21k
+cropnet/feature_vector/cassava_disease_V1
+resnet33ts
+mobilenetv2_140
+resnetrs270
+tf_efficientnetv2_m_in21k
+imagenet/efficientnet_v2_imagenet1k_b2/feature_vector
+efficientnetv2_rw_t
+cropnet/feature_vector/imagenet
+bit/s-r50x1
+vit_base_patch16_224_sam
+resnetrs152
+vgg13_bn
+tf_efficientnetv2_b2
+experts/bit/r50x1/in21k/vehicle
+efficientnet_em
+tf_efficientnet_b0_ns
+tf_efficientnet_b4
+efficientnet_es
+resnetv2_50d_gn
+tf_mobilenetv3_small_minimal_100
+imagenet/mobilenet_v1_100_128/feature_vector
+imagenet/mobilenet_v2_075_160/feature_vector
+tf_efficientnet_b0_ap
+mobilenetv3_large_100
+tf_mobilenetv3_large_100
+
+Duplicated models: ['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']
+Dropped 15 duplicated models from keras
+775 models in sims data
+Dropped models that are not in sims data 674 models left
+Number of models: 674
+Number of unique models: 674
+Yes, Models are all unique
+All 42 attributes: Index(['Pooling Layers', 'Max RF', 'Highest Internal Layer Parameters',
+       'Conv Layers', 'RF25 Layer Name', 'Family', 'Origin', 'Architecture',
+       'MAX RF', 'Attention Layers', 'Parameters', 'Recurrent Layers', 'Model',
+       'Layers', 'Crop Percentage', 'Dense Layers', 'Output Features',
+       'RF25 Layer Number', 'Bottlenecks', 'Last Layer Parameters',
+       'First Layer Parameters', 'Lowest Internal Layer Parameters',
+       'Training Dataset', 'Residual Blocks', 'Normalization Layers',
+       'Has Convolutional Layers', 'Has Residual Blocks', 'Has Dense Layers',
+       'Has Bottlenecks', 'Has Recurrent Layers', 'Has Skip Connections',
+       'Has Attention Layers', 'Tokenized', 'Transformer', 'Has ReLU',
+       'Has GeLU', 'Other', 'Year Made', 'Learning Type',
+       'Primary Application', 'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')
+
+Finished checking columns
+                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0
+
+Analyzing 15 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Output Features', 'Residual Blocks']
+...Plotting Pooling Layers...
+Skipping Max RF because more than half of the rows are missing.
+...Plotting Highest Internal Layer Parameters...
+...Plotting Conv Layers...
+Skipping RF25 Layer Name because more than half of the rows are missing.
+...Plotting Family...
+Number of unique models: 81
+Total rows: 674
+...Plotting Origin...
+Number of unique models: 4
+Total rows: 674
+...Plotting Architecture...
+Number of unique models: 614
+Total rows: 674
+Number of unique models after combining: 30
+Total rows after combining: 614
+Skipping MAX RF because more than half of the rows are missing.
+...Plotting Attention Layers...
+...Plotting Parameters...
+...Plotting Recurrent Layers...
+...Plotting Model...
+Number of unique models: 674
+Total rows: 674
+Alert: Model has unique values for each row. Skipping for plotting.
+...Plotting Layers...
+...Plotting Crop Percentage...
+--> Skipping Crop Percentage because it's not categorical or numerical. The type is float64
+...Plotting Dense Layers...
+...Plotting Output Features...
+Skipping RF25 Layer Number because more than half of the rows are missing.
+...Plotting Bottlenecks...
+...Plotting Last Layer Parameters...
+...Plotting First Layer Parameters...
+...Plotting Lowest Internal Layer Parameters...
+...Plotting Training Dataset...
+Number of unique models: 6
+Total rows: 674
+...Plotting Residual Blocks...
+...Plotting Normalization Layers...
+...Plotting Has Convolutional Layers...
+...Plotting Has Residual Blocks...
+...Plotting Has Dense Layers...
+...Plotting Has Bottlenecks...
+...Plotting Has Recurrent Layers...
+...Plotting Has Skip Connections...
+...Plotting Has Attention Layers...
+...Plotting Tokenized...
+...Plotting Transformer...
+...Plotting Has ReLU...
+...Plotting Has GeLU...
+...Plotting Other...
+Number of unique models: 3
+Total rows: 674
+...Plotting Year Made...
+--> Skipping Year Made because it's not categorical or numerical. The type is float64
+...Plotting Learning Type...
+Number of unique models: 2
+Total rows: 674
+...Plotting Primary Application...
+Number of unique models: 7
+Total rows: 674
+...Plotting Key Distinguishing Feature...
+Number of unique models: 77
+Total rows: 674
+...Plotting Pooling Type...
+Number of unique models: 8
+Total rows: 674
+
+Variance Inflation Factor (VIF):
+                           Attributes        VIF
+2   Highest Internal Layer Parameters  23.384935
+0                          Parameters  22.410949
+5                              Layers  11.524502
+7                         Conv Layers   9.622511
+3               Last Layer Parameters   5.303537
+13                    Output Features   5.166853
+8                        Dense Layers   4.762500
+9                Normalization Layers   4.197365
+14                    Residual Blocks   2.369301
+6                    Attention Layers   1.971996
+12                        Bottlenecks   1.367791
+4    Lowest Internal Layer Parameters   1.310685
+1              First Layer Parameters   1.136770
+10                     Pooling Layers   1.132071
+11                   Recurrent Layers   1.020614
+Number of Principal Components to capture 90% of the variance: 9
