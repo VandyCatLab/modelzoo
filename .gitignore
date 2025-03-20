@@ -7,3 +7,12 @@ torch_cache/
 .vscode/
 *.npy
 *.pkl
+illustration/
+README_yinuo.md
+python_scripts/try.sh
+python_scripts/run.sh
+todo_modelzoo.md
+yinuo_outputs_archive/
+yinuo_outputs_tem/
+yinuo_readme.md
+archive/

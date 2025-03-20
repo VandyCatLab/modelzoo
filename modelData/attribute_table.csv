@@ -1,0 +1,43 @@
+Attribute,Type,Empty data,Unique values
+Family,Categorical,0,81
+Training Dataset,Categorical,0,6
+Layers,Numerical,0,283
+Parameters,Numerical,0,564
+Origin,Categorical,0,4
+Model,Categorical,0,674
+Output Features,Numerical,0,9
+Pooling Layers,Numerical,3,22
+Residual Blocks,Numerical,3,41
+Normalization Layers,Numerical,3,119
+Dense Layers,Numerical,3,54
+Conv Layers,Numerical,3,143
+Attention Layers,Numerical,3,33
+Bottlenecks,Numerical,3,30
+Recurrent Layers,Numerical,3,4
+Has Recurrent Layers,Binary,13,1
+Has Skip Connections,Binary,13,2
+Has Bottlenecks,Binary,13,2
+Key Distinguishing Feature,Categorical,13,77
+Pooling Type,Categorical,13,8
+Tokenized,Binary,13,2
+Transformer,Binary,13,2
+Learning Type,Categorical,13,2
+Has Attention Layers,Binary,13,2
+Other,Categorical,13,3
+Primary Application,Categorical,13,7
+Year Made,Numerical,13,9
+Has Residual Blocks,Binary,13,2
+Has Dense Layers,Binary,13,2
+Has Convolutional Layers,Binary,13,2
+Has ReLU,Binary,13,2
+Has GeLU,Binary,13,2
+Last Layer Parameters,Numerical,60,89
+Architecture,Categorical,60,614
+First Layer Parameters,Numerical,60,141
+Crop Percentage,Numerical,63,22
+Lowest Internal Layer Parameters,Numerical,72,188
+Highest Internal Layer Parameters,Numerical,72,382
+MAX RF,Binary,673,1
+RF25 Layer Number,Binary,673,1
+RF25 Layer Name,Categorical,673,1
+Max RF,Binary,674,0
