@@ -1,0 +1,10 @@
+Attribute,Factor Type,Mode,Mode Count,Max Category Count,Count Empty,Unique Values
+Architecture Family,Categorical,resnet,58,58,0,81
+Key Distinguishing Feature,NA,Deep Residual Learning for Image Recognition,58,58,0,78
+Model,NA,xcit_tiny_24_p16_384_dist,1,1,0,674
+Most Common Activation Function,Categorical,ReLU,364,364,0,4
+Most Common Pooling Type,Categorical,Average,338,338,0,9
+Origin,NA,timm,614,614,0,4
+Primary Application,Categorical,Image Classification,312,312,0,8
+Training Dataset,Categorical,ImageNet-1K,639,639,0,6
+Training Type,Categorical,Supervised,588,588,0,3

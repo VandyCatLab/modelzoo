@@ -1,0 +1,64 @@
+Categorical Attribute,Binary Attribute,Chi2,p-value
+Architecture Family,Has Attention Layers,674.0000000000001,9.203754696029781e-95
+Model,Has Skip Connections,674.0000000000001,0.48188872736206495
+Architecture Family,Transformer,674.0,9.203754696030307e-95
+Architecture Family,Has Residual Blocks,674.0,9.203754696030307e-95
+Architecture Family,Has Skip Connections,674.0,9.203754696030307e-95
+Architecture Family,Tokenized,674.0,9.203754696030307e-95
+Architecture Family,Has Bottlenecks,674.0,9.203754696030307e-95
+Model,Transformer,674.0,0.48188872736206617
+Model,Has Residual Blocks,674.0,0.48188872736206617
+Key Distinguishing Feature,Transformer,674.0,3.5705380669278325e-96
+Key Distinguishing Feature,Has Attention Layers,674.0,3.5705380669278325e-96
+Model,Has Bottlenecks,674.0,0.48188872736206617
+Model,Has Attention Layers,674.0,0.48188872736206617
+Model,Has Dense Layers,674.0,0.48188872736206617
+Key Distinguishing Feature,Has Residual Blocks,674.0,3.5705380669278325e-96
+Key Distinguishing Feature,Has Skip Connections,674.0,3.5705380669278325e-96
+Key Distinguishing Feature,Tokenized,674.0,3.5705380669278325e-96
+Key Distinguishing Feature,Has Bottlenecks,674.0,3.5705380669278325e-96
+Model,Tokenized,673.9999999999999,0.4818887273620674
+Key Distinguishing Feature,Has Dense Layers,603.3370665492699,1.2578057235502147e-82
+Architecture Family,Has Dense Layers,603.3370665492699,2.747797184360256e-81
+Most Common Pooling Type,Has Skip Connections,384.8874446691881,3.1937500203550003e-78
+Most Common Pooling Type,Has Dense Layers,351.1251931313195,5.20858676225883e-71
+Most Common Pooling Type,Tokenized,304.625095209986,4.267156484125276e-61
+Most Common Pooling Type,Has Residual Blocks,291.376571356685,2.8149930166511237e-58
+Most Common Pooling Type,Transformer,286.41521250794233,3.19597245011666e-57
+Most Common Activation Function,Tokenized,268.1934294155874,7.591214470065349e-58
+Most Common Activation Function,Transformer,256.483891661135,2.5905033314877227e-55
+Most Common Pooling Type,Has Attention Layers,243.3459487285906,4.4287494618679995e-48
+Primary Application,Has Skip Connections,203.09430640061913,2.5377112413083265e-40
+Most Common Pooling Type,Has Bottlenecks,197.4079281385075,2.2466271781375683e-38
+Training Type,Has Skip Connections,188.37159896991827,1.2463126698835812e-41
+Most Common Activation Function,Has Attention Layers,178.1615111202139,2.200309975979083e-38
+Training Type,Tokenized,129.14956476509556,9.026686118283969e-29
+Training Type,Has Residual Blocks,117.14166445799103,3.656038517105301e-26
+Training Type,Has Attention Layers,94.54113998538723,2.955645174471534e-21
+Primary Application,Has Dense Layers,88.51364432339909,2.497701650514039e-16
+Most Common Activation Function,Has Bottlenecks,82.86396295999977,7.457466294524134e-18
+Training Type,Has Bottlenecks,82.52252348659722,1.2035432694349162e-18
+Training Type,Transformer,78.25417754117815,1.017000705028659e-17
+Primary Application,Has Residual Blocks,74.95974995826555,1.4613670915231516e-13
+Most Common Activation Function,Has Residual Blocks,74.05842192393817,5.766271780232214e-16
+Primary Application,Transformer,69.67849734049983,1.7158008838575386e-12
+Primary Application,Tokenized,66.43906276709664,7.722381798129501e-12
+Most Common Activation Function,Has Skip Connections,56.216110660662245,3.77768952613493e-12
+Origin,Has Skip Connections,46.037684897006606,5.567807934687245e-10
+Training Dataset,Has Skip Connections,44.233728674822295,2.0764697110948988e-08
+Origin,Tokenized,43.74616962239113,1.708667927208033e-09
+Origin,Transformer,42.409470088186225,3.2845262089450493e-09
+Primary Application,Has Bottlenecks,41.44079378943677,6.661737362811265e-07
+Origin,Has Residual Blocks,40.772908587698545,7.306107520893707e-09
+Primary Application,Has Attention Layers,38.67855372629599,2.2506946374432293e-06
+Origin,Has Attention Layers,35.48793003435813,9.607985687691232e-08
+Training Dataset,Has Dense Layers,27.273604027865193,5.045325600864998e-05
+Origin,Has Dense Layers,26.64494980644597,6.9877532539885925e-06
+Training Dataset,Has Attention Layers,25.152078242053346,0.00013022141410692456
+Origin,Has Bottlenecks,24.233589990761374,2.2326261244479594e-05
+Most Common Activation Function,Has Dense Layers,22.111363213058127,6.184164611302472e-05
+Training Dataset,Transformer,20.703150582314617,0.0009216066238577029
+Training Dataset,Tokenized,20.03663523431552,0.0012301009830780162
+Training Dataset,Has Bottlenecks,9.844554909284167,0.07976145133640816
+Training Dataset,Has Residual Blocks,8.381390399026047,0.13643138776631814
+Training Type,Has Dense Layers,3.7973124534867866,0.14976974063369658

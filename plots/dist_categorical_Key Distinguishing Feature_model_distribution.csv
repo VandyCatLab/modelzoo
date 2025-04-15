@@ -1,0 +1,79 @@
+Key Distinguishing Feature,Count
+Deep Residual Learning for Image Recognition,58
+Transformer Architecture Applied to Image Patches,44
+Feature Cross-Covariance Self-Attention Transformer,40
+Grouped Convolutions,39
+Shifted Windows for Hierarchical Vision Transformer,28
+Regnet With Squeeze Excitation,24
+Systematic Network Design No Squeeze Excitation,24
+Transformer Design Principles in ConvNet,18
+Advancements in Data Efficiency,15
+Deep Architecture with 11 Layers,14
+NA,13
+Separable Self-Attention,13
+Compound Scaling Method,13
+Training-aware Optimizations,11
+Residual MLP for Image Classification,11
+Dual-branch Transformers for Multi-scale Processing,11
+Normalization-Free ResNet with High Performance,11
+Outlook Attention Mechanism,11
+Efficiency and Performance in Object Detection,10
+Class Attention Mechanism,10
+Deep Layer Aggregation for Improved Representation,10
+Z Block with Inverted Bottlenecks,10
+ViT architecture with Relative Position Embeddings,9
+High-Resolution Representations,9
+Neural Architecture Search,9
+Learnable Pooling in Vision Transformer,8
+Squeeze-and-Excitation Block ResNet,8
+ResNet optimized for GPU Architecture,8
+Split-Attention Mechanism,8
+Data-efficient Learning with Transformers,8
+Hierarchical Residual-Like Connections,7
+Entirely MLP-based Image Processing,7
+Mixed Depthwise Convolutional Layers,7
+NAS for Efficiency and Robustness,6
+Depthwise Separable Convolutions,6
+Hybrid Convolution and Transformer Architecture,6
+Optimized Pyramid Vision Transformer Structure,6
+Combines ResNet and DenseNet paths,6
+Global and Local Attention,5
+Efficiency and Compactness Modeling Scheme Applied to EfficientNet,5
+Fast Inference Image Classification,5
+Self-supervised Learning for Images,5
+Co-Scale and Conv-Attentional Mechanisms,5
+Efficiency on Edge Devices,5
+Global Context in Self-Attention,5
+Pooling Operations Instead of Attention,5
+Efficiency Improvements with Channel Design,4
+Transformer Blocks in ResNet,4
+"Label Smoothing, Factorized Convolutions",4
+Multiscale Features in Vision Transformers With Pooling Attention,4
+Differentiable Neural Architecture Search,4
+Long and Short Range Skip Connections,3
+Hardware-aware Network Design,3
+Pre-activation Residual Units,3
+Combines Convolutions and Transformers,3
+Efficiency in Image Processing for Transformers,3
+Dense Connectivity,3
+Mixes Per-Patch Fully Connected and Depthwise Convolutions,3
+Efficiency on GPU,3
+Halo Attention Mechanism,3
+ViT for Mobile Applications,3
+Lightweight and Efficient for CPU,3
+Nested Hierarchical Transformer,3
+One shot aggregation,2
+Squeeze-and-Excitation Blocks,2
+Efficiency on Mobile Devices,2
+Specialized in Edge Detection,2
+Improvements in Self-Supervised Learning,2
+Inception with Residual Connections,2
+Enhanced Grouped Convolutions,2
+Ghost Modules for Efficiency,1
+Combining Inception with Residual Connections,1
+Transformer Patches within Transformer Patches,1
+Convolutional Token Embedding,1
+U-shaped Architecture for Segmentation,1
+Transformer Blocks in ResNeXt,1
+Halo Attention with ResNeXt Backbone,1
+Selective Kernel Units in ResNeXt,1

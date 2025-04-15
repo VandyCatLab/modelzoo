@@ -1,0 +1,7 @@
+Training Dataset,Count
+ImageNet-1K,639
+ImageNet-21K,25
+ImageNet-21K-P,4
+COCO,3
+LAION-2B,2
+https://www.kaggle.com/datasets/mateuszbuda/lgg-mri-segmentation,1

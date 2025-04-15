@@ -1,0 +1,149 @@
+Categorical Attribute,Continuous Attribute,F-Statistic,p-value
+Key Distinguishing Feature,Year Made,inf,0.0
+Architecture Family,Year Made,inf,0.0
+Training Dataset,Number of Output Features,3196.1623120741174,0.0
+Training Dataset,Number of Last Layer Parameters,730.9592250996888,1.7716436834927816e-201
+Most Common Pooling Type,Year Made,162.989920435695,9.575679460104973e-139
+Most Common Activation Function,Year Made,144.55655513181188,6.308735570996693e-72
+Most Common Activation Function,Number of Attention Layers,137.91350167955196,1.6102973213446883e-69
+Most Common Activation Function,Number of Dense Layers,118.26313135630906,2.0415154271637e-61
+Training Type,Number of Recurrent Layers,88.70578738201688,6.832240527593472e-35
+Architecture Family,Number of Recurrent Layers,88.6287523951461,9.537532568666575e-280
+Key Distinguishing Feature,Number of Attention Layers,76.2449251143857,4.2354705133531935e-260
+Architecture Family,Number of Attention Layers,73.0144803530047,2.790794186287339e-257
+Training Type,Year Made,54.37808550496605,4.98350175329793e-13
+Training Type,Crop Percentage,53.11542068697119,5.492294413698782e-22
+Architecture Family,Number of Dense Layers,47.504936325506584,3.4764776515869193e-209
+Most Common Activation Function,Number of Convolutional Layers,45.68893823230811,7.319369964485912e-27
+Key Distinguishing Feature,Number of Dense Layers,43.22530900688862,7.679066363166875e-197
+Training Type,Number of Dense Layers,41.75953626945061,8.154102609533962e-18
+Most Common Activation Function,Number of Normalization Layers,36.25696505453734,1.0272055731118852e-21
+Most Common Pooling Type,Number of Dense Layers,32.62488726267065,2.3760379838063126e-43
+Most Common Activation Function,Number of Bottlenecks,32.01746180644209,2.415438737998278e-19
+Most Common Pooling Type,Number of First Layer Parameters,31.34252456807619,3.3979448340509396e-41
+Primary Application,Number of Recurrent Layers,25.15480625931445,1.558660856344771e-30
+Primary Application,Number of Dense Layers,23.38235913325238,1.884612923926902e-28
+Most Common Activation Function,Number of Residual Blocks,22.986105843630657,3.605151281672627e-14
+Origin,Number of Residual Blocks,22.889467892935333,2.4269091007825567e-10
+Key Distinguishing Feature,Number of First Layer Parameters,22.066559918514468,6.157615254660095e-122
+Most Common Pooling Type,Number of Recurrent Layers,21.97725720317933,8.151061837127246e-30
+Most Common Activation Function,Crop Percentage,21.65187540132004,2.472425030032787e-13
+Most Common Activation Function,Number of Highest Internal Layer Parameters,21.390889883655028,3.57988166066611e-13
+Architecture Family,Number of First Layer Parameters,21.112118666053366,5.6382977073559545e-120
+Most Common Activation Function,Number of Parameters,18.09292468746539,2.6743856258037973e-11
+Most Common Pooling Type,Crop Percentage,17.997893952733005,3.2224530081016932e-24
+Origin,Number of Convolutional Layers,17.395239004945118,4.320145040564497e-08
+Most Common Activation Function,Number of Output Features,16.87488491963462,1.4112651414514044e-10
+Most Common Pooling Type,Number of Bottlenecks,16.048363447033978,9.133710416636168e-22
+Training Dataset,Number of Highest Internal Layer Parameters,15.124675208994892,1.687761512103354e-09
+Origin,Number of Dense Layers,14.944873968866899,4.4724044579150644e-07
+Training Type,Number of Convolutional Layers,14.821903103400977,5.031162624349768e-07
+Origin,Number of Normalization Layers,13.74680479447876,1.4106796440455106e-06
+Most Common Pooling Type,Number of Residual Blocks,12.916420292686306,2.2672728701826476e-17
+Training Dataset,Number of Parameters,11.752613938109347,6.576909529564187e-11
+Training Type,Number of Bottlenecks,11.468359766456413,1.267520682419415e-05
+Most Common Pooling Type,Number of Convolutional Layers,11.126878095819112,8.024432381618716e-15
+Most Common Pooling Type,Number of Attention Layers,11.103843620392396,8.657098189614494e-15
+Primary Application,Crop Percentage,10.85523842064334,1.7183579966542807e-11
+Key Distinguishing Feature,Crop Percentage,10.539382570924802,1.5925133618775673e-66
+Architecture Family,Crop Percentage,10.479942038692998,1.765373184369195e-67
+Key Distinguishing Feature,Number of Pooling Layers,10.16320628576036,1.9812362298143137e-68
+Key Distinguishing Feature,Number of Residual Blocks,10.142355942939274,2.710074639721407e-68
+Key Distinguishing Feature,Number of Normalization Layers,9.927307395484736,6.978040395636053e-67
+Key Distinguishing Feature,Number of Bottlenecks,9.775268376598863,7.07233971047976e-66
+Architecture Family,Number of Pooling Layers,9.756469126573458,4.404797229559276e-67
+Architecture Family,Number of Residual Blocks,9.712631334058422,8.700058811622143e-67
+Most Common Activation Function,Number of Recurrent Layers,9.616690554190555,3.1959003091348734e-06
+Architecture Family,Number of Bottlenecks,9.583610412431481,6.502206635714104e-66
+Architecture Family,Number of Normalization Layers,9.537762042998203,1.3327930902245845e-65
+Key Distinguishing Feature,Number of Convolutional Layers,9.023599088246256,8.460639415374813e-61
+Architecture Family,Number of Convolutional Layers,8.838160542964511,9.251258370225713e-61
+Origin,Number of Attention Layers,8.577112926700526,0.00020990978193134423
+Origin,Number of Bottlenecks,8.256755771167287,0.0002869076316185748
+Primary Application,Number of Attention Layers,8.222017694423354,1.2431427131533142e-09
+Origin,Year Made,7.7521252376674505,4.295047845892395e-05
+Training Type,Number of Residual Blocks,7.6839812182896505,0.0005019925309519576
+Training Type,Number of Highest Internal Layer Parameters,7.328885493240807,0.0007168444978972119
+Training Dataset,Year Made,6.665824127123632,4.553552968942365e-06
+Primary Application,Number of First Layer Parameters,6.450308493878471,1.3203006650852082e-06
+Training Dataset,Number of Attention Layers,6.3941010684403725,4.725983882771629e-05
+Most Common Pooling Type,Number of Normalization Layers,6.2971057081938095,7.035400297815324e-08
+Training Type,Number of Last Layer Parameters,6.018243901586106,0.0025806023640181923
+Training Type,Number of Parameters,6.001932676595393,0.002608764224509346
+Primary Application,Number of Pooling Layers,5.672012713327472,2.2245308481313864e-06
+Training Dataset,Number of Dense Layers,5.564005213443536,0.00020742957169010167
+Primary Application,Number of Highest Internal Layer Parameters,5.305929735887516,2.4080423489038687e-05
+Key Distinguishing Feature,Number of Layers,5.034096764786809,8.967093713443493e-31
+Key Distinguishing Feature,Number of Lowest Internal Layer Parameters,5.028957541141338,1.8426284342066886e-28
+Most Common Activation Function,Number of Last Layer Parameters,5.009722438204628,0.0019410618466434491
+Architecture Family,Number of Layers,4.830611661311745,8.393530946591846e-30
+Architecture Family,Number of Lowest Internal Layer Parameters,4.800423084076224,2.0775535676549613e-27
+Training Dataset,Number of Convolutional Layers,3.8526104172590063,0.004195572575891834
+Training Type,Number of Pooling Layers,3.782579986150155,0.023252995631501076
+Origin,Number of Layers,3.732950282321455,0.011122265049692846
+Most Common Pooling Type,Number of Layers,3.587300027888232,0.0004337291511507998
+Primary Application,Number of Parameters,3.5727906021679994,0.0008775903326977754
+Most Common Pooling Type,Number of Lowest Internal Layer Parameters,3.536104594561593,0.0005192119432920928
+Most Common Activation Function,Number of Pooling Layers,3.5357947032794983,0.014546748961781751
+Most Common Activation Function,Number of Layers,3.406239662173742,0.0173401019931943
+Key Distinguishing Feature,Number of Highest Internal Layer Parameters,3.35430284175847,1.1861304330071267e-15
+Most Common Pooling Type,Number of Last Layer Parameters,3.2614415952400226,0.001195598999759803
+Primary Application,Number of Convolutional Layers,3.25719580496926,0.002080951167565723
+Primary Application,Year Made,3.2144074079623652,0.00405449237343307
+Architecture Family,Number of Highest Internal Layer Parameters,3.2106037801216445,6.272165458841431e-15
+Most Common Pooling Type,Number of Pooling Layers,3.1508016861899546,0.0016481860461601426
+Most Common Pooling Type,Number of Output Features,3.0944300334539503,0.001951829732405801
+Most Common Pooling Type,Number of Highest Internal Layer Parameters,2.9962682002649483,0.00265647930697792
+Primary Application,Number of Residual Blocks,2.9634344171768974,0.00458000905188877
+Key Distinguishing Feature,Number of Parameters,2.9509861246296136,1.8623948841777848e-13
+Architecture Family,Number of Parameters,2.831310746027055,8.625419292163682e-13
+Most Common Activation Function,Number of First Layer Parameters,2.740172355301276,0.042581817847822355
+Key Distinguishing Feature,Number of Output Features,2.5072045107186076,6.771062997442789e-10
+Training Dataset,Number of Layers,2.444828832646931,0.03290889127707353
+Architecture Family,Number of Output Features,2.4010374405185058,2.733657131852716e-09
+Primary Application,Number of Normalization Layers,2.270314321402256,0.02736457066504003
+Training Dataset,Number of Normalization Layers,2.1674425766753465,0.07113742042202581
+Most Common Pooling Type,Number of Parameters,2.0733369761419085,0.03628847876036304
+Key Distinguishing Feature,Number of Recurrent Layers,2.0453585783317516,1.999172251716656e-06
+Training Type,Number of Output Features,2.0213004457234076,0.13328895859891607
+Training Type,Number of Attention Layers,1.939439007785624,0.14459336761562913
+Key Distinguishing Feature,Number of Last Layer Parameters,1.8156380524612574,9.814317379016108e-05
+Architecture Family,Number of Last Layer Parameters,1.7370696843017386,0.0002459352996823436
+Training Type,Number of Lowest Internal Layer Parameters,1.729023663397843,0.17834205191144695
+Primary Application,Number of Bottlenecks,1.6930869031603184,0.10764116229697324
+Training Dataset,Crop Percentage,1.5498517839837924,0.20050521608166172
+Primary Application,Number of Last Layer Parameters,1.3725467135994507,0.22334024854713846
+Training Dataset,Number of Bottlenecks,1.187747449661671,0.314894611644512
+Origin,Number of Pooling Layers,1.1635027857486397,0.3130222749842606
+Origin,Number of Parameters,1.0296585473121134,0.3788283515902258
+Origin,Number of Output Features,1.0274362529548444,0.37982489820326343
+Training Type,Number of Layers,0.9633861507825292,0.382125720104022
+Primary Application,Number of Layers,0.9442251775784032,0.4715004783496708
+Primary Application,Number of Lowest Internal Layer Parameters,0.8747152266071656,0.5130691615945184
+Training Type,Number of Normalization Layers,0.8414351672016253,0.4315477802286888
+Primary Application,Number of Output Features,0.7646030660365921,0.617235206974013
+Training Dataset,Number of First Layer Parameters,0.7466237142681871,0.5245804315659148
+Training Dataset,Number of Residual Blocks,0.7363783502620239,0.5673369600562954
+Training Type,Number of First Layer Parameters,0.7216750808556944,0.4863513259707777
+Training Dataset,Number of Pooling Layers,0.5536449111291922,0.6964263653779096
+Most Common Activation Function,Number of Lowest Internal Layer Parameters,0.47072820497443923,0.7027949368980816
+Training Dataset,Number of Lowest Internal Layer Parameters,0.1748446783565719,0.9134229956721194
+Origin,Number of Recurrent Layers,0.1286030769156977,0.8793446853481823
+Training Dataset,Number of Recurrent Layers,0.03457679681400962,0.9977100837640579
+Model,Number of Parameters,,
+Model,Number of Output Features,,
+Model,Number of Layers,,
+Model,Number of Recurrent Layers,,
+Model,Number of Pooling Layers,,
+Model,Number of Dense Layers,,
+Model,Number of Residual Blocks,,
+Model,Number of Attention Layers,,
+Model,Number of Convolutional Layers,,
+Model,Number of Bottlenecks,,
+Model,Number of Normalization Layers,,
+Model,Year Made,,
+Model,Number of First Layer Parameters,,
+Model,Number of Last Layer Parameters,,
+Model,Crop Percentage,,
+Model,Number of Highest Internal Layer Parameters,,
+Model,Number of Lowest Internal Layer Parameters,,

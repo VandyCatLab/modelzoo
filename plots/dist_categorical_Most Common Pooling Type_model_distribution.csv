@@ -1,0 +1,10 @@
+Most Common Pooling Type,Count
+Average,338
+"Max, Average",162
+Class Token,56
+"Average, Class Token",45
+"Average, Spatial Pyramid",21
+Max,19
+"Max, Average, Strided",14
+NA,13
+"Max, Average, Spatial Pyramid",6

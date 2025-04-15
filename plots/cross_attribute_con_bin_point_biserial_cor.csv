@@ -1,0 +1,120 @@
+Binary Attribute,Continuous Attribute,Correlation,p-value
+Tokenized,Number of Dense Layers,0.7121110365885293,7.296045023157098e-105
+Has Attention Layers,Number of Attention Layers,0.7050611357629395,6.06116195768782e-102
+Transformer,Number of Dense Layers,0.6826503569650556,3.2624744815015387e-93
+Transformer,Number of Attention Layers,0.644812414693105,3.9607803566944174e-80
+Tokenized,Year Made,0.611327719327217,5.493360680897033e-69
+Tokenized,Number of Attention Layers,0.6062329961229034,1.4316238675927676e-68
+Transformer,Year Made,0.603123567546609,1.0100325314528646e-66
+Has Attention Layers,Number of Dense Layers,0.5947702165512296,1.9595890575438413e-65
+Has Attention Layers,Year Made,0.5519961657712604,5.555299370503796e-54
+Has Residual Blocks,Number of Dense Layers,-0.5389563936794405,8.032422712399586e-52
+Tokenized,Number of Convolutional Layers,-0.507284249799039,3.645501999232804e-45
+Transformer,Number of Convolutional Layers,-0.4810556620504973,3.704867653103432e-40
+Has Bottlenecks,Number of Bottlenecks,0.48098638181614634,3.814447378768422e-40
+Has Bottlenecks,Number of Dense Layers,-0.47099635303685367,2.3812681212821843e-38
+Has Attention Layers,Number of Convolutional Layers,-0.4355773805836591,1.9246548509034074e-32
+Has Residual Blocks,Number of Convolutional Layers,0.4029739119635104,1.3751890128018453e-27
+Transformer,Crop Percentage,0.40274605967478616,3.135959877293462e-25
+Has Residual Blocks,Number of Bottlenecks,0.40070338938636696,2.8635683336975163e-27
+Has Residual Blocks,Year Made,-0.3870760353991948,4.714097218145737e-25
+Has Residual Blocks,Number of Attention Layers,-0.3776974228480543,3.5368008740071666e-24
+Tokenized,Number of Bottlenecks,-0.3659120033394335,1.0952573587880028e-22
+Tokenized,Crop Percentage,0.3565743357706532,9.319331377208383e-20
+Has Residual Blocks,Number of Residual Blocks,0.35282645516006267,4.207129124455287e-21
+Has Attention Layers,Crop Percentage,0.3475278341929634,8.745877946070916e-19
+Transformer,Number of Bottlenecks,-0.3471899725753222,1.9232451185176878e-20
+Has Attention Layers,Number of Bottlenecks,-0.3230442121519334,9.193046479851932e-18
+Has Bottlenecks,Number of Residual Blocks,0.3063694996460319,4.766997952379583e-16
+Has Skip Connections,Year Made,0.30576549756876925,9.00869186388039e-16
+Tokenized,Number of Residual Blocks,-0.3028120441543139,1.071974319864035e-15
+Has Bottlenecks,Number of Attention Layers,-0.3013111362247462,1.5039187438107855e-15
+Transformer,Number of Residual Blocks,-0.29781681331366266,3.282845896303021e-15
+Has Bottlenecks,Year Made,-0.29044842278093025,2.574337324642103e-14
+Has Attention Layers,Number of Residual Blocks,-0.2705030706317277,1.0239444560160397e-12
+Tokenized,Number of Normalization Layers,-0.2694272261454646,1.2675388988097041e-12
+Has Dense Layers,Number of First Layer Parameters,-0.254883433202601,1.4643595074573816e-10
+Has Skip Connections,Number of Recurrent Layers,-0.24918178210643138,5.901141545178202e-11
+Has Bottlenecks,Number of Convolutional Layers,0.24745813500042432,8.060246788563486e-11
+Has Bottlenecks,Crop Percentage,-0.2308784128503945,7.766827260848822e-09
+Transformer,Number of Normalization Layers,-0.22555555249628603,3.460281418263951e-09
+Has Attention Layers,Number of Highest Internal Layer Parameters,0.21289401116591594,1.340556669917899e-07
+Has Residual Blocks,Crop Percentage,-0.21073992180628087,1.459101619739794e-07
+Tokenized,Number of Highest Internal Layer Parameters,0.202068932228806,5.755175426266059e-07
+Has Attention Layers,Number of Normalization Layers,-0.20106435162389436,1.5019227973849412e-07
+Has Residual Blocks,Number of Normalization Layers,0.1929760383035043,4.7316707144629177e-07
+Transformer,Number of Highest Internal Layer Parameters,0.19231923705496978,2.001033743922801e-06
+Has Attention Layers,Number of Parameters,0.1751961391702212,4.754329976609356e-06
+Has Attention Layers,Number of Output Features,0.17092387397148562,8.116743712646309e-06
+Has Dense Layers,Number of Lowest Internal Layer Parameters,-0.16194920138241042,6.561347463077852e-05
+Tokenized,Number of Parameters,0.16066370771177924,2.7823896697663853e-05
+Has Skip Connections,Crop Percentage,0.15572508806467295,0.00011109018192883106
+Transformer,Number of Parameters,0.15338723847074726,6.375658398325421e-05
+Transformer,Number of Output Features,0.14981145178032512,9.455093891042146e-05
+Tokenized,Number of Output Features,0.14626065507293678,0.00013862445980830464
+Has Dense Layers,Number of Dense Layers,0.1421198705519521,0.00022134100329819368
+Has Skip Connections,Number of Attention Layers,0.13419535134811159,0.0004913145249410894
+Has Bottlenecks,Number of Normalization Layers,0.1303866962565025,0.0007100735392054369
+Has Dense Layers,Year Made,0.12375259120225715,0.0014330551440192318
+Has Residual Blocks,Number of Layers,0.12263616890792228,0.0014229305289820287
+Tokenized,Number of Lowest Internal Layer Parameters,-0.11758448932996786,0.003864098342900706
+Has Residual Blocks,Number of First Layer Parameters,0.11463987549759687,0.004451498710584433
+Transformer,Number of Lowest Internal Layer Parameters,-0.11011515424154952,0.006843528794350761
+Tokenized,Number of Layers,-0.10270652431580914,0.007618463853359238
+Has Dense Layers,Number of Attention Layers,0.10216259001703124,0.008087758404823415
+Has Attention Layers,Number of Lowest Internal Layer Parameters,-0.10144067192529252,0.012768198310305415
+Has Skip Connections,Number of Residual Blocks,0.10106688207077184,0.008797292776099157
+Transformer,Number of Pooling Layers,-0.10102225441499776,0.008827333157448557
+Has Bottlenecks,Number of Last Layer Parameters,0.09980933120267362,0.013349039376928664
+Has Skip Connections,Number of Bottlenecks,0.0996478224157862,0.009798433712929922
+Has Residual Blocks,Number of Last Layer Parameters,0.09887318094240889,0.01424612972602723
+Has Dense Layers,Crop Percentage,0.095938670663668,0.01768876844778199
+Has Dense Layers,Number of Bottlenecks,-0.09574217152703357,0.01309588027646073
+Has Bottlenecks,Number of Pooling Layers,-0.08935926044932607,0.020610215499384955
+Has Skip Connections,Number of Lowest Internal Layer Parameters,-0.08732830916361346,0.03216926972603462
+Transformer,Number of Layers,-0.08720600249637786,0.02356723913137249
+Has Dense Layers,Number of Pooling Layers,-0.08502969443365349,0.027632537796722676
+Tokenized,Number of First Layer Parameters,-0.08123672037114762,0.04419976755854182
+Has Attention Layers,Number of Pooling Layers,-0.08056903058257117,0.036930177814769836
+Transformer,Number of First Layer Parameters,-0.07899479892531418,0.05040822895884849
+Has Attention Layers,Number of Layers,-0.07235762116534697,0.06045127314461835
+Has Residual Blocks,Number of Recurrent Layers,-0.07053525374243215,0.06785178508750354
+Has Dense Layers,Number of Residual Blocks,0.07012216233008994,0.0694825110401495
+Has Bottlenecks,Number of Recurrent Layers,-0.06663583471295915,0.08456142894599004
+Has Bottlenecks,Number of Output Features,0.06468743460152343,0.09334241252324425
+Has Skip Connections,Number of Parameters,0.06363602224852472,0.09880107909118473
+Has Dense Layers,Number of Last Layer Parameters,0.06288954587560942,0.1195400057959955
+Has Attention Layers,Number of First Layer Parameters,-0.062447919613814545,0.12216394233847626
+Has Skip Connections,Number of Highest Internal Layer Parameters,0.05642764231731781,0.16675215893283046
+Has Skip Connections,Number of Output Features,0.056336573965016415,0.14400770818840797
+Has Skip Connections,Number of Layers,0.055239831566009416,0.15198893726357895
+Has Skip Connections,Number of Dense Layers,0.054709871386975625,0.156891379127972
+Tokenized,Number of Pooling Layers,-0.053141382979252874,0.16914328908300458
+Has Residual Blocks,Number of Pooling Layers,0.05291946797306507,0.1709330261919477
+Tokenized,Number of Recurrent Layers,-0.0526718683179163,0.1729465699957831
+Transformer,Number of Recurrent Layers,-0.05185854992453318,0.1796852023817542
+Has Dense Layers,Number of Layers,0.05154690554065038,0.18134011646412523
+Has Attention Layers,Number of Recurrent Layers,-0.04742714511293705,0.21984630869293145
+Has Bottlenecks,Number of Highest Internal Layer Parameters,-0.04679205361778978,0.25166399615389196
+Has Residual Blocks,Number of Lowest Internal Layer Parameters,0.0464972616095811,0.25466672653452843
+Has Residual Blocks,Number of Output Features,0.04570625171823605,0.2360094978713886
+Has Dense Layers,Number of Output Features,0.04170945067143658,0.2795632673122358
+Has Bottlenecks,Number of Lowest Internal Layer Parameters,0.03829257434140569,0.3482824608073655
+Has Residual Blocks,Number of Highest Internal Layer Parameters,-0.033868057591878206,0.4068289001020316
+Has Dense Layers,Number of Convolutional Layers,-0.03295996376405347,0.39397897695162826
+Has Bottlenecks,Number of First Layer Parameters,0.031178200030047568,0.4406011060696497
+Has Skip Connections,Number of Pooling Layers,0.027350268543626273,0.47939022884861626
+Has Skip Connections,Number of Last Layer Parameters,0.027085140478141347,0.5029224215942095
+Has Attention Layers,Number of Last Layer Parameters,0.02665518018626381,0.5097284586374095
+Has Skip Connections,Number of First Layer Parameters,-0.02246526339742476,0.5784822356042844
+Tokenized,Number of Last Layer Parameters,-0.015081079290759978,0.7091825803241182
+Has Dense Layers,Number of Normalization Layers,-0.014011121600864776,0.7171424105494567
+Has Residual Blocks,Number of Parameters,0.01325650276464861,0.7311959381614669
+Has Dense Layers,Number of Recurrent Layers,0.012666871222382118,0.7432747779709387
+Has Bottlenecks,Number of Layers,0.011196913546385023,0.7716951312037892
+Has Bottlenecks,Number of Parameters,-0.010896925515038083,0.7776491520062649
+Has Skip Connections,Number of Normalization Layers,0.007381779701739451,0.8486343000337111
+Has Skip Connections,Number of Convolutional Layers,-0.004496898084201538,0.9074389141321556
+Transformer,Number of Last Layer Parameters,-0.0033494129453730103,0.9339896634317589
+Has Dense Layers,Number of Parameters,-0.0019144752554457753,0.9604328137330225
+Has Dense Layers,Number of Highest Internal Layer Parameters,0.0009797316399413896,0.9808618339636743

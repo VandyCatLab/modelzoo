@@ -1,0 +1,18 @@
+Attribute,Factor Type,Min,Max,Mean,SD,Skewness,Count Empty,Unique Values
+Crop Percentage,NA,0.88,1.15,0.92,0.05,1.18,63,22
+Number of Attention Layers,Continuous,0.0,86.0,7.5,14.46,2.45,3,33
+Number of Bottlenecks,NA,0.0,89.0,6.16,12.09,2.63,3,30
+Number of Convolutional Layers,Continuous,1.0,703.0,68.83,80.8,2.89,3,143
+Number of Dense Layers,Continuous,0.0,301.0,36.64,50.76,1.5,3,54
+Number of First Layer Parameters,Continuous,216.0,84228800.0,1770475.22,8484752.93,6.84,60,141
+Number of Highest Internal Layer Parameters,Continuous,328960.0,927727616.0,55355745.39,93766877.75,4.09,72,382
+Number of Last Layer Parameters,Continuous,0.0,33572689.0,1995841.84,4224235.89,5.25,60,89
+Number of Layers,Continuous,1.0,2258.0,419.61,257.61,2.57,0,283
+Number of Lowest Internal Layer Parameters,Continuous,4.0,927727616.0,8378334.59,45129000.86,15.32,72,188
+Number of Normalization Layers,Continuous,0.0,425.0,64.38,54.86,2.67,3,119
+Number of Output Features,Continuous,1.0,21843.0,1795.61,3934.77,4.79,0,9
+Number of Parameters,Continuous,38720.0,936533224.0,61793511.85,96413769.05,4.15,0,564
+Number of Pooling Layers,Continuous,0.0,78.0,1.84,6.39,8.19,3,22
+Number of Recurrent Layers,NA,0.0,72.0,0.23,3.61,16.6,3,4
+Number of Residual Blocks,NA,0.0,139.0,7.22,18.48,3.86,3,41
+Year Made,NA,2014.0,2022.0,2019.51,2.29,-1.02,13,9
