@@ -829,3 +829,3269 @@ Variance Inflation Factor (VIF):
 10                     Pooling Layers   1.132071
 11                   Recurrent Layers   1.020614
 Number of Principal Components to capture 90% of the variance: 9
+
+===== Workflow Started: 2025-03-20 18:01:26.373148 =====
+
+data/models_summaries/models_summary_keras.csv
+True
+Number of models in sims data: 774
+Number of models in models_summaries_all: 928
+
+Number of models in sims but not in models_summaries_all: 100
+Number of models in models_summaries_all but not in sims: 239
+
+Models in models_summaries_all but not in sims:
+imagenet/mobilenet_v1_100_128/feature_vector
+tf_mobilenetv3_small_minimal_100
+beit_base_patch16_224_in22k
+tf_efficientnetv2_l_in21ft1k
+inaturalist/inception_v3/feature_vector
+imagenet/mobilenet_v3_large_100_224/feature_vector
+experts/bit/r50x1/in21k/object
+densenet161
+tf_efficientnet_b8
+tf_efficientnet_lite1
+vit_giant_patch14_224_clip_laion2b
+efficientnet_es_pruned
+experts/bit/r50x1/in21k/arthropod
+resnetv2_101x3_bitm_in21k
+tf_efficientnet_lite3
+efficientnet_b3_pruned
+resnetv2_152x2_bitm
+imagenet/mobilenet_v2_075_96/feature_vector
+convnext_atto
+bit/s-r50x1
+resnetv2_50
+imagenet/efficientnet_v2_imagenet1k_b2/feature_vector
+efficientnet_em
+experts/bit/r50x1/in21k/part
+resnet50d
+experts/bit/r50x1/in21k/flower
+imagenet/mobilenet_v1_050_160/feature_vector
+tf_mobilenetv3_small_075
+vgg11
+resnetv2_50x3_bitm_in21k
+experts/bit/r50x1/in21k/plant
+resnetv2_50x1_bit_distilled
+mobilenetv3_large_100_miil
+experts/bit/r50x1/in21k/whole
+tf_efficientnetv2_l
+cropnet/feature_vector/imagenet
+convnext_small_in22ft1k
+efficientnet_el_pruned
+cropnet/feature_vector/concat
+mobilenetv3_rw
+imagenet/efficientnet_v2_imagenet1k_s/feature_vector
+resnet51q
+tf_efficientnet_b8_ap
+experts/bit/r50x1/in21k/structure
+bit/m-r50x1
+imagenet/mobilenet_v2_140_224/feature_vector
+resnetrs200
+imagenet/inception_v2/feature_vector
+efficientnet/b7/feature-vector
+tf_efficientnet_l2_ns_475
+imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector
+tf_efficientnet_b6
+beitv2_large_patch16_224_in22k
+tf_efficientnet_el
+resnet26t
+resnet18
+imagenet/mobilenet_v3_small_075_224/feature_vector
+resnetv2_152x4_bitm_in21k
+tf_efficientnet_lite4
+tf_efficientnet_b3_ap
+mobilenetv2_050
+efficientnetv2_rw_m
+imagenet/efficientnet_v2_imagenet21k_b1/feature_vector
+resnetv2_50x3_bitm
+tf_efficientnet_b4_ap
+efficientnetv2_rw_t
+imagenet/efficientnet_v2_imagenet1k_b3/feature_vector
+vit_base_patch16_224_sam
+resnetv2_152x2_bit_teacher
+tf_efficientnet_b7_ap
+tf_efficientnetv2_m_in21k
+tf_efficientnet_lite0
+resnetblur50
+imagenet/mobilenet_v2_050_160/feature_vector
+imagenet/efficientnet_v2_imagenet21k_m/feature_vector
+deit3_medium_patch16_224_in21ft1k
+resnet14t
+experts/bit/r50x1/in21k/conveyance
+imagenet/inception_resnet_v2/feature_vector
+tf_efficientnet_b0_ap
+vgg11_bn
+tf_efficientnet_b1
+convnext_xlarge_in22ft1k
+resnet26
+efficientnet/b3/feature-vector
+vgg13_bn
+tv_densenet121
+imagenet/resnet_v2_50/feature_vector
+tf_efficientnet_b1_ap
+convnext_tiny_in22k
+imagenet/mobilenet_v2_100_224/feature_vector
+imagenet/nasnet_mobile/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector
+resnetv2_152x2_bitm_in21k
+efficientnet/b1/feature-vector
+tf_efficientnet_b0
+tf_efficientnet_cc_b1_8e
+imagenet/efficientnet_v2_imagenet21k_b0/feature_vector
+tf_efficientnet_b3_ns
+resnetrs152
+imagenet/resnet_v2_152/feature_vector
+efficientnet_lite0
+experts/bit/r50x1/in21k/artifact
+tf_efficientnet_b2
+imagenet/mobilenet_v1_025_192/feature_vector
+efficientnet/b5/feature-vector
+convnext_pico
+imagenet/resnet_v1_101/feature_vector
+efficientnet_el
+pvt_v2_b5
+experts/bit/r50x1/in21k/tree
+efficientnet_b2
+tf_efficientnetv2_m
+convnext_base_in22ft1k
+tf_mobilenetv3_small_100
+tf_efficientnetv2_xl_in21ft1k
+imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector
+imagenet/inception_v3/feature_vector
+imagenet/efficientnet_v2_imagenet1k_m/feature_vector
+resnet18d
+efficientnet_b3
+imagenet/efficientnet_v2_imagenet21k_xl/feature_vector
+convnext_xlarge_in22k
+imagenet/mobilenet_v2_035_96/feature_vector
+beitv2_base_patch16_224_in22k
+tf_efficientnetv2_s_in21ft1k
+tf_efficientnetv2_s
+imagenet/mobilenet_v3_large_075_224/feature_vector
+resnetv2_101x1_bitm_in21k
+tf_efficientnet_b5_ap
+mobilenetv2_120d
+imagenet/mobilenet_v2_075_160/feature_vector
+tf_efficientnet_cc_b0_8e
+imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector
+experts/bit/r50x1/in21k/animal
+efficientnet_b1_pruned
+bit/m-r101x1
+tf_efficientnetv2_b2
+imagenet/nasnet_large/feature_vector
+imagenet/mobilenet_v2_100_160/feature_vector
+convnext_femto
+imagenet/resnet_v1_50/feature_vector
+tf_efficientnet_lite2
+tf_mobilenetv3_large_minimal_100
+efficientnet/b4/feature-vector
+mobilenetv2_140
+imagenet/mobilenet_v3_small_100_224/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector
+imagenet/inception_v1/feature_vector
+tf_efficientnet_b3
+xcit_small_24_p16_384_dist
+resnetv2_50x1_bitm
+tf_efficientnet_b4_ns
+densenetblur121d
+imagenet/mobilenet_v2_035_160/feature_vector
+resnetv2_101x3_bitm
+mobilenetv3_large_100
+imagenet/efficientnet_v2_imagenet21k_l/feature_vector
+imagenet/efficientnet_v2_imagenet1k_b0/feature_vector
+resnet34d
+tf_efficientnet_b7
+resnetv2_101
+beit_large_patch16_224_in22k
+resnet10t
+resnet_50/feature_vector
+resnet50_gn
+resnetrs350
+experts/bit/r50x1/in21k/abstraction
+experts/bit/r50x1/in21k/spermatophyte
+xcit_medium_24_p16_224_dist
+convnext_tiny_hnf
+mobilenetv3_small_050
+efficientnet/b2/feature-vector
+imagenet/efficientnet_v2_imagenet21k_b3/feature_vector
+tf_efficientnetv2_b3
+resnetrs101
+convnext_nano
+tf_mobilenetv3_large_100
+imagenet/efficientnet_v2_imagenet21k_s/feature_vector
+efficientnet_b2_pruned
+imagenet/resnet_v1_152/feature_vector
+vgg16_bn
+convnext_large_in22ft1k
+tf_efficientnet_b2_ns
+resnet101d
+imagenet/mobilenet_v1_050_224/feature_vector
+mobilenetv2_110d
+resnet152d
+gluon_xception65
+imagenet/efficientnet_v2_imagenet1k_l/feature_vector
+imagenet/mobilenet_v2_050_192/feature_vector
+vgg13
+experts/bit/r50x1/in21k/vehicle
+imagenet/mobilenet_v2_130_224/feature_vector
+nts-net
+resnet33ts
+resnetv2_50d_gn
+tf_mobilenetv3_large_075
+experts/bit/r50x1/in21k/consumer_goods
+resnetv2_50x1_bitm_in21k
+tf_efficientnetv2_s_in21k
+resnetv2_152x2_bit_teacher_384
+tf_efficientnet_b4
+tf_efficientnetv2_xl_in21k
+tf_efficientnetv2_l_in21k
+resnetaa50
+efficientnet_b0
+tf_efficientnetv2_b1
+imagenet/mobilenet_v1_100_224/feature_vector
+imagenet/mobilenet_v2_100_128/feature_vector
+experts/bit/r50x1/in21k/food
+mobilenetv2_100
+tf_efficientnet_b1_ns
+tf_efficientnet_cc_b0_4e
+imagenet/efficientnet_v2_imagenet21k_b2/feature_vector
+resnetrs420
+imagenet/resnet_v2_101/feature_vector
+mobilenetv3_small_100
+efficientnet_b1
+efficientnet_es
+tf_efficientnet_b6_ap
+tf_efficientnet_b6_ns
+tf_efficientnet_b0_ns
+resnetrs270
+tf_efficientnet_em
+imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector
+resnet34
+vit_base_patch32_224_sam
+resnet26d
+imagenet/pnasnet_large/feature_vector
+resnet200d
+experts/bit/r50x1/in21k/instrument
+imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector
+mobilenetv3_small_075
+tf_efficientnet_l2_ns
+cropnet/feature_vector/cassava_disease_V1
+efficientnet/b0/feature-vector
+tf_efficientnet_b5_ns
+
+Duplicated models: ['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']
+Dropped 15 duplicated models from keras
+775 models in sims data
+Dropped models that are not in sims data 674 models left
+Number of models: 674
+Number of unique models: 674
+Yes, Models are all unique
+All 42 attributes: Index(['Normalization Layers', 'Layers', 'Model',
+       'Highest Internal Layer Parameters', 'Conv Layers', 'Origin',
+       'Residual Blocks', 'RF25 Layer Number', 'Crop Percentage', 'Max RF',
+       'Recurrent Layers', 'Pooling Layers', 'Parameters',
+       'First Layer Parameters', 'Training Dataset', 'Output Features',
+       'Bottlenecks', 'Attention Layers', 'Dense Layers', 'Architecture',
+       'Last Layer Parameters', 'MAX RF', 'RF25 Layer Name',
+       'Lowest Internal Layer Parameters', 'Family',
+       'Has Convolutional Layers', 'Has Residual Blocks', 'Has Dense Layers',
+       'Has Bottlenecks', 'Has Recurrent Layers', 'Has Skip Connections',
+       'Has Attention Layers', 'Tokenized', 'Transformer', 'Has ReLU',
+       'Has GeLU', 'Other', 'Year Made', 'Learning Type',
+       'Primary Application', 'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')
+
+Finished checking columns
+                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0
+
+Analyzing 15 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Output Features', 'Residual Blocks']
+...Plotting Normalization Layers...
+...Plotting Layers...
+...Plotting Model...
+Number of unique models: 674
+Total rows: 674
+Alert: Model has unique values for each row. Skipping for plotting.
+...Plotting Highest Internal Layer Parameters...
+...Plotting Conv Layers...
+...Plotting Origin...
+Number of unique models: 4
+Total rows: 674
+...Plotting Residual Blocks...
+Skipping RF25 Layer Number because more than half of the rows are missing.
+...Plotting Crop Percentage...
+--> Skipping Crop Percentage because it's not categorical or numerical. The type is float64
+Skipping Max RF because more than half of the rows are missing.
+...Plotting Recurrent Layers...
+...Plotting Pooling Layers...
+...Plotting Parameters...
+...Plotting First Layer Parameters...
+...Plotting Training Dataset...
+Number of unique models: 6
+Total rows: 674
+...Plotting Output Features...
+...Plotting Bottlenecks...
+...Plotting Attention Layers...
+...Plotting Dense Layers...
+...Plotting Architecture...
+Number of unique models: 614
+Total rows: 674
+Number of unique models after combining: 30
+Total rows after combining: 614
+...Plotting Last Layer Parameters...
+Skipping MAX RF because more than half of the rows are missing.
+Skipping RF25 Layer Name because more than half of the rows are missing.
+...Plotting Lowest Internal Layer Parameters...
+...Plotting Family...
+Number of unique models: 81
+Total rows: 674
+...Plotting Has Convolutional Layers...
+...Plotting Has Residual Blocks...
+...Plotting Has Dense Layers...
+...Plotting Has Bottlenecks...
+...Plotting Has Recurrent Layers...
+
+===== Workflow Started: 2025-03-20 18:04:18.140427 =====
+
+data/models_summaries/models_summary_keras.csv
+True
+Number of models in sims data: 774
+Number of models in models_summaries_all: 928
+
+Number of models in sims but not in models_summaries_all: 100
+Number of models in models_summaries_all but not in sims: 239
+
+Models in models_summaries_all but not in sims:
+tf_efficientnet_el
+xcit_small_24_p16_384_dist
+bit/m-r50x1
+imagenet/efficientnet_v2_imagenet21k_b2/feature_vector
+tf_mobilenetv3_small_minimal_100
+imagenet/mobilenet_v1_100_128/feature_vector
+resnet152d
+resnet26t
+resnetv2_152x2_bit_teacher
+convnext_base_in22ft1k
+experts/bit/r50x1/in21k/tree
+imagenet/resnet_v1_50/feature_vector
+imagenet/nasnet_large/feature_vector
+resnetaa50
+experts/bit/r50x1/in21k/arthropod
+imagenet/efficientnet_v2_imagenet1k_s/feature_vector
+experts/bit/r50x1/in21k/artifact
+tf_efficientnet_b4_ap
+resnet34d
+imagenet/resnet_v1_101/feature_vector
+mobilenetv3_rw
+imagenet/mobilenet_v2_140_224/feature_vector
+tf_efficientnetv2_s_in21ft1k
+vgg16_bn
+efficientnet_es
+imagenet/mobilenet_v2_075_96/feature_vector
+beitv2_large_patch16_224_in22k
+resnetrs350
+tf_efficientnet_lite4
+imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector
+convnext_atto
+vgg13_bn
+resnet51q
+resnetrs152
+imagenet/mobilenet_v1_050_224/feature_vector
+imagenet/efficientnet_v2_imagenet21k_b1/feature_vector
+experts/bit/r50x1/in21k/animal
+resnetv2_101
+imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector
+tf_efficientnet_b2_ns
+mobilenetv3_small_075
+resnetv2_101x3_bitm
+imagenet/efficientnet_v2_imagenet21k_xl/feature_vector
+imagenet/mobilenet_v3_small_100_224/feature_vector
+efficientnet_em
+imagenet/inception_v3/feature_vector
+resnet50d
+nts-net
+tf_mobilenetv3_large_075
+tf_efficientnet_b2
+resnetrs101
+experts/bit/r50x1/in21k/whole
+mobilenetv3_large_100
+vgg13
+tf_efficientnet_lite3
+beitv2_base_patch16_224_in22k
+imagenet/efficientnet_v2_imagenet21k_m/feature_vector
+imagenet/mobilenet_v2_050_160/feature_vector
+convnext_xlarge_in22ft1k
+convnext_femto
+efficientnetv2_rw_t
+resnetv2_50d_gn
+efficientnet/b5/feature-vector
+vit_base_patch32_224_sam
+imagenet/efficientnet_v2_imagenet1k_b3/feature_vector
+tf_efficientnet_b1_ns
+tf_mobilenetv3_large_100
+tf_efficientnetv2_xl_in21ft1k
+efficientnet/b3/feature-vector
+resnetv2_152x4_bitm_in21k
+vit_base_patch16_224_sam
+resnet18d
+mobilenetv2_100
+efficientnet_el
+experts/bit/r50x1/in21k/flower
+imagenet/pnasnet_large/feature_vector
+inaturalist/inception_v3/feature_vector
+imagenet/mobilenet_v3_small_075_224/feature_vector
+tf_efficientnetv2_l_in21ft1k
+xcit_medium_24_p16_224_dist
+tf_efficientnet_b5_ns
+convnext_tiny_hnf
+resnet50_gn
+experts/bit/r50x1/in21k/part
+tf_efficientnetv2_s_in21k
+imagenet/mobilenet_v3_large_100_224/feature_vector
+tf_efficientnet_b3
+efficientnet_b2_pruned
+vgg11_bn
+resnetv2_50x1_bitm_in21k
+efficientnet_b2
+efficientnet/b1/feature-vector
+mobilenetv2_140
+bit/s-r50x1
+tf_efficientnetv2_b2
+imagenet/efficientnet_v2_imagenet21k_l/feature_vector
+tf_efficientnetv2_b3
+tf_efficientnet_b5_ap
+experts/bit/r50x1/in21k/object
+vgg11
+mobilenetv3_large_100_miil
+convnext_pico
+resnet10t
+imagenet/resnet_v1_152/feature_vector
+tf_efficientnet_cc_b0_4e
+mobilenetv2_050
+efficientnet_b3_pruned
+imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector
+experts/bit/r50x1/in21k/spermatophyte
+resnetrs270
+experts/bit/r50x1/in21k/instrument
+tf_efficientnet_b0_ap
+resnet34
+resnet14t
+tf_efficientnet_lite1
+vit_giant_patch14_224_clip_laion2b
+resnetv2_50x3_bitm_in21k
+gluon_xception65
+tf_efficientnet_lite2
+efficientnet_es_pruned
+tf_efficientnet_b4_ns
+beit_base_patch16_224_in22k
+efficientnet_b0
+imagenet/mobilenet_v2_035_96/feature_vector
+tf_efficientnet_cc_b1_8e
+imagenet/mobilenet_v2_130_224/feature_vector
+tf_efficientnet_b7
+experts/bit/r50x1/in21k/food
+convnext_tiny_in22k
+resnetv2_50x3_bitm
+imagenet/efficientnet_v2_imagenet21k_b3/feature_vector
+efficientnet/b4/feature-vector
+resnet33ts
+resnet101d
+resnetv2_101x3_bitm_in21k
+tf_mobilenetv3_small_075
+resnet200d
+beit_large_patch16_224_in22k
+tf_mobilenetv3_large_minimal_100
+tf_efficientnetv2_s
+resnet26
+imagenet/mobilenet_v2_100_160/feature_vector
+tf_efficientnetv2_m_in21k
+imagenet/mobilenet_v1_025_192/feature_vector
+convnext_large_in22ft1k
+mobilenetv3_small_050
+resnet18
+tf_efficientnetv2_b1
+tf_efficientnet_b3_ap
+tf_efficientnet_b8
+imagenet/efficientnet_v2_imagenet21k_s/feature_vector
+efficientnetv2_rw_m
+tf_efficientnet_em
+imagenet/efficientnet_v2_imagenet1k_m/feature_vector
+imagenet/efficientnet_v2_imagenet21k_b0/feature_vector
+imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector
+efficientnet/b2/feature-vector
+imagenet/resnet_v2_152/feature_vector
+tf_efficientnet_b8_ap
+imagenet/mobilenet_v2_075_160/feature_vector
+imagenet/mobilenet_v3_large_075_224/feature_vector
+imagenet/resnet_v2_50/feature_vector
+tf_efficientnetv2_xl_in21k
+tf_efficientnet_b0_ns
+imagenet/mobilenet_v2_100_224/feature_vector
+imagenet/mobilenet_v1_050_160/feature_vector
+tf_efficientnetv2_l_in21k
+efficientnet_b1_pruned
+resnetv2_50
+mobilenetv3_small_100
+cropnet/feature_vector/imagenet
+imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector
+resnetv2_101x1_bitm_in21k
+tf_efficientnet_cc_b0_8e
+imagenet/nasnet_mobile/feature_vector
+tf_efficientnet_lite0
+imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector
+imagenet/inception_resnet_v2/feature_vector
+tf_efficientnet_b3_ns
+resnetv2_152x2_bit_teacher_384
+efficientnet_el_pruned
+mobilenetv2_120d
+efficientnet_b1
+tf_efficientnet_b4
+tf_efficientnet_l2_ns
+resnetrs420
+efficientnet_b3
+tf_efficientnet_b1
+tv_densenet121
+efficientnet_lite0
+tf_efficientnet_b6
+tf_efficientnetv2_m
+cropnet/feature_vector/concat
+tf_efficientnet_l2_ns_475
+imagenet/efficientnet_v2_imagenet1k_b2/feature_vector
+imagenet/mobilenet_v1_100_224/feature_vector
+pvt_v2_b5
+imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector
+bit/m-r101x1
+experts/bit/r50x1/in21k/plant
+imagenet/mobilenet_v2_100_128/feature_vector
+convnext_nano
+resnetrs200
+efficientnet/b0/feature-vector
+cropnet/feature_vector/cassava_disease_V1
+imagenet/inception_v2/feature_vector
+efficientnet/b7/feature-vector
+imagenet/resnet_v2_101/feature_vector
+imagenet/efficientnet_v2_imagenet1k_l/feature_vector
+densenetblur121d
+imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector
+resnet26d
+tf_efficientnet_b0
+resnet_50/feature_vector
+imagenet/mobilenet_v2_035_160/feature_vector
+experts/bit/r50x1/in21k/abstraction
+resnetv2_152x2_bitm
+experts/bit/r50x1/in21k/conveyance
+tf_efficientnet_b6_ap
+densenet161
+resnetv2_50x1_bitm
+resnetblur50
+tf_efficientnet_b7_ap
+tf_efficientnet_b1_ap
+experts/bit/r50x1/in21k/vehicle
+convnext_xlarge_in22k
+tf_efficientnet_b6_ns
+resnetv2_152x2_bitm_in21k
+experts/bit/r50x1/in21k/structure
+tf_efficientnetv2_l
+deit3_medium_patch16_224_in21ft1k
+tf_mobilenetv3_small_100
+imagenet/efficientnet_v2_imagenet1k_b0/feature_vector
+resnetv2_50x1_bit_distilled
+mobilenetv2_110d
+experts/bit/r50x1/in21k/consumer_goods
+convnext_small_in22ft1k
+imagenet/inception_v1/feature_vector
+imagenet/mobilenet_v2_050_192/feature_vector
+
+Duplicated models: ['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']
+Dropped 15 duplicated models from keras
+775 models in sims data
+Dropped models that are not in sims data 674 models left
+Number of models: 674
+Number of unique models: 674
+Yes, Models are all unique
+All 42 attributes: Index(['Output Features', 'Pooling Layers', 'Conv Layers', 'Training Dataset',
+       'Bottlenecks', 'Recurrent Layers', 'Model',
+       'Highest Internal Layer Parameters', 'Max RF', 'Family', 'Parameters',
+       'Dense Layers', 'Layers', 'First Layer Parameters',
+       'Normalization Layers', 'Last Layer Parameters', 'RF25 Layer Number',
+       'Attention Layers', 'Origin', 'RF25 Layer Name', 'Residual Blocks',
+       'MAX RF', 'Architecture', 'Crop Percentage',
+       'Lowest Internal Layer Parameters', 'Has Convolutional Layers',
+       'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks',
+       'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers',
+       'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU', 'Other',
+       'Year Made', 'Learning Type', 'Primary Application',
+       'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')
+
+Finished checking columns
+                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0
+
+Analyzing 15 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Output Features', 'Residual Blocks']
+...Plotting Output Features...
+...Plotting Pooling Layers...
+...Plotting Conv Layers...
+...Plotting Training Dataset...
+Number of unique models: 6
+Total rows: 674
+...Plotting Bottlenecks...
+...Plotting Recurrent Layers...
+...Plotting Model...
+Number of unique models: 674
+Total rows: 674
+Alert: Model has unique values for each row. Skipping for plotting.
+...Plotting Highest Internal Layer Parameters...
+Skipping Max RF because more than half of the rows are missing.
+...Plotting Family...
+Number of unique models: 81
+Total rows: 674
+...Plotting Parameters...
+...Plotting Dense Layers...
+...Plotting Layers...
+...Plotting First Layer Parameters...
+...Plotting Normalization Layers...
+...Plotting Last Layer Parameters...
+Skipping RF25 Layer Number because more than half of the rows are missing.
+...Plotting Attention Layers...
+...Plotting Origin...
+Number of unique models: 4
+Total rows: 674
+Skipping RF25 Layer Name because more than half of the rows are missing.
+...Plotting Residual Blocks...
+Skipping MAX RF because more than half of the rows are missing.
+...Plotting Architecture...
+Number of unique models: 614
+Total rows: 674
+Number of unique models after combining: 30
+Total rows after combining: 614
+...Plotting Crop Percentage...
+--> Skipping Crop Percentage because it's not categorical or numerical. The type is float64
+...Plotting Lowest Internal Layer Parameters...
+...Plotting Has Convolutional Layers...
+...Plotting Has Residual Blocks...
+...Plotting Has Dense Layers...
+...Plotting Has Bottlenecks...
+...Plotting Has Recurrent Layers...
+...Plotting Has Skip Connections...
+...Plotting Has Attention Layers...
+...Plotting Tokenized...
+...Plotting Transformer...
+...Plotting Has ReLU...
+...Plotting Has GeLU...
+...Plotting Other...
+Number of unique models: 3
+Total rows: 674
+...Plotting Year Made...
+--> Skipping Year Made because it's not categorical or numerical. The type is float64
+...Plotting Learning Type...
+Number of unique models: 2
+Total rows: 674
+...Plotting Primary Application...
+Number of unique models: 7
+Total rows: 674
+...Plotting Key Distinguishing Feature...
+Number of unique models: 77
+Total rows: 674
+...Plotting Pooling Type...
+Number of unique models: 8
+Total rows: 674
+
+Variance Inflation Factor (VIF):
+                           Attributes        VIF
+2   Highest Internal Layer Parameters  23.384935
+0                          Parameters  22.410949
+5                              Layers  11.524502
+7                         Conv Layers   9.622511
+3               Last Layer Parameters   5.303537
+13                    Output Features   5.166853
+8                        Dense Layers   4.762500
+9                Normalization Layers   4.197365
+14                    Residual Blocks   2.369301
+6                    Attention Layers   1.971996
+12                        Bottlenecks   1.367791
+4    Lowest Internal Layer Parameters   1.310685
+1              First Layer Parameters   1.136770
+10                     Pooling Layers   1.132071
+11                   Recurrent Layers   1.020614
+Number of Principal Components to capture 90% of the variance: 9
+
+===== Workflow Started: 2025-03-20 18:07:06.096643 =====
+
+data/models_summaries/models_summary_keras.csv
+True
+Number of models in sims data: 774
+Number of models in models_summaries_all: 928
+
+Number of models in sims but not in models_summaries_all: 100
+Number of models in models_summaries_all but not in sims: 239
+
+Models in models_summaries_all but not in sims:
+imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector
+experts/bit/r50x1/in21k/plant
+efficientnet_em
+tf_efficientnet_b6_ns
+tf_efficientnet_b6
+resnetv2_50x3_bitm_in21k
+imagenet/mobilenet_v1_100_128/feature_vector
+experts/bit/r50x1/in21k/object
+resnet101d
+tf_efficientnet_b1_ns
+imagenet/mobilenet_v1_025_192/feature_vector
+tf_mobilenetv3_large_minimal_100
+tf_efficientnet_lite1
+resnet33ts
+tf_efficientnet_lite0
+resnet26
+tf_mobilenetv3_large_075
+imagenet/inception_resnet_v2/feature_vector
+tf_efficientnetv2_s
+experts/bit/r50x1/in21k/conveyance
+convnext_small_in22ft1k
+convnext_base_in22ft1k
+imagenet/efficientnet_v2_imagenet1k_b2/feature_vector
+vgg11_bn
+imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector
+tf_efficientnet_cc_b0_8e
+imagenet/efficientnet_v2_imagenet1k_l/feature_vector
+mobilenetv3_rw
+tf_efficientnet_b3_ns
+resnet10t
+experts/bit/r50x1/in21k/structure
+tf_mobilenetv3_small_100
+tf_efficientnet_em
+tf_efficientnetv2_l
+imagenet/efficientnet_v2_imagenet21k_s/feature_vector
+resnetv2_101
+resnet18d
+efficientnet/b4/feature-vector
+convnext_large_in22ft1k
+resnet34
+mobilenetv3_small_050
+resnetrs200
+tf_efficientnet_b0
+experts/bit/r50x1/in21k/whole
+efficientnet/b1/feature-vector
+efficientnet/b7/feature-vector
+bit/m-r101x1
+imagenet/mobilenet_v3_large_100_224/feature_vector
+tf_efficientnetv2_b3
+experts/bit/r50x1/in21k/part
+efficientnet_b3_pruned
+imagenet/mobilenet_v3_small_075_224/feature_vector
+imagenet/efficientnet_v2_imagenet1k_m/feature_vector
+imagenet/efficientnet_v2_imagenet21k_b0/feature_vector
+densenetblur121d
+resnet34d
+densenet161
+resnetv2_101x3_bitm_in21k
+imagenet/resnet_v2_152/feature_vector
+resnetaa50
+imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector
+vgg11
+tf_efficientnet_lite3
+deit3_medium_patch16_224_in21ft1k
+imagenet/inception_v1/feature_vector
+resnetv2_101x1_bitm_in21k
+xcit_small_24_p16_384_dist
+imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector
+resnetv2_50x1_bitm_in21k
+imagenet/efficientnet_v2_imagenet1k_b0/feature_vector
+resnetblur50
+tf_efficientnet_b0_ap
+imagenet/efficientnet_v2_imagenet21k_l/feature_vector
+vgg13_bn
+tf_efficientnet_b8
+tf_efficientnet_cc_b1_8e
+tf_efficientnetv2_m
+resnet14t
+imagenet/mobilenet_v2_035_160/feature_vector
+vit_base_patch32_224_sam
+tf_efficientnetv2_l_in21k
+mobilenetv3_small_100
+vgg13
+resnet50d
+imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector
+experts/bit/r50x1/in21k/instrument
+vit_base_patch16_224_sam
+experts/bit/r50x1/in21k/arthropod
+cropnet/feature_vector/imagenet
+imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector
+mobilenetv2_140
+experts/bit/r50x1/in21k/food
+mobilenetv3_large_100_miil
+resnetrs420
+tv_densenet121
+resnetv2_152x2_bit_teacher
+resnetv2_152x2_bitm
+tf_efficientnetv2_b1
+imagenet/mobilenet_v2_075_160/feature_vector
+resnet_50/feature_vector
+imagenet/efficientnet_v2_imagenet21k_xl/feature_vector
+resnet50_gn
+imagenet/resnet_v1_50/feature_vector
+experts/bit/r50x1/in21k/tree
+efficientnet_el_pruned
+tf_efficientnet_b0_ns
+imagenet/mobilenet_v2_140_224/feature_vector
+tf_mobilenetv3_small_075
+convnext_pico
+resnetv2_152x2_bit_teacher_384
+tf_efficientnetv2_xl_in21k
+tf_efficientnet_b5_ns
+resnetrs350
+tf_mobilenetv3_small_minimal_100
+efficientnet_b0
+imagenet/mobilenet_v2_035_96/feature_vector
+tf_efficientnetv2_s_in21k
+efficientnet_b1_pruned
+imagenet/nasnet_large/feature_vector
+tf_efficientnet_cc_b0_4e
+resnetrs270
+efficientnet_es_pruned
+imagenet/inception_v3/feature_vector
+mobilenetv2_120d
+tf_efficientnetv2_m_in21k
+resnet26d
+resnet200d
+efficientnetv2_rw_t
+tf_efficientnet_el
+tf_efficientnet_b7_ap
+resnetv2_50x3_bitm
+efficientnet_b2
+imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector
+beit_large_patch16_224_in22k
+vgg16_bn
+imagenet/resnet_v1_101/feature_vector
+convnext_femto
+tf_efficientnet_b7
+resnetrs152
+tf_efficientnet_b6_ap
+mobilenetv2_050
+tf_efficientnetv2_b2
+tf_mobilenetv3_large_100
+resnetv2_152x4_bitm_in21k
+tf_efficientnet_b3
+imagenet/nasnet_mobile/feature_vector
+imagenet/mobilenet_v1_050_224/feature_vector
+cropnet/feature_vector/cassava_disease_V1
+imagenet/mobilenet_v2_130_224/feature_vector
+imagenet/resnet_v1_152/feature_vector
+beitv2_base_patch16_224_in22k
+resnetv2_101x3_bitm
+tf_efficientnet_lite2
+bit/s-r50x1
+mobilenetv2_100
+resnetv2_50x1_bitm
+experts/bit/r50x1/in21k/abstraction
+pvt_v2_b5
+tf_efficientnet_b3_ap
+imagenet/efficientnet_v2_imagenet21k_b3/feature_vector
+tf_efficientnetv2_l_in21ft1k
+tf_efficientnet_b4
+efficientnetv2_rw_m
+mobilenetv2_110d
+tf_efficientnet_b5_ap
+imagenet/pnasnet_large/feature_vector
+beitv2_large_patch16_224_in22k
+tf_efficientnet_b1_ap
+convnext_nano
+imagenet/efficientnet_v2_imagenet21k_b2/feature_vector
+resnetv2_50x1_bit_distilled
+cropnet/feature_vector/concat
+gluon_xception65
+resnet18
+imagenet/efficientnet_v2_imagenet1k_b3/feature_vector
+resnet51q
+resnet152d
+efficientnet/b0/feature-vector
+experts/bit/r50x1/in21k/spermatophyte
+imagenet/mobilenet_v1_100_224/feature_vector
+xcit_medium_24_p16_224_dist
+imagenet/resnet_v2_101/feature_vector
+efficientnet_es
+efficientnet/b5/feature-vector
+experts/bit/r50x1/in21k/vehicle
+imagenet/mobilenet_v2_100_224/feature_vector
+resnet26t
+imagenet/mobilenet_v3_small_100_224/feature_vector
+vit_giant_patch14_224_clip_laion2b
+convnext_tiny_hnf
+imagenet/efficientnet_v2_imagenet21k_b1/feature_vector
+efficientnet_b3
+imagenet/mobilenet_v2_100_128/feature_vector
+efficientnet_b1
+imagenet/mobilenet_v2_075_96/feature_vector
+imagenet/mobilenet_v2_100_160/feature_vector
+resnetrs101
+experts/bit/r50x1/in21k/animal
+tf_efficientnet_b2_ns
+efficientnet_b2_pruned
+tf_efficientnet_l2_ns_475
+tf_efficientnet_b2
+imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector
+convnext_tiny_in22k
+tf_efficientnet_lite4
+imagenet/inception_v2/feature_vector
+tf_efficientnet_l2_ns
+tf_efficientnetv2_xl_in21ft1k
+mobilenetv3_large_100
+convnext_xlarge_in22k
+imagenet/efficientnet_v2_imagenet21k_m/feature_vector
+imagenet/mobilenet_v2_050_160/feature_vector
+experts/bit/r50x1/in21k/artifact
+efficientnet/b2/feature-vector
+resnetv2_50
+imagenet/mobilenet_v3_large_075_224/feature_vector
+tf_efficientnetv2_s_in21ft1k
+convnext_xlarge_in22ft1k
+efficientnet/b3/feature-vector
+convnext_atto
+nts-net
+beit_base_patch16_224_in22k
+efficientnet_lite0
+tf_efficientnet_b4_ap
+resnetv2_152x2_bitm_in21k
+tf_efficientnet_b8_ap
+tf_efficientnet_b1
+efficientnet_el
+mobilenetv3_small_075
+experts/bit/r50x1/in21k/flower
+imagenet/resnet_v2_50/feature_vector
+imagenet/mobilenet_v1_050_160/feature_vector
+imagenet/mobilenet_v2_050_192/feature_vector
+bit/m-r50x1
+imagenet/efficientnet_v2_imagenet1k_s/feature_vector
+tf_efficientnet_b4_ns
+resnetv2_50d_gn
+experts/bit/r50x1/in21k/consumer_goods
+inaturalist/inception_v3/feature_vector
+
+Duplicated models: ['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']
+Dropped 15 duplicated models from keras
+775 models in sims data
+Dropped models that are not in sims data 674 models left
+Number of models: 674
+Number of unique models: 674
+Yes, Models are all unique
+
+===== Workflow Started: 2025-04-10 14:50:05.811876 =====
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}]
+
+===== Workflow Started: 2025-04-10 14:50:07.210455 =====
+
+===== Workflow Started: 2025-04-10 14:50:07.210455 =====
+
+
+data/models_summaries/models_summary_keras.csvdata/models_summaries/models_summary_keras.csv
+
+TrueTrue
+
+Number of models in sims data:Number of models in sims data:  774774
+
+Number of models in models_summaries_all:Number of models in models_summaries_all:  928928
+
+
+
+Number of models in sims but not in models_summaries_all:Number of models in sims but not in models_summaries_all:  100100
+
+Number of models in models_summaries_all but not in sims:Number of models in models_summaries_all but not in sims:  239239
+
+
+
+Models in models_summaries_all but not in sims:Models in models_summaries_all but not in sims:
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector
+
+tf_efficientnet_b0_nstf_efficientnet_b0_ns
+
+tf_efficientnet_b6tf_efficientnet_b6
+
+efficientnet/b7/feature-vectorefficientnet/b7/feature-vector
+
+resnetv2_50x1_bitmresnetv2_50x1_bitm
+
+imagenet/resnet_v1_152/feature_vectorimagenet/resnet_v1_152/feature_vector
+
+mobilenetv3_large_100mobilenetv3_large_100
+
+tf_efficientnet_b0_aptf_efficientnet_b0_ap
+
+experts/bit/r50x1/in21k/plantexperts/bit/r50x1/in21k/plant
+
+resnetv2_50x1_bitm_in21kresnetv2_50x1_bitm_in21k
+
+imagenet/mobilenet_v2_140_224/feature_vectorimagenet/mobilenet_v2_140_224/feature_vector
+
+tf_mobilenetv3_small_075tf_mobilenetv3_small_075
+
+experts/bit/r50x1/in21k/treeexperts/bit/r50x1/in21k/tree
+
+tf_efficientnet_b1tf_efficientnet_b1
+
+tf_efficientnet_b4tf_efficientnet_b4
+
+tf_mobilenetv3_large_minimal_100tf_mobilenetv3_large_minimal_100
+
+vit_base_patch16_224_samvit_base_patch16_224_sam
+
+cropnet/feature_vector/cassava_disease_V1cropnet/feature_vector/cassava_disease_V1
+
+imagenet/efficientnet_v2_imagenet21k_m/feature_vectorimagenet/efficientnet_v2_imagenet21k_m/feature_vector
+
+resnet18resnet18
+
+vit_base_patch32_224_samvit_base_patch32_224_sam
+
+resnetv2_152x2_bitmresnetv2_152x2_bitm
+
+imagenet/inception_v2/feature_vectorimagenet/inception_v2/feature_vector
+
+tf_efficientnet_l2_nstf_efficientnet_l2_ns
+
+resnetv2_152x2_bitm_in21kresnetv2_152x2_bitm_in21k
+
+tf_efficientnetv2_b3tf_efficientnetv2_b3
+
+tf_mobilenetv3_large_100tf_mobilenetv3_large_100
+
+tf_efficientnet_b0tf_efficientnet_b0
+
+imagenet/mobilenet_v3_large_100_224/feature_vectorimagenet/mobilenet_v3_large_100_224/feature_vector
+
+resnet26tresnet26t
+
+tf_efficientnet_b2_nstf_efficientnet_b2_ns
+
+efficientnetv2_rw_tefficientnetv2_rw_t
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_b1/feature_vectorimagenet/efficientnet_v2_imagenet21k_b1/feature_vector
+
+cropnet/feature_vector/imagenetcropnet/feature_vector/imagenet
+
+imagenet/nasnet_mobile/feature_vectorimagenet/nasnet_mobile/feature_vector
+
+imagenet/mobilenet_v1_025_192/feature_vectorimagenet/mobilenet_v1_025_192/feature_vector
+
+tf_efficientnet_b6_nstf_efficientnet_b6_ns
+
+pvt_v2_b5pvt_v2_b5
+
+tf_efficientnetv2_xl_in21ft1ktf_efficientnetv2_xl_in21ft1k
+
+resnetv2_101x3_bitm_in21kresnetv2_101x3_bitm_in21k
+
+vgg16_bnvgg16_bn
+
+imagenet/efficientnet_v2_imagenet21k_b0/feature_vectorimagenet/efficientnet_v2_imagenet21k_b0/feature_vector
+
+imagenet/inception_v3/feature_vectorimagenet/inception_v3/feature_vector
+
+experts/bit/r50x1/in21k/instrumentexperts/bit/r50x1/in21k/instrument
+
+resnetv2_152x2_bit_teacher_384resnetv2_152x2_bit_teacher_384
+
+vgg13vgg13
+
+tf_mobilenetv3_small_minimal_100tf_mobilenetv3_small_minimal_100
+
+experts/bit/r50x1/in21k/foodexperts/bit/r50x1/in21k/food
+
+efficientnet/b1/feature-vectorefficientnet/b1/feature-vector
+
+efficientnet/b5/feature-vectorefficientnet/b5/feature-vector
+
+imagenet/efficientnet_v2_imagenet1k_b2/feature_vectorimagenet/efficientnet_v2_imagenet1k_b2/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector
+
+beitv2_base_patch16_224_in22kbeitv2_base_patch16_224_in22k
+
+convnext_attoconvnext_atto
+
+imagenet/efficientnet_v2_imagenet21k_b2/feature_vectorimagenet/efficientnet_v2_imagenet21k_b2/feature_vector
+
+efficientnet/b3/feature-vectorefficientnet/b3/feature-vector
+
+efficientnet_b0efficientnet_b0
+
+vgg13_bnvgg13_bn
+
+efficientnet_b3_prunedefficientnet_b3_pruned
+
+efficientnet_b2_prunedefficientnet_b2_pruned
+
+tf_efficientnetv2_l_in21ktf_efficientnetv2_l_in21k
+
+convnext_femtoconvnext_femto
+
+tf_efficientnet_cc_b0_4etf_efficientnet_cc_b0_4e
+
+tf_efficientnet_b7tf_efficientnet_b7
+
+tf_efficientnet_b1_aptf_efficientnet_b1_ap
+
+imagenet/efficientnet_v2_imagenet1k_s/feature_vectorimagenet/efficientnet_v2_imagenet1k_s/feature_vector
+
+beit_base_patch16_224_in22kbeit_base_patch16_224_in22k
+
+resnet26resnet26
+
+resnet51qresnet51q
+
+experts/bit/r50x1/in21k/structureexperts/bit/r50x1/in21k/structure
+
+convnext_tiny_hnfconvnext_tiny_hnf
+
+bit/m-r101x1bit/m-r101x1
+
+imagenet/mobilenet_v2_050_160/feature_vectorimagenet/mobilenet_v2_050_160/feature_vector
+
+resnetv2_152x2_bit_teacherresnetv2_152x2_bit_teacher
+
+resnetv2_50x3_bitmresnetv2_50x3_bitm
+
+inaturalist/inception_v3/feature_vectorinaturalist/inception_v3/feature_vector
+
+efficientnet_esefficientnet_es
+
+beitv2_large_patch16_224_in22kbeitv2_large_patch16_224_in22k
+
+tf_efficientnetv2_s_in21ktf_efficientnetv2_s_in21k
+
+tf_efficientnet_cc_b0_8etf_efficientnet_cc_b0_8e
+
+imagenet/nasnet_large/feature_vectorimagenet/nasnet_large/feature_vector
+
+resnetv2_50x3_bitm_in21kresnetv2_50x3_bitm_in21k
+
+imagenet/inception_resnet_v2/feature_vectorimagenet/inception_resnet_v2/feature_vector
+
+tf_efficientnet_b6_aptf_efficientnet_b6_ap
+
+efficientnet/b0/feature-vectorefficientnet/b0/feature-vector
+
+efficientnet_b3efficientnet_b3
+
+mobilenetv3_small_100mobilenetv3_small_100
+
+tf_efficientnetv2_b2tf_efficientnetv2_b2
+
+resnet26dresnet26d
+
+tf_mobilenetv3_small_100tf_mobilenetv3_small_100
+
+imagenet/mobilenet_v2_035_96/feature_vectorimagenet/mobilenet_v2_035_96/feature_vector
+
+efficientnet_el_prunedefficientnet_el_pruned
+
+xcit_small_24_p16_384_distxcit_small_24_p16_384_dist
+
+resnetv2_101x1_bitm_in21kresnetv2_101x1_bitm_in21k
+
+mobilenetv2_100mobilenetv2_100
+
+imagenet/efficientnet_v2_imagenet1k_l/feature_vectorimagenet/efficientnet_v2_imagenet1k_l/feature_vector
+
+vgg11vgg11
+
+tf_efficientnet_eltf_efficientnet_el
+
+imagenet/mobilenet_v2_100_224/feature_vectorimagenet/mobilenet_v2_100_224/feature_vector
+
+experts/bit/r50x1/in21k/flowerexperts/bit/r50x1/in21k/flower
+
+resnetblur50resnetblur50
+
+tf_efficientnet_lite2tf_efficientnet_lite2
+
+tf_efficientnet_emtf_efficientnet_em
+
+imagenet/pnasnet_large/feature_vectorimagenet/pnasnet_large/feature_vector
+
+efficientnet_es_prunedefficientnet_es_pruned
+
+resnetv2_50x1_bit_distilledresnetv2_50x1_bit_distilled
+
+cropnet/feature_vector/concatcropnet/feature_vector/concat
+
+tf_efficientnetv2_s_in21ft1ktf_efficientnetv2_s_in21ft1k
+
+resnetaa50resnetaa50
+
+mobilenetv3_small_075mobilenetv3_small_075
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector
+
+imagenet/mobilenet_v1_050_160/feature_vectorimagenet/mobilenet_v1_050_160/feature_vector
+
+tf_efficientnetv2_l_in21ft1ktf_efficientnetv2_l_in21ft1k
+
+imagenet/mobilenet_v1_050_224/feature_vectorimagenet/mobilenet_v1_050_224/feature_vector
+
+convnext_large_in22ft1kconvnext_large_in22ft1k
+
+tf_efficientnetv2_xl_in21ktf_efficientnetv2_xl_in21k
+
+bit/m-r50x1bit/m-r50x1
+
+bit/s-r50x1bit/s-r50x1
+
+nts-netnts-net
+
+densenet161densenet161
+
+resnet14tresnet14t
+
+imagenet/resnet_v2_101/feature_vectorimagenet/resnet_v2_101/feature_vector
+
+tf_mobilenetv3_large_075tf_mobilenetv3_large_075
+
+tf_efficientnetv2_m_in21ktf_efficientnetv2_m_in21k
+
+resnetv2_101resnetv2_101
+
+deit3_medium_patch16_224_in21ft1kdeit3_medium_patch16_224_in21ft1k
+
+tf_efficientnetv2_ltf_efficientnetv2_l
+
+resnet34dresnet34d
+
+mobilenetv2_050mobilenetv2_050
+
+resnet50dresnet50d
+
+imagenet/resnet_v2_50/feature_vectorimagenet/resnet_v2_50/feature_vector
+
+resnet152dresnet152d
+
+imagenet/mobilenet_v3_large_075_224/feature_vectorimagenet/mobilenet_v3_large_075_224/feature_vector
+
+efficientnet/b4/feature-vectorefficientnet/b4/feature-vector
+
+tf_efficientnet_lite0tf_efficientnet_lite0
+
+tf_efficientnet_l2_ns_475tf_efficientnet_l2_ns_475
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector
+
+resnetrs350resnetrs350
+
+convnext_small_in22ft1kconvnext_small_in22ft1k
+
+efficientnet_elefficientnet_el
+
+mobilenetv2_140mobilenetv2_140
+
+tf_efficientnet_b3_nstf_efficientnet_b3_ns
+
+imagenet/mobilenet_v2_130_224/feature_vectorimagenet/mobilenet_v2_130_224/feature_vector
+
+imagenet/mobilenet_v3_small_075_224/feature_vectorimagenet/mobilenet_v3_small_075_224/feature_vector
+
+vit_giant_patch14_224_clip_laion2bvit_giant_patch14_224_clip_laion2b
+
+efficientnet_emefficientnet_em
+
+resnet33tsresnet33ts
+
+convnext_nanoconvnext_nano
+
+imagenet/efficientnet_v2_imagenet1k_b0/feature_vectorimagenet/efficientnet_v2_imagenet1k_b0/feature_vector
+
+tv_densenet121tv_densenet121
+
+tf_efficientnet_b8tf_efficientnet_b8
+
+tf_efficientnet_b3_aptf_efficientnet_b3_ap
+
+convnext_base_in22ft1kconvnext_base_in22ft1k
+
+experts/bit/r50x1/in21k/animalexperts/bit/r50x1/in21k/animal
+
+tf_efficientnet_cc_b1_8etf_efficientnet_cc_b1_8e
+
+imagenet/efficientnet_v2_imagenet21k_xl/feature_vectorimagenet/efficientnet_v2_imagenet21k_xl/feature_vector
+
+imagenet/efficientnet_v2_imagenet1k_b3/feature_vectorimagenet/efficientnet_v2_imagenet1k_b3/feature_vector
+
+efficientnet_b1_prunedefficientnet_b1_pruned
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector
+
+tf_efficientnet_b7_aptf_efficientnet_b7_ap
+
+convnext_xlarge_in22ft1kconvnext_xlarge_in22ft1k
+
+mobilenetv3_large_100_miilmobilenetv3_large_100_miil
+
+resnet34resnet34
+
+tf_efficientnet_b4_aptf_efficientnet_b4_ap
+
+resnet50_gnresnet50_gn
+
+mobilenetv3_small_050mobilenetv3_small_050
+
+resnet_50/feature_vectorresnet_50/feature_vector
+
+experts/bit/r50x1/in21k/spermatophyteexperts/bit/r50x1/in21k/spermatophyte
+
+experts/bit/r50x1/in21k/artifactexperts/bit/r50x1/in21k/artifact
+
+gluon_xception65gluon_xception65
+
+experts/bit/r50x1/in21k/arthropodexperts/bit/r50x1/in21k/arthropod
+
+convnext_picoconvnext_pico
+
+tf_efficientnet_b8_aptf_efficientnet_b8_ap
+
+efficientnet_b1efficientnet_b1
+
+resnet101dresnet101d
+
+experts/bit/r50x1/in21k/wholeexperts/bit/r50x1/in21k/whole
+
+imagenet/efficientnet_v2_imagenet21k_b3/feature_vectorimagenet/efficientnet_v2_imagenet21k_b3/feature_vector
+
+imagenet/resnet_v2_152/feature_vectorimagenet/resnet_v2_152/feature_vector
+
+imagenet/mobilenet_v2_075_96/feature_vectorimagenet/mobilenet_v2_075_96/feature_vector
+
+tf_efficientnet_b4_nstf_efficientnet_b4_ns
+
+efficientnet_b2efficientnet_b2
+
+imagenet/resnet_v1_101/feature_vectorimagenet/resnet_v1_101/feature_vector
+
+resnetv2_50d_gnresnetv2_50d_gn
+
+tf_efficientnetv2_mtf_efficientnetv2_m
+
+imagenet/mobilenet_v2_100_128/feature_vectorimagenet/mobilenet_v2_100_128/feature_vector
+
+beit_large_patch16_224_in22kbeit_large_patch16_224_in22k
+
+imagenet/efficientnet_v2_imagenet1k_m/feature_vectorimagenet/efficientnet_v2_imagenet1k_m/feature_vector
+
+imagenet/mobilenet_v2_035_160/feature_vectorimagenet/mobilenet_v2_035_160/feature_vector
+
+xcit_medium_24_p16_224_distxcit_medium_24_p16_224_dist
+
+imagenet/mobilenet_v3_small_100_224/feature_vectorimagenet/mobilenet_v3_small_100_224/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector
+
+experts/bit/r50x1/in21k/consumer_goodsexperts/bit/r50x1/in21k/consumer_goods
+
+resnetrs101resnetrs101
+
+resnetrs200resnetrs200
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector
+
+resnetv2_101x3_bitmresnetv2_101x3_bitm
+
+imagenet/mobilenet_v1_100_224/feature_vectorimagenet/mobilenet_v1_100_224/feature_vector
+
+experts/bit/r50x1/in21k/objectexperts/bit/r50x1/in21k/object
+
+convnext_tiny_in22kconvnext_tiny_in22k
+
+imagenet/mobilenet_v2_050_192/feature_vectorimagenet/mobilenet_v2_050_192/feature_vector
+
+resnetrs270resnetrs270
+
+experts/bit/r50x1/in21k/abstractionexperts/bit/r50x1/in21k/abstraction
+
+experts/bit/r50x1/in21k/conveyanceexperts/bit/r50x1/in21k/conveyance
+
+tf_efficientnetv2_b1tf_efficientnetv2_b1
+
+tf_efficientnet_lite4tf_efficientnet_lite4
+
+densenetblur121ddensenetblur121d
+
+mobilenetv3_rwmobilenetv3_rw
+
+experts/bit/r50x1/in21k/vehicleexperts/bit/r50x1/in21k/vehicle
+
+resnetv2_50resnetv2_50
+
+resnetv2_152x4_bitm_in21kresnetv2_152x4_bitm_in21k
+
+imagenet/mobilenet_v1_100_128/feature_vectorimagenet/mobilenet_v1_100_128/feature_vector
+
+imagenet/mobilenet_v2_100_160/feature_vectorimagenet/mobilenet_v2_100_160/feature_vector
+
+imagenet/inception_v1/feature_vectorimagenet/inception_v1/feature_vector
+
+mobilenetv2_110dmobilenetv2_110d
+
+tf_efficientnet_b3tf_efficientnet_b3
+
+imagenet/resnet_v1_50/feature_vectorimagenet/resnet_v1_50/feature_vector
+
+resnet18dresnet18d
+
+tf_efficientnet_b2tf_efficientnet_b2
+
+tf_efficientnet_lite3tf_efficientnet_lite3
+
+resnet200dresnet200d
+
+resnetrs152resnetrs152
+
+tf_efficientnetv2_stf_efficientnetv2_s
+
+tf_efficientnet_b1_nstf_efficientnet_b1_ns
+
+imagenet/mobilenet_v2_075_160/feature_vectorimagenet/mobilenet_v2_075_160/feature_vector
+
+experts/bit/r50x1/in21k/partexperts/bit/r50x1/in21k/part
+
+vgg11_bnvgg11_bn
+
+efficientnet_lite0efficientnet_lite0
+
+convnext_xlarge_in22kconvnext_xlarge_in22k
+
+mobilenetv2_120dmobilenetv2_120d
+
+efficientnet/b2/feature-vectorefficientnet/b2/feature-vector
+
+resnetrs420resnetrs420
+
+imagenet/efficientnet_v2_imagenet21k_s/feature_vectorimagenet/efficientnet_v2_imagenet21k_s/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_l/feature_vectorimagenet/efficientnet_v2_imagenet21k_l/feature_vector
+
+efficientnetv2_rw_mefficientnetv2_rw_m
+
+tf_efficientnet_lite1tf_efficientnet_lite1
+
+resnet10tresnet10t
+
+tf_efficientnet_b5_nstf_efficientnet_b5_ns
+
+tf_efficientnet_b5_aptf_efficientnet_b5_ap
+
+
+
+Models in sims but not in models_summaries_all:Models in sims but not in models_summaries_all:
+
+imagenet-mobilenet_v2_035_160-feature_vectorimagenet-mobilenet_v2_035_160-feature_vector
+
+imagenet-mobilenet_v3_large_100_224-feature_vectorimagenet-mobilenet_v3_large_100_224-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_s-feature_vectorimagenet-efficientnet_v2_imagenet1k_s-feature_vector
+
+experts-bit-r50x1-in21k-wholeexperts-bit-r50x1-in21k-whole
+
+efficientnet-b0-feature-vectorefficientnet-b0-feature-vector
+
+imagenet-mobilenet_v2_050_192-feature_vectorimagenet-mobilenet_v2_050_192-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_b1-feature_vectorimagenet-efficientnet_v2_imagenet21k_b1-feature_vector
+
+experts-bit-r50x1-in21k-vehicleexperts-bit-r50x1-in21k-vehicle
+
+imagenet-efficientnet_v2_imagenet21k_m-feature_vectorimagenet-efficientnet_v2_imagenet21k_m-feature_vector
+
+fbresnet152fbresnet152
+
+imagenet-efficientnet_v2_imagenet1k_b2-feature_vectorimagenet-efficientnet_v2_imagenet1k_b2-feature_vector
+
+vit_base_patch32_224.sam_in1kvit_base_patch32_224.sam_in1k
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_b0-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_b0-feature_vector
+
+experts-bit-r50x1-in21k-abstractionexperts-bit-r50x1-in21k-abstraction
+
+imagenet-resnet_v1_50-feature_vectorimagenet-resnet_v1_50-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_l-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_l-feature_vector
+
+resnext101_32x4dresnext101_32x4d
+
+imagenet-mobilenet_v2_035_96-feature_vectorimagenet-mobilenet_v2_035_96-feature_vector
+
+experts-bit-r50x1-in21k-instrumentexperts-bit-r50x1-in21k-instrument
+
+experts-bit-r50x1-in21k-treeexperts-bit-r50x1-in21k-tree
+
+experts-bit-r50x1-in21k-matterexperts-bit-r50x1-in21k-matter
+
+imagenet-mobilenet_v2_075_96-feature_vectorimagenet-mobilenet_v2_075_96-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_xl-feature_vectorimagenet-efficientnet_v2_imagenet21k_xl-feature_vector
+
+experts-bit-r50x1-in21k-conveyanceexperts-bit-r50x1-in21k-conveyance
+
+imagenet-pnasnet_large-feature_vectorimagenet-pnasnet_large-feature_vector
+
+experts-bit-r50x1-in21k-flowerexperts-bit-r50x1-in21k-flower
+
+experts-bit-r50x1-in21k-plantexperts-bit-r50x1-in21k-plant
+
+bit-m-r101x1bit-m-r101x1
+
+cropnet-feature_vector-imagenetcropnet-feature_vector-imagenet
+
+experts-bit-r50x1-in21k-partexperts-bit-r50x1-in21k-part
+
+imagenet-efficientnet_v2_imagenet21k_s-feature_vectorimagenet-efficientnet_v2_imagenet21k_s-feature_vector
+
+efficientnet-b1-feature-vectorefficientnet-b1-feature-vector
+
+unet_carvanaunet_carvana
+
+alexnetalexnet
+
+imagenet-mobilenet_v1_100_224-feature_vectorimagenet-mobilenet_v1_100_224-feature_vector
+
+experts-bit-r50x1-in21k-foodexperts-bit-r50x1-in21k-food
+
+imagenet-mobilenet_v2_100_128-feature_vectorimagenet-mobilenet_v2_100_128-feature_vector
+
+imagenet-mobilenet_v2_140_224-feature_vectorimagenet-mobilenet_v2_140_224-feature_vector
+
+imagenet-mobilenet_v2_075_160-feature_vectorimagenet-mobilenet_v2_075_160-feature_vector
+
+efficientnet-b7-feature-vectorefficientnet-b7-feature-vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_b3-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_b3-feature_vector
+
+experts-bit-r50x1-in21k-objectexperts-bit-r50x1-in21k-object
+
+efficientnet-b5-feature-vectorefficientnet-b5-feature-vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_xl-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_xl-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_m-feature_vectorimagenet-efficientnet_v2_imagenet1k_m-feature_vector
+
+cropnet-feature_vector-concatcropnet-feature_vector-concat
+
+imagenet-mobilenet_v1_025_192-feature_vectorimagenet-mobilenet_v1_025_192-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_b2-feature_vectorimagenet-efficientnet_v2_imagenet21k_b2-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_b0-feature_vectorimagenet-efficientnet_v2_imagenet1k_b0-feature_vector
+
+imagenet-resnet_v1_152-feature_vectorimagenet-resnet_v1_152-feature_vector
+
+imagenet-mobilenet_v2_050_160-feature_vectorimagenet-mobilenet_v2_050_160-feature_vector
+
+imagenet-mobilenet_v3_large_075_224-feature_vectorimagenet-mobilenet_v3_large_075_224-feature_vector
+
+bit-s-r50x1bit-s-r50x1
+
+densenet121.tv_in1kdensenet121.tv_in1k
+
+inaturalist-inception_v3-feature_vectorinaturalist-inception_v3-feature_vector
+
+imagenet-resnet_v1_101-feature_vectorimagenet-resnet_v1_101-feature_vector
+
+experts-bit-r50x1-in21k-arthropodexperts-bit-r50x1-in21k-arthropod
+
+imagenet-nasnet_large-feature_vectorimagenet-nasnet_large-feature_vector
+
+imagenet-mobilenet_v2_100_160-feature_vectorimagenet-mobilenet_v2_100_160-feature_vector
+
+experts-bit-r50x1-in21k-structureexperts-bit-r50x1-in21k-structure
+
+imagenet-resnet_v2_101-feature_vectorimagenet-resnet_v2_101-feature_vector
+
+imagenet-inception_v1-feature_vectorimagenet-inception_v1-feature_vector
+
+imagenet-nasnet_mobile-feature_vectorimagenet-nasnet_mobile-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_b1-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_b1-feature_vector
+
+efficientnet-b4-feature-vectorefficientnet-b4-feature-vector
+
+imagenet-inception_v2-feature_vectorimagenet-inception_v2-feature_vector
+
+experts-bit-r50x1-in21k-spermatophyteexperts-bit-r50x1-in21k-spermatophyte
+
+efficientnet-b2-feature-vectorefficientnet-b2-feature-vector
+
+imagenet-mobilenet_v1_100_128-feature_vectorimagenet-mobilenet_v1_100_128-feature_vector
+
+imagenet-inception_resnet_v2-feature_vectorimagenet-inception_resnet_v2-feature_vector
+
+bit-m-r50x1bit-m-r50x1
+
+beit_base_patch16_224.in22k_ft_in22kbeit_base_patch16_224.in22k_ft_in22k
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_s-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_s-feature_vector
+
+resnet_50-feature_vectorresnet_50-feature_vector
+
+imagenet-mobilenet_v2_130_224-feature_vectorimagenet-mobilenet_v2_130_224-feature_vector
+
+cropnet-feature_vector-cassava_disease_V1cropnet-feature_vector-cassava_disease_V1
+
+experts-bit-r50x1-in21k-consumer_goodsexperts-bit-r50x1-in21k-consumer_goods
+
+experts-bit-r50x1-in21k-artifactexperts-bit-r50x1-in21k-artifact
+
+imagenet-resnet_v2_50-feature_vectorimagenet-resnet_v2_50-feature_vector
+
+imagenet-mobilenet_v1_050_224-feature_vectorimagenet-mobilenet_v1_050_224-feature_vector
+
+xcit_small_24_p16_384.fb_dist_in1kxcit_small_24_p16_384.fb_dist_in1k
+
+imagenet-mobilenet_v3_small_075_224-feature_vectorimagenet-mobilenet_v3_small_075_224-feature_vector
+
+imagenet-resnet_v2_152-feature_vectorimagenet-resnet_v2_152-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_b3-feature_vectorimagenet-efficientnet_v2_imagenet1k_b3-feature_vector
+
+beit_large_patch16_224.in22k_ft_in22kbeit_large_patch16_224.in22k_ft_in22k
+
+vit_base_patch16_224.sam_in1kvit_base_patch16_224.sam_in1k
+
+imagenet-mobilenet_v1_050_160-feature_vectorimagenet-mobilenet_v1_050_160-feature_vector
+
+bninceptionbninception
+
+imagenet-inception_v3-feature_vectorimagenet-inception_v3-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_b0-feature_vectorimagenet-efficientnet_v2_imagenet21k_b0-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_l-feature_vectorimagenet-efficientnet_v2_imagenet1k_l-feature_vector
+
+beitv2_large_patch16_224.in1k_ft_in22kbeitv2_large_patch16_224.in1k_ft_in22k
+
+imagenet-efficientnet_v2_imagenet21k_b3-feature_vectorimagenet-efficientnet_v2_imagenet21k_b3-feature_vector
+
+beitv2_base_patch16_224.in1k_ft_in22kbeitv2_base_patch16_224.in1k_ft_in22k
+
+imagenet-mobilenet_v3_small_100_224-feature_vectorimagenet-mobilenet_v3_small_100_224-feature_vector
+
+experts-bit-r50x1-in21k-animalexperts-bit-r50x1-in21k-animal
+
+imagenet-mobilenet_v2_100_224-feature_vectorimagenet-mobilenet_v2_100_224-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_l-feature_vectorimagenet-efficientnet_v2_imagenet21k_l-feature_vector
+
+efficientnet-b3-feature-vectorefficientnet-b3-feature-vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_m-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_m-feature_vector
+
+
+
+Duplicated models:Duplicated models:  ['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']
+
+DroppedDropped  1515  duplicated models from kerasduplicated models from keras
+
+774774  models in sims datamodels in sims data
+
+Dropped models that are not in sims dataDropped models that are not in sims data  674674  models leftmodels left
+
+Number of models:Number of models:  674674
+
+Number of unique models:Number of unique models:  674674
+
+Yes, Models are all uniqueYes, Models are all unique
+
+All 42 attributes: Index(['Family', 'Bottlenecks', 'Training Dataset',
+       'Lowest Internal Layer Parameters', 'RF25 Layer Name',
+       'Recurrent Layers', 'Max RF', 'Architecture', 'Dense Layers',
+       'Crop Percentage', 'Parameters', 'Pooling Layers',
+       'Last Layer Parameters', 'First Layer Parameters', 'Output Features',
+       'Model', 'Origin', 'Residual Blocks', 'MAX RF', 'Attention Layers',
+       'Layers', 'Conv Layers', 'Normalization Layers', 'RF25 Layer Number',
+       'Highest Internal Layer Parameters', 'Has Convolutional Layers',
+       'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks',
+       'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers',
+       'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU', 'Other',
+       'Year Made', 'Learning Type', 'Primary Application',
+       'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')All 42 attributes: Index(['Family', 'Bottlenecks', 'Training Dataset',
+       'Lowest Internal Layer Parameters', 'RF25 Layer Name',
+       'Recurrent Layers', 'Max RF', 'Architecture', 'Dense Layers',
+       'Crop Percentage', 'Parameters', 'Pooling Layers',
+       'Last Layer Parameters', 'First Layer Parameters', 'Output Features',
+       'Model', 'Origin', 'Residual Blocks', 'MAX RF', 'Attention Layers',
+       'Layers', 'Conv Layers', 'Normalization Layers', 'RF25 Layer Number',
+       'Highest Internal Layer Parameters', 'Has Convolutional Layers',
+       'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks',
+       'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers',
+       'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU', 'Other',
+       'Year Made', 'Learning Type', 'Primary Application',
+       'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')
+
+
+
+Finished checking columnsFinished checking columns
+
+Categorical columns: 11Categorical columns: 11
+
+Categorical columns include: ['Family', 'Training Dataset', 'RF25 Layer Name', 'Architecture', 'Model', 'Origin', 'Other', 'Learning Type', 'Primary Application', 'Key Distinguishing Feature', 'Pooling Type']Categorical columns include: ['Family', 'Training Dataset', 'RF25 Layer Name', 'Architecture', 'Model', 'Origin', 'Other', 'Learning Type', 'Primary Application', 'Key Distinguishing Feature', 'Pooling Type']
+
+
+
+Binary columns: 14Binary columns: 14
+
+Binary columns include: ['Max RF', 'MAX RF', 'RF25 Layer Number', 'Has Convolutional Layers', 'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks', 'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers', 'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU']Binary columns include: ['Max RF', 'MAX RF', 'RF25 Layer Number', 'Has Convolutional Layers', 'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks', 'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers', 'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU']
+
+
+
+Continuous columns: 17Continuous columns: 17
+
+Continuous columns include: ['Bottlenecks', 'Lowest Internal Layer Parameters', 'Recurrent Layers', 'Dense Layers', 'Crop Percentage', 'Parameters', 'Pooling Layers', 'Last Layer Parameters', 'First Layer Parameters', 'Output Features', 'Residual Blocks', 'Attention Layers', 'Layers', 'Conv Layers', 'Normalization Layers', 'Highest Internal Layer Parameters', 'Year Made']Continuous columns include: ['Bottlenecks', 'Lowest Internal Layer Parameters', 'Recurrent Layers', 'Dense Layers', 'Crop Percentage', 'Parameters', 'Pooling Layers', 'Last Layer Parameters', 'First Layer Parameters', 'Output Features', 'Residual Blocks', 'Attention Layers', 'Layers', 'Conv Layers', 'Normalization Layers', 'Highest Internal Layer Parameters', 'Year Made']
+
+
+
+In total: 42In total: 42
+
+where Missing data columns: 35where Missing data columns: 35
+
+
+
+                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0
+
+                        Attribute        Type  Empty data  Unique values
+                            Model Categorical           0            674
+                   Pooling Layers  Continuous           0             22
+                  Residual Blocks  Continuous           0             41
+                       Parameters  Continuous           0            564
+                           Layers  Continuous           0            283
+            Last Layer Parameters  Continuous           0             89
+             Normalization Layers  Continuous           0            119
+ Lowest Internal Layer Parameters  Continuous           0            188
+                 Recurrent Layers  Continuous           0              4
+                 Training Dataset Categorical           0              6
+                           Family Categorical           0             81
+                           Origin Categorical           0              4
+                  Crop Percentage  Continuous           0             22
+                     Dense Layers  Continuous           0             54
+           First Layer Parameters  Continuous           0            141
+Highest Internal Layer Parameters  Continuous           0            383
+                  Output Features  Continuous           0              9
+                 Attention Layers  Continuous           0             33
+                      Bottlenecks  Continuous           0             30
+                      Conv Layers  Continuous           0            143
+                        Year Made  Continuous           0              9
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+             Has Skip Connections      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+              Has Residual Blocks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                    Learning Type Categorical          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+             Has Recurrent Layers      Binary          13              1
+             Has Attention Layers      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+              Primary Application Categorical          13              7
+                            Other Categorical          13              3
+                     Pooling Type Categorical          13              8
+                     Architecture Categorical          60            614
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1                        Attribute        Type  Empty data  Unique values
+                            Model Categorical           0            674
+                   Pooling Layers  Continuous           0             22
+                  Residual Blocks  Continuous           0             41
+                       Parameters  Continuous           0            564
+                           Layers  Continuous           0            283
+            Last Layer Parameters  Continuous           0             89
+             Normalization Layers  Continuous           0            119
+ Lowest Internal Layer Parameters  Continuous           0            188
+                 Recurrent Layers  Continuous           0              4
+                 Training Dataset Categorical           0              6
+                           Family Categorical           0             81
+                           Origin Categorical           0              4
+                  Crop Percentage  Continuous           0             22
+                     Dense Layers  Continuous           0             54
+           First Layer Parameters  Continuous           0            141
+Highest Internal Layer Parameters  Continuous           0            383
+                  Output Features  Continuous           0              9
+                 Attention Layers  Continuous           0             33
+                      Bottlenecks  Continuous           0             30
+                      Conv Layers  Continuous           0            143
+                        Year Made  Continuous           0              9
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+             Has Skip Connections      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+              Has Residual Blocks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                    Learning Type Categorical          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+             Has Recurrent Layers      Binary          13              1
+             Has Attention Layers      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+              Primary Application Categorical          13              7
+                            Other Categorical          13              3
+                     Pooling Type Categorical          13              8
+                     Architecture Categorical          60            614
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+
+...Plotting Family......Plotting Family...
+
+Number of unique models: 81Number of unique models: 81
+
+Total rows: 674Total rows: 674
+
+...Plotting Bottlenecks......Plotting Bottlenecks...
+
+...Plotting Training Dataset......Plotting Training Dataset...
+
+Number of unique models: 6Number of unique models: 6
+
+Total rows: 674Total rows: 674
+
+...Plotting Lowest Internal Layer Parameters......Plotting Lowest Internal Layer Parameters...
+
+Skipping RF25 Layer Name because more than half of the rows are missing.Skipping RF25 Layer Name because more than half of the rows are missing.
+
+...Plotting Recurrent Layers......Plotting Recurrent Layers...
+
+...Plotting Architecture......Plotting Architecture...
+
+Number of unique models: 614Number of unique models: 614
+
+Total rows: 674Total rows: 674
+
+Number of unique models after combining: 30Number of unique models after combining: 30
+
+Total rows after combining: 614Total rows after combining: 614
+
+...Plotting Dense Layers......Plotting Dense Layers...
+
+...Plotting Crop Percentage......Plotting Crop Percentage...
+
+...Plotting Parameters......Plotting Parameters...
+
+...Plotting Pooling Layers......Plotting Pooling Layers...
+
+...Plotting Last Layer Parameters......Plotting Last Layer Parameters...
+
+...Plotting First Layer Parameters......Plotting First Layer Parameters...
+
+...Plotting Output Features......Plotting Output Features...
+
+...Plotting Model......Plotting Model...
+
+Number of unique models: 674Number of unique models: 674
+
+Total rows: 674Total rows: 674
+
+Alert: Model has unique values for each row. Skipping for plotting.Alert: Model has unique values for each row. Skipping for plotting.
+
+...Plotting Origin......Plotting Origin...
+
+Number of unique models: 4Number of unique models: 4
+
+Total rows: 674Total rows: 674
+
+...Plotting Residual Blocks......Plotting Residual Blocks...
+
+Skipping MAX RF because more than half of the rows are missing.Skipping MAX RF because more than half of the rows are missing.
+
+...Plotting Attention Layers......Plotting Attention Layers...
+
+...Plotting Layers......Plotting Layers...
+
+...Plotting Conv Layers......Plotting Conv Layers...
+
+...Plotting Normalization Layers......Plotting Normalization Layers...
+
+Skipping RF25 Layer Number because more than half of the rows are missing.Skipping RF25 Layer Number because more than half of the rows are missing.
+
+...Plotting Highest Internal Layer Parameters......Plotting Highest Internal Layer Parameters...
+
+...Plotting Has Convolutional Layers......Plotting Has Convolutional Layers...
+
+...Plotting Has Residual Blocks......Plotting Has Residual Blocks...
+
+...Plotting Has Dense Layers......Plotting Has Dense Layers...
+
+...Plotting Has Bottlenecks......Plotting Has Bottlenecks...
+
+...Plotting Has Recurrent Layers......Plotting Has Recurrent Layers...
+
+...Plotting Has Skip Connections......Plotting Has Skip Connections...
+
+...Plotting Has Attention Layers......Plotting Has Attention Layers...
+
+...Plotting Tokenized......Plotting Tokenized...
+
+...Plotting Transformer......Plotting Transformer...
+
+...Plotting Has ReLU......Plotting Has ReLU...
+
+...Plotting Has GeLU......Plotting Has GeLU...
+
+...Plotting Other......Plotting Other...
+
+Number of unique models: 3Number of unique models: 3
+
+Total rows: 674Total rows: 674
+
+...Plotting Year Made......Plotting Year Made...
+
+...Plotting Learning Type......Plotting Learning Type...
+
+Number of unique models: 2Number of unique models: 2
+
+Total rows: 674Total rows: 674
+
+...Plotting Primary Application......Plotting Primary Application...
+
+Number of unique models: 7Number of unique models: 7
+
+Total rows: 674Total rows: 674
+
+...Plotting Key Distinguishing Feature......Plotting Key Distinguishing Feature...
+
+Number of unique models: 77Number of unique models: 77
+
+Total rows: 674Total rows: 674
+
+...Plotting Pooling Type......Plotting Pooling Type...
+
+Number of unique models: 8Number of unique models: 8
+
+Total rows: 674Total rows: 674
+
+
+
+Analyzing 17 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Crop Percentage', 'Output Features', 'Residual Blocks', 'Year Made']Analyzing 17 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Crop Percentage', 'Output Features', 'Residual Blocks', 'Year Made']
+
+
+Variance Inflation Factor (VIF):
+Variance Inflation Factor (VIF):
+
+                           Attributes        VIF
+2   Highest Internal Layer Parameters  23.431248
+0                          Parameters  22.428631
+5                              Layers  12.316748
+7                         Conv Layers   9.684021
+3               Last Layer Parameters   5.402690
+14                    Output Features   5.283598
+8                        Dense Layers   4.939836
+9                Normalization Layers   4.761884
+15                    Residual Blocks   2.405658
+6                    Attention Layers   1.981414
+16                          Year Made   1.783597
+12                        Bottlenecks   1.415758
+13                    Crop Percentage   1.328500
+4    Lowest Internal Layer Parameters   1.325369
+1              First Layer Parameters   1.158528
+10                     Pooling Layers   1.137295
+11                   Recurrent Layers   1.030488                           Attributes        VIF
+2   Highest Internal Layer Parameters  23.431248
+0                          Parameters  22.428631
+5                              Layers  12.316748
+7                         Conv Layers   9.684021
+3               Last Layer Parameters   5.402690
+14                    Output Features   5.283598
+8                        Dense Layers   4.939836
+9                Normalization Layers   4.761884
+15                    Residual Blocks   2.405658
+6                    Attention Layers   1.981414
+16                          Year Made   1.783597
+12                        Bottlenecks   1.415758
+13                    Crop Percentage   1.328500
+4    Lowest Internal Layer Parameters   1.325369
+1              First Layer Parameters   1.158528
+10                     Pooling Layers   1.137295
+11                   Recurrent Layers   1.030488
+
+Number of Principal Components to capture 90% of the variance: 10Number of Principal Components to capture 90% of the variance: 10
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+[{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}][{"name": "Logger", "type": "type", "fullType": "type"}, {"name": "PCA", "type": "ABCMeta", "fullType": "abc.ABCMeta"}, {"name": "StandardScaler", "type": "type", "fullType": "type"}, {"name": "Xs_continuous", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "all_columns", "type": "set", "fullType": "set"}, {"name": "attribute_binary_columns", "type": "list", "fullType": "list"}, {"name": "attribute_categorical_columns", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_cleanned", "type": "list", "fullType": "list"}, {"name": "attribute_continuous_columns", "type": "list", "fullType": "list"}, {"name": "attribute_missing_data_columns", "type": "list", "fullType": "list"}, {"name": "attribute_table", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "attributes_binary", "type": "list", "fullType": "list"}, {"name": "column", "type": "str", "fullType": "str"}, {"name": "column_counts", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "count", "type": "int", "fullType": "int"}, {"name": "cumulative_variance", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "datetime", "type": "module", "fullType": "module"}, {"name": "df", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "duplicated_models", "type": "Series", "fullType": "pandas.core.series.Series"}, {"name": "explained_variance_ratio", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "family_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "family_data_path", "type": "str", "fullType": "str"}, {"name": "file", "type": "str", "fullType": "str"}, {"name": "folder_save", "type": "str", "fullType": "str"}, {"name": "folder_save_plot", "type": "str", "fullType": "str"}, {"name": "i", "type": "int", "fullType": "int"}, {"name": "model", "type": "str", "fullType": "str"}, {"name": "models_summaries_all", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_imagenet_family", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "models_summaries_all_models", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "models_summaries_file_paths", "type": "list", "fullType": "list"}, {"name": "np", "type": "module", "fullType": "module"}, {"name": "num_components", "type": "int64", "fullType": "numpy.int64"}, {"name": "num_unique", "type": "int", "fullType": "int"}, {"name": "os", "type": "module", "fullType": "module"}, {"name": "pca", "type": "PCA", "fullType": "sklearn.decomposition._pca.PCA"}, {"name": "pca_loadings", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "pca_result", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "pd", "type": "module", "fullType": "module"}, {"name": "plt", "type": "module", "fullType": "module"}, {"name": "sims_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "sims_data_models", "type": "Index", "fullType": "pandas.core.indexes.base.Index"}, {"name": "sims_file_path", "type": "str", "fullType": "str"}, {"name": "sns", "type": "module", "fullType": "module"}, {"name": "sys", "type": "module", "fullType": "module"}, {"name": "threshold_cum_variance", "type": "float", "fullType": "float"}, {"name": "v", "type": "int", "fullType": "int"}, {"name": "var", "type": "str", "fullType": "str"}, {"name": "variance_inflation_factor", "type": "function", "fullType": "function"}, {"name": "vif_data", "type": "DataFrame", "fullType": "pandas.core.frame.DataFrame"}, {"name": "x_scores", "type": "ndarray", "fullType": "numpy.ndarray"}, {"name": "y_scores", "type": "ndarray", "fullType": "numpy.ndarray"}]
+
+data/models_summaries/models_summary_keras.csvdata/models_summaries/models_summary_keras.csv
+
+TrueTrue
+
+Number of models in sims data:Number of models in sims data:  774774
+
+Number of models in models_summaries_all:Number of models in models_summaries_all:  928928
+
+
+
+Number of models in sims but not in models_summaries_all:Number of models in sims but not in models_summaries_all:  100100
+
+Number of models in models_summaries_all but not in sims:Number of models in models_summaries_all but not in sims:  239239
+
+
+
+Models in models_summaries_all but not in sims:Models in models_summaries_all but not in sims:
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_l/feature_vector
+
+tf_efficientnet_b0_nstf_efficientnet_b0_ns
+
+tf_efficientnet_b6tf_efficientnet_b6
+
+efficientnet/b7/feature-vectorefficientnet/b7/feature-vector
+
+resnetv2_50x1_bitmresnetv2_50x1_bitm
+
+imagenet/resnet_v1_152/feature_vectorimagenet/resnet_v1_152/feature_vector
+
+mobilenetv3_large_100mobilenetv3_large_100
+
+tf_efficientnet_b0_aptf_efficientnet_b0_ap
+
+experts/bit/r50x1/in21k/plantexperts/bit/r50x1/in21k/plant
+
+resnetv2_50x1_bitm_in21kresnetv2_50x1_bitm_in21k
+
+imagenet/mobilenet_v2_140_224/feature_vectorimagenet/mobilenet_v2_140_224/feature_vector
+
+tf_mobilenetv3_small_075tf_mobilenetv3_small_075
+
+experts/bit/r50x1/in21k/treeexperts/bit/r50x1/in21k/tree
+
+tf_efficientnet_b1tf_efficientnet_b1
+
+tf_efficientnet_b4tf_efficientnet_b4
+
+tf_mobilenetv3_large_minimal_100tf_mobilenetv3_large_minimal_100
+
+vit_base_patch16_224_samvit_base_patch16_224_sam
+
+cropnet/feature_vector/cassava_disease_V1cropnet/feature_vector/cassava_disease_V1
+
+imagenet/efficientnet_v2_imagenet21k_m/feature_vectorimagenet/efficientnet_v2_imagenet21k_m/feature_vector
+
+resnet18resnet18
+
+vit_base_patch32_224_samvit_base_patch32_224_sam
+
+resnetv2_152x2_bitmresnetv2_152x2_bitm
+
+imagenet/inception_v2/feature_vectorimagenet/inception_v2/feature_vector
+
+tf_efficientnet_l2_nstf_efficientnet_l2_ns
+
+resnetv2_152x2_bitm_in21kresnetv2_152x2_bitm_in21k
+
+tf_efficientnetv2_b3tf_efficientnetv2_b3
+
+tf_mobilenetv3_large_100tf_mobilenetv3_large_100
+
+tf_efficientnet_b0tf_efficientnet_b0
+
+imagenet/mobilenet_v3_large_100_224/feature_vectorimagenet/mobilenet_v3_large_100_224/feature_vector
+
+resnet26tresnet26t
+
+tf_efficientnet_b2_nstf_efficientnet_b2_ns
+
+efficientnetv2_rw_tefficientnetv2_rw_t
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b0/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_b1/feature_vectorimagenet/efficientnet_v2_imagenet21k_b1/feature_vector
+
+cropnet/feature_vector/imagenetcropnet/feature_vector/imagenet
+
+imagenet/nasnet_mobile/feature_vectorimagenet/nasnet_mobile/feature_vector
+
+imagenet/mobilenet_v1_025_192/feature_vectorimagenet/mobilenet_v1_025_192/feature_vector
+
+tf_efficientnet_b6_nstf_efficientnet_b6_ns
+
+pvt_v2_b5pvt_v2_b5
+
+tf_efficientnetv2_xl_in21ft1ktf_efficientnetv2_xl_in21ft1k
+
+resnetv2_101x3_bitm_in21kresnetv2_101x3_bitm_in21k
+
+vgg16_bnvgg16_bn
+
+imagenet/efficientnet_v2_imagenet21k_b0/feature_vectorimagenet/efficientnet_v2_imagenet21k_b0/feature_vector
+
+imagenet/inception_v3/feature_vectorimagenet/inception_v3/feature_vector
+
+experts/bit/r50x1/in21k/instrumentexperts/bit/r50x1/in21k/instrument
+
+resnetv2_152x2_bit_teacher_384resnetv2_152x2_bit_teacher_384
+
+vgg13vgg13
+
+tf_mobilenetv3_small_minimal_100tf_mobilenetv3_small_minimal_100
+
+experts/bit/r50x1/in21k/foodexperts/bit/r50x1/in21k/food
+
+efficientnet/b1/feature-vectorefficientnet/b1/feature-vector
+
+efficientnet/b5/feature-vectorefficientnet/b5/feature-vector
+
+imagenet/efficientnet_v2_imagenet1k_b2/feature_vectorimagenet/efficientnet_v2_imagenet1k_b2/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_s/feature_vector
+
+beitv2_base_patch16_224_in22kbeitv2_base_patch16_224_in22k
+
+convnext_attoconvnext_atto
+
+imagenet/efficientnet_v2_imagenet21k_b2/feature_vectorimagenet/efficientnet_v2_imagenet21k_b2/feature_vector
+
+efficientnet/b3/feature-vectorefficientnet/b3/feature-vector
+
+efficientnet_b0efficientnet_b0
+
+vgg13_bnvgg13_bn
+
+efficientnet_b3_prunedefficientnet_b3_pruned
+
+efficientnet_b2_prunedefficientnet_b2_pruned
+
+tf_efficientnetv2_l_in21ktf_efficientnetv2_l_in21k
+
+convnext_femtoconvnext_femto
+
+tf_efficientnet_cc_b0_4etf_efficientnet_cc_b0_4e
+
+tf_efficientnet_b7tf_efficientnet_b7
+
+tf_efficientnet_b1_aptf_efficientnet_b1_ap
+
+imagenet/efficientnet_v2_imagenet1k_s/feature_vectorimagenet/efficientnet_v2_imagenet1k_s/feature_vector
+
+beit_base_patch16_224_in22kbeit_base_patch16_224_in22k
+
+resnet26resnet26
+
+resnet51qresnet51q
+
+experts/bit/r50x1/in21k/structureexperts/bit/r50x1/in21k/structure
+
+convnext_tiny_hnfconvnext_tiny_hnf
+
+bit/m-r101x1bit/m-r101x1
+
+imagenet/mobilenet_v2_050_160/feature_vectorimagenet/mobilenet_v2_050_160/feature_vector
+
+resnetv2_152x2_bit_teacherresnetv2_152x2_bit_teacher
+
+resnetv2_50x3_bitmresnetv2_50x3_bitm
+
+inaturalist/inception_v3/feature_vectorinaturalist/inception_v3/feature_vector
+
+efficientnet_esefficientnet_es
+
+beitv2_large_patch16_224_in22kbeitv2_large_patch16_224_in22k
+
+tf_efficientnetv2_s_in21ktf_efficientnetv2_s_in21k
+
+tf_efficientnet_cc_b0_8etf_efficientnet_cc_b0_8e
+
+imagenet/nasnet_large/feature_vectorimagenet/nasnet_large/feature_vector
+
+resnetv2_50x3_bitm_in21kresnetv2_50x3_bitm_in21k
+
+imagenet/inception_resnet_v2/feature_vectorimagenet/inception_resnet_v2/feature_vector
+
+tf_efficientnet_b6_aptf_efficientnet_b6_ap
+
+efficientnet/b0/feature-vectorefficientnet/b0/feature-vector
+
+efficientnet_b3efficientnet_b3
+
+mobilenetv3_small_100mobilenetv3_small_100
+
+tf_efficientnetv2_b2tf_efficientnetv2_b2
+
+resnet26dresnet26d
+
+tf_mobilenetv3_small_100tf_mobilenetv3_small_100
+
+imagenet/mobilenet_v2_035_96/feature_vectorimagenet/mobilenet_v2_035_96/feature_vector
+
+efficientnet_el_prunedefficientnet_el_pruned
+
+xcit_small_24_p16_384_distxcit_small_24_p16_384_dist
+
+resnetv2_101x1_bitm_in21kresnetv2_101x1_bitm_in21k
+
+mobilenetv2_100mobilenetv2_100
+
+imagenet/efficientnet_v2_imagenet1k_l/feature_vectorimagenet/efficientnet_v2_imagenet1k_l/feature_vector
+
+vgg11vgg11
+
+tf_efficientnet_eltf_efficientnet_el
+
+imagenet/mobilenet_v2_100_224/feature_vectorimagenet/mobilenet_v2_100_224/feature_vector
+
+experts/bit/r50x1/in21k/flowerexperts/bit/r50x1/in21k/flower
+
+resnetblur50resnetblur50
+
+tf_efficientnet_lite2tf_efficientnet_lite2
+
+tf_efficientnet_emtf_efficientnet_em
+
+imagenet/pnasnet_large/feature_vectorimagenet/pnasnet_large/feature_vector
+
+efficientnet_es_prunedefficientnet_es_pruned
+
+resnetv2_50x1_bit_distilledresnetv2_50x1_bit_distilled
+
+cropnet/feature_vector/concatcropnet/feature_vector/concat
+
+tf_efficientnetv2_s_in21ft1ktf_efficientnetv2_s_in21ft1k
+
+resnetaa50resnetaa50
+
+mobilenetv3_small_075mobilenetv3_small_075
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_m/feature_vector
+
+imagenet/mobilenet_v1_050_160/feature_vectorimagenet/mobilenet_v1_050_160/feature_vector
+
+tf_efficientnetv2_l_in21ft1ktf_efficientnetv2_l_in21ft1k
+
+imagenet/mobilenet_v1_050_224/feature_vectorimagenet/mobilenet_v1_050_224/feature_vector
+
+convnext_large_in22ft1kconvnext_large_in22ft1k
+
+tf_efficientnetv2_xl_in21ktf_efficientnetv2_xl_in21k
+
+bit/m-r50x1bit/m-r50x1
+
+bit/s-r50x1bit/s-r50x1
+
+nts-netnts-net
+
+densenet161densenet161
+
+resnet14tresnet14t
+
+imagenet/resnet_v2_101/feature_vectorimagenet/resnet_v2_101/feature_vector
+
+tf_mobilenetv3_large_075tf_mobilenetv3_large_075
+
+tf_efficientnetv2_m_in21ktf_efficientnetv2_m_in21k
+
+resnetv2_101resnetv2_101
+
+deit3_medium_patch16_224_in21ft1kdeit3_medium_patch16_224_in21ft1k
+
+tf_efficientnetv2_ltf_efficientnetv2_l
+
+resnet34dresnet34d
+
+mobilenetv2_050mobilenetv2_050
+
+resnet50dresnet50d
+
+imagenet/resnet_v2_50/feature_vectorimagenet/resnet_v2_50/feature_vector
+
+resnet152dresnet152d
+
+imagenet/mobilenet_v3_large_075_224/feature_vectorimagenet/mobilenet_v3_large_075_224/feature_vector
+
+efficientnet/b4/feature-vectorefficientnet/b4/feature-vector
+
+tf_efficientnet_lite0tf_efficientnet_lite0
+
+tf_efficientnet_l2_ns_475tf_efficientnet_l2_ns_475
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b2/feature_vector
+
+resnetrs350resnetrs350
+
+convnext_small_in22ft1kconvnext_small_in22ft1k
+
+efficientnet_elefficientnet_el
+
+mobilenetv2_140mobilenetv2_140
+
+tf_efficientnet_b3_nstf_efficientnet_b3_ns
+
+imagenet/mobilenet_v2_130_224/feature_vectorimagenet/mobilenet_v2_130_224/feature_vector
+
+imagenet/mobilenet_v3_small_075_224/feature_vectorimagenet/mobilenet_v3_small_075_224/feature_vector
+
+vit_giant_patch14_224_clip_laion2bvit_giant_patch14_224_clip_laion2b
+
+efficientnet_emefficientnet_em
+
+resnet33tsresnet33ts
+
+convnext_nanoconvnext_nano
+
+imagenet/efficientnet_v2_imagenet1k_b0/feature_vectorimagenet/efficientnet_v2_imagenet1k_b0/feature_vector
+
+tv_densenet121tv_densenet121
+
+tf_efficientnet_b8tf_efficientnet_b8
+
+tf_efficientnet_b3_aptf_efficientnet_b3_ap
+
+convnext_base_in22ft1kconvnext_base_in22ft1k
+
+experts/bit/r50x1/in21k/animalexperts/bit/r50x1/in21k/animal
+
+tf_efficientnet_cc_b1_8etf_efficientnet_cc_b1_8e
+
+imagenet/efficientnet_v2_imagenet21k_xl/feature_vectorimagenet/efficientnet_v2_imagenet21k_xl/feature_vector
+
+imagenet/efficientnet_v2_imagenet1k_b3/feature_vectorimagenet/efficientnet_v2_imagenet1k_b3/feature_vector
+
+efficientnet_b1_prunedefficientnet_b1_pruned
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b3/feature_vector
+
+tf_efficientnet_b7_aptf_efficientnet_b7_ap
+
+convnext_xlarge_in22ft1kconvnext_xlarge_in22ft1k
+
+mobilenetv3_large_100_miilmobilenetv3_large_100_miil
+
+resnet34resnet34
+
+tf_efficientnet_b4_aptf_efficientnet_b4_ap
+
+resnet50_gnresnet50_gn
+
+mobilenetv3_small_050mobilenetv3_small_050
+
+resnet_50/feature_vectorresnet_50/feature_vector
+
+experts/bit/r50x1/in21k/spermatophyteexperts/bit/r50x1/in21k/spermatophyte
+
+experts/bit/r50x1/in21k/artifactexperts/bit/r50x1/in21k/artifact
+
+gluon_xception65gluon_xception65
+
+experts/bit/r50x1/in21k/arthropodexperts/bit/r50x1/in21k/arthropod
+
+convnext_picoconvnext_pico
+
+tf_efficientnet_b8_aptf_efficientnet_b8_ap
+
+efficientnet_b1efficientnet_b1
+
+resnet101dresnet101d
+
+experts/bit/r50x1/in21k/wholeexperts/bit/r50x1/in21k/whole
+
+imagenet/efficientnet_v2_imagenet21k_b3/feature_vectorimagenet/efficientnet_v2_imagenet21k_b3/feature_vector
+
+imagenet/resnet_v2_152/feature_vectorimagenet/resnet_v2_152/feature_vector
+
+imagenet/mobilenet_v2_075_96/feature_vectorimagenet/mobilenet_v2_075_96/feature_vector
+
+tf_efficientnet_b4_nstf_efficientnet_b4_ns
+
+efficientnet_b2efficientnet_b2
+
+imagenet/resnet_v1_101/feature_vectorimagenet/resnet_v1_101/feature_vector
+
+resnetv2_50d_gnresnetv2_50d_gn
+
+tf_efficientnetv2_mtf_efficientnetv2_m
+
+imagenet/mobilenet_v2_100_128/feature_vectorimagenet/mobilenet_v2_100_128/feature_vector
+
+beit_large_patch16_224_in22kbeit_large_patch16_224_in22k
+
+imagenet/efficientnet_v2_imagenet1k_m/feature_vectorimagenet/efficientnet_v2_imagenet1k_m/feature_vector
+
+imagenet/mobilenet_v2_035_160/feature_vectorimagenet/mobilenet_v2_035_160/feature_vector
+
+xcit_medium_24_p16_224_distxcit_medium_24_p16_224_dist
+
+imagenet/mobilenet_v3_small_100_224/feature_vectorimagenet/mobilenet_v3_small_100_224/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_b1/feature_vector
+
+experts/bit/r50x1/in21k/consumer_goodsexperts/bit/r50x1/in21k/consumer_goods
+
+resnetrs101resnetrs101
+
+resnetrs200resnetrs200
+
+imagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vectorimagenet/efficientnet_v2_imagenet21k_ft1k_xl/feature_vector
+
+resnetv2_101x3_bitmresnetv2_101x3_bitm
+
+imagenet/mobilenet_v1_100_224/feature_vectorimagenet/mobilenet_v1_100_224/feature_vector
+
+experts/bit/r50x1/in21k/objectexperts/bit/r50x1/in21k/object
+
+convnext_tiny_in22kconvnext_tiny_in22k
+
+imagenet/mobilenet_v2_050_192/feature_vectorimagenet/mobilenet_v2_050_192/feature_vector
+
+resnetrs270resnetrs270
+
+experts/bit/r50x1/in21k/abstractionexperts/bit/r50x1/in21k/abstraction
+
+experts/bit/r50x1/in21k/conveyanceexperts/bit/r50x1/in21k/conveyance
+
+tf_efficientnetv2_b1tf_efficientnetv2_b1
+
+tf_efficientnet_lite4tf_efficientnet_lite4
+
+densenetblur121ddensenetblur121d
+
+mobilenetv3_rwmobilenetv3_rw
+
+experts/bit/r50x1/in21k/vehicleexperts/bit/r50x1/in21k/vehicle
+
+resnetv2_50resnetv2_50
+
+resnetv2_152x4_bitm_in21kresnetv2_152x4_bitm_in21k
+
+imagenet/mobilenet_v1_100_128/feature_vectorimagenet/mobilenet_v1_100_128/feature_vector
+
+imagenet/mobilenet_v2_100_160/feature_vectorimagenet/mobilenet_v2_100_160/feature_vector
+
+imagenet/inception_v1/feature_vectorimagenet/inception_v1/feature_vector
+
+mobilenetv2_110dmobilenetv2_110d
+
+tf_efficientnet_b3tf_efficientnet_b3
+
+imagenet/resnet_v1_50/feature_vectorimagenet/resnet_v1_50/feature_vector
+
+resnet18dresnet18d
+
+tf_efficientnet_b2tf_efficientnet_b2
+
+tf_efficientnet_lite3tf_efficientnet_lite3
+
+resnet200dresnet200d
+
+resnetrs152resnetrs152
+
+tf_efficientnetv2_stf_efficientnetv2_s
+
+tf_efficientnet_b1_nstf_efficientnet_b1_ns
+
+imagenet/mobilenet_v2_075_160/feature_vectorimagenet/mobilenet_v2_075_160/feature_vector
+
+experts/bit/r50x1/in21k/partexperts/bit/r50x1/in21k/part
+
+vgg11_bnvgg11_bn
+
+efficientnet_lite0efficientnet_lite0
+
+convnext_xlarge_in22kconvnext_xlarge_in22k
+
+mobilenetv2_120dmobilenetv2_120d
+
+efficientnet/b2/feature-vectorefficientnet/b2/feature-vector
+
+resnetrs420resnetrs420
+
+imagenet/efficientnet_v2_imagenet21k_s/feature_vectorimagenet/efficientnet_v2_imagenet21k_s/feature_vector
+
+imagenet/efficientnet_v2_imagenet21k_l/feature_vectorimagenet/efficientnet_v2_imagenet21k_l/feature_vector
+
+efficientnetv2_rw_mefficientnetv2_rw_m
+
+tf_efficientnet_lite1tf_efficientnet_lite1
+
+resnet10tresnet10t
+
+tf_efficientnet_b5_nstf_efficientnet_b5_ns
+
+tf_efficientnet_b5_aptf_efficientnet_b5_ap
+
+
+
+Models in sims but not in models_summaries_all:Models in sims but not in models_summaries_all:
+
+imagenet-mobilenet_v2_035_160-feature_vectorimagenet-mobilenet_v2_035_160-feature_vector
+
+imagenet-mobilenet_v3_large_100_224-feature_vectorimagenet-mobilenet_v3_large_100_224-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_s-feature_vectorimagenet-efficientnet_v2_imagenet1k_s-feature_vector
+
+experts-bit-r50x1-in21k-wholeexperts-bit-r50x1-in21k-whole
+
+efficientnet-b0-feature-vectorefficientnet-b0-feature-vector
+
+imagenet-mobilenet_v2_050_192-feature_vectorimagenet-mobilenet_v2_050_192-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_b1-feature_vectorimagenet-efficientnet_v2_imagenet21k_b1-feature_vector
+
+experts-bit-r50x1-in21k-vehicleexperts-bit-r50x1-in21k-vehicle
+
+imagenet-efficientnet_v2_imagenet21k_m-feature_vectorimagenet-efficientnet_v2_imagenet21k_m-feature_vector
+
+fbresnet152fbresnet152
+
+imagenet-efficientnet_v2_imagenet1k_b2-feature_vectorimagenet-efficientnet_v2_imagenet1k_b2-feature_vector
+
+vit_base_patch32_224.sam_in1kvit_base_patch32_224.sam_in1k
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_b0-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_b0-feature_vector
+
+experts-bit-r50x1-in21k-abstractionexperts-bit-r50x1-in21k-abstraction
+
+imagenet-resnet_v1_50-feature_vectorimagenet-resnet_v1_50-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_l-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_l-feature_vector
+
+resnext101_32x4dresnext101_32x4d
+
+imagenet-mobilenet_v2_035_96-feature_vectorimagenet-mobilenet_v2_035_96-feature_vector
+
+experts-bit-r50x1-in21k-instrumentexperts-bit-r50x1-in21k-instrument
+
+experts-bit-r50x1-in21k-treeexperts-bit-r50x1-in21k-tree
+
+experts-bit-r50x1-in21k-matterexperts-bit-r50x1-in21k-matter
+
+imagenet-mobilenet_v2_075_96-feature_vectorimagenet-mobilenet_v2_075_96-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_xl-feature_vectorimagenet-efficientnet_v2_imagenet21k_xl-feature_vector
+
+experts-bit-r50x1-in21k-conveyanceexperts-bit-r50x1-in21k-conveyance
+
+imagenet-pnasnet_large-feature_vectorimagenet-pnasnet_large-feature_vector
+
+experts-bit-r50x1-in21k-flowerexperts-bit-r50x1-in21k-flower
+
+experts-bit-r50x1-in21k-plantexperts-bit-r50x1-in21k-plant
+
+bit-m-r101x1bit-m-r101x1
+
+cropnet-feature_vector-imagenetcropnet-feature_vector-imagenet
+
+experts-bit-r50x1-in21k-partexperts-bit-r50x1-in21k-part
+
+imagenet-efficientnet_v2_imagenet21k_s-feature_vectorimagenet-efficientnet_v2_imagenet21k_s-feature_vector
+
+efficientnet-b1-feature-vectorefficientnet-b1-feature-vector
+
+unet_carvanaunet_carvana
+
+alexnetalexnet
+
+imagenet-mobilenet_v1_100_224-feature_vectorimagenet-mobilenet_v1_100_224-feature_vector
+
+experts-bit-r50x1-in21k-foodexperts-bit-r50x1-in21k-food
+
+imagenet-mobilenet_v2_100_128-feature_vectorimagenet-mobilenet_v2_100_128-feature_vector
+
+imagenet-mobilenet_v2_140_224-feature_vectorimagenet-mobilenet_v2_140_224-feature_vector
+
+imagenet-mobilenet_v2_075_160-feature_vectorimagenet-mobilenet_v2_075_160-feature_vector
+
+efficientnet-b7-feature-vectorefficientnet-b7-feature-vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_b3-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_b3-feature_vector
+
+experts-bit-r50x1-in21k-objectexperts-bit-r50x1-in21k-object
+
+efficientnet-b5-feature-vectorefficientnet-b5-feature-vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_xl-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_xl-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_m-feature_vectorimagenet-efficientnet_v2_imagenet1k_m-feature_vector
+
+cropnet-feature_vector-concatcropnet-feature_vector-concat
+
+imagenet-mobilenet_v1_025_192-feature_vectorimagenet-mobilenet_v1_025_192-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_b2-feature_vectorimagenet-efficientnet_v2_imagenet21k_b2-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_b0-feature_vectorimagenet-efficientnet_v2_imagenet1k_b0-feature_vector
+
+imagenet-resnet_v1_152-feature_vectorimagenet-resnet_v1_152-feature_vector
+
+imagenet-mobilenet_v2_050_160-feature_vectorimagenet-mobilenet_v2_050_160-feature_vector
+
+imagenet-mobilenet_v3_large_075_224-feature_vectorimagenet-mobilenet_v3_large_075_224-feature_vector
+
+bit-s-r50x1bit-s-r50x1
+
+densenet121.tv_in1kdensenet121.tv_in1k
+
+inaturalist-inception_v3-feature_vectorinaturalist-inception_v3-feature_vector
+
+imagenet-resnet_v1_101-feature_vectorimagenet-resnet_v1_101-feature_vector
+
+experts-bit-r50x1-in21k-arthropodexperts-bit-r50x1-in21k-arthropod
+
+imagenet-nasnet_large-feature_vectorimagenet-nasnet_large-feature_vector
+
+imagenet-mobilenet_v2_100_160-feature_vectorimagenet-mobilenet_v2_100_160-feature_vector
+
+experts-bit-r50x1-in21k-structureexperts-bit-r50x1-in21k-structure
+
+imagenet-resnet_v2_101-feature_vectorimagenet-resnet_v2_101-feature_vector
+
+imagenet-inception_v1-feature_vectorimagenet-inception_v1-feature_vector
+
+imagenet-nasnet_mobile-feature_vectorimagenet-nasnet_mobile-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_b1-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_b1-feature_vector
+
+efficientnet-b4-feature-vectorefficientnet-b4-feature-vector
+
+imagenet-inception_v2-feature_vectorimagenet-inception_v2-feature_vector
+
+experts-bit-r50x1-in21k-spermatophyteexperts-bit-r50x1-in21k-spermatophyte
+
+efficientnet-b2-feature-vectorefficientnet-b2-feature-vector
+
+imagenet-mobilenet_v1_100_128-feature_vectorimagenet-mobilenet_v1_100_128-feature_vector
+
+imagenet-inception_resnet_v2-feature_vectorimagenet-inception_resnet_v2-feature_vector
+
+bit-m-r50x1bit-m-r50x1
+
+beit_base_patch16_224.in22k_ft_in22kbeit_base_patch16_224.in22k_ft_in22k
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_s-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_s-feature_vector
+
+resnet_50-feature_vectorresnet_50-feature_vector
+
+imagenet-mobilenet_v2_130_224-feature_vectorimagenet-mobilenet_v2_130_224-feature_vector
+
+cropnet-feature_vector-cassava_disease_V1cropnet-feature_vector-cassava_disease_V1
+
+experts-bit-r50x1-in21k-consumer_goodsexperts-bit-r50x1-in21k-consumer_goods
+
+experts-bit-r50x1-in21k-artifactexperts-bit-r50x1-in21k-artifact
+
+imagenet-resnet_v2_50-feature_vectorimagenet-resnet_v2_50-feature_vector
+
+imagenet-mobilenet_v1_050_224-feature_vectorimagenet-mobilenet_v1_050_224-feature_vector
+
+xcit_small_24_p16_384.fb_dist_in1kxcit_small_24_p16_384.fb_dist_in1k
+
+imagenet-mobilenet_v3_small_075_224-feature_vectorimagenet-mobilenet_v3_small_075_224-feature_vector
+
+imagenet-resnet_v2_152-feature_vectorimagenet-resnet_v2_152-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_b3-feature_vectorimagenet-efficientnet_v2_imagenet1k_b3-feature_vector
+
+beit_large_patch16_224.in22k_ft_in22kbeit_large_patch16_224.in22k_ft_in22k
+
+vit_base_patch16_224.sam_in1kvit_base_patch16_224.sam_in1k
+
+imagenet-mobilenet_v1_050_160-feature_vectorimagenet-mobilenet_v1_050_160-feature_vector
+
+bninceptionbninception
+
+imagenet-inception_v3-feature_vectorimagenet-inception_v3-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_b0-feature_vectorimagenet-efficientnet_v2_imagenet21k_b0-feature_vector
+
+imagenet-efficientnet_v2_imagenet1k_l-feature_vectorimagenet-efficientnet_v2_imagenet1k_l-feature_vector
+
+beitv2_large_patch16_224.in1k_ft_in22kbeitv2_large_patch16_224.in1k_ft_in22k
+
+imagenet-efficientnet_v2_imagenet21k_b3-feature_vectorimagenet-efficientnet_v2_imagenet21k_b3-feature_vector
+
+beitv2_base_patch16_224.in1k_ft_in22kbeitv2_base_patch16_224.in1k_ft_in22k
+
+imagenet-mobilenet_v3_small_100_224-feature_vectorimagenet-mobilenet_v3_small_100_224-feature_vector
+
+experts-bit-r50x1-in21k-animalexperts-bit-r50x1-in21k-animal
+
+imagenet-mobilenet_v2_100_224-feature_vectorimagenet-mobilenet_v2_100_224-feature_vector
+
+imagenet-efficientnet_v2_imagenet21k_l-feature_vectorimagenet-efficientnet_v2_imagenet21k_l-feature_vector
+
+efficientnet-b3-feature-vectorefficientnet-b3-feature-vector
+
+imagenet-efficientnet_v2_imagenet21k_ft1k_m-feature_vectorimagenet-efficientnet_v2_imagenet21k_ft1k_m-feature_vector
+
+
+
+Duplicated models:Duplicated models:  ['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']['convnext_base' 'convnext_large' 'convnext_small' 'convnext_tiny'
+ 'densenet121' 'densenet169' 'densenet201' 'inception_resnet_v2'
+ 'inception_v3' 'resnet50' 'resnet101' 'resnet152' 'vgg16' 'vgg19'
+ 'xception']
+
+DroppedDropped  1515  duplicated models from kerasduplicated models from keras
+
+774774  models in sims datamodels in sims data
+
+Dropped models that are not in sims dataDropped models that are not in sims data  674674  models leftmodels left
+
+Number of models:Number of models:  674674
+
+Number of unique models:Number of unique models:  674674
+
+Yes, Models are all uniqueYes, Models are all unique
+
+All 42 attributes: Index(['Family', 'Bottlenecks', 'Training Dataset',
+       'Lowest Internal Layer Parameters', 'RF25 Layer Name',
+       'Recurrent Layers', 'Max RF', 'Architecture', 'Dense Layers',
+       'Crop Percentage', 'Parameters', 'Pooling Layers',
+       'Last Layer Parameters', 'First Layer Parameters', 'Output Features',
+       'Model', 'Origin', 'Residual Blocks', 'MAX RF', 'Attention Layers',
+       'Layers', 'Conv Layers', 'Normalization Layers', 'RF25 Layer Number',
+       'Highest Internal Layer Parameters', 'Has Convolutional Layers',
+       'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks',
+       'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers',
+       'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU', 'Other',
+       'Year Made', 'Learning Type', 'Primary Application',
+       'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')All 42 attributes: Index(['Family', 'Bottlenecks', 'Training Dataset',
+       'Lowest Internal Layer Parameters', 'RF25 Layer Name',
+       'Recurrent Layers', 'Max RF', 'Architecture', 'Dense Layers',
+       'Crop Percentage', 'Parameters', 'Pooling Layers',
+       'Last Layer Parameters', 'First Layer Parameters', 'Output Features',
+       'Model', 'Origin', 'Residual Blocks', 'MAX RF', 'Attention Layers',
+       'Layers', 'Conv Layers', 'Normalization Layers', 'RF25 Layer Number',
+       'Highest Internal Layer Parameters', 'Has Convolutional Layers',
+       'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks',
+       'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers',
+       'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU', 'Other',
+       'Year Made', 'Learning Type', 'Primary Application',
+       'Key Distinguishing Feature', 'Pooling Type'],
+      dtype='object')
+
+
+
+Finished checking columnsFinished checking columns
+
+Categorical columns: 11Categorical columns: 11
+
+Categorical columns include: ['Family', 'Training Dataset', 'RF25 Layer Name', 'Architecture', 'Model', 'Origin', 'Other', 'Learning Type', 'Primary Application', 'Key Distinguishing Feature', 'Pooling Type']Categorical columns include: ['Family', 'Training Dataset', 'RF25 Layer Name', 'Architecture', 'Model', 'Origin', 'Other', 'Learning Type', 'Primary Application', 'Key Distinguishing Feature', 'Pooling Type']
+
+
+
+Binary columns: 14Binary columns: 14
+
+Binary columns include: ['Max RF', 'MAX RF', 'RF25 Layer Number', 'Has Convolutional Layers', 'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks', 'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers', 'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU']Binary columns include: ['Max RF', 'MAX RF', 'RF25 Layer Number', 'Has Convolutional Layers', 'Has Residual Blocks', 'Has Dense Layers', 'Has Bottlenecks', 'Has Recurrent Layers', 'Has Skip Connections', 'Has Attention Layers', 'Tokenized', 'Transformer', 'Has ReLU', 'Has GeLU']
+
+
+
+Continuous columns: 17Continuous columns: 17
+
+Continuous columns include: ['Bottlenecks', 'Lowest Internal Layer Parameters', 'Recurrent Layers', 'Dense Layers', 'Crop Percentage', 'Parameters', 'Pooling Layers', 'Last Layer Parameters', 'First Layer Parameters', 'Output Features', 'Residual Blocks', 'Attention Layers', 'Layers', 'Conv Layers', 'Normalization Layers', 'Highest Internal Layer Parameters', 'Year Made']Continuous columns include: ['Bottlenecks', 'Lowest Internal Layer Parameters', 'Recurrent Layers', 'Dense Layers', 'Crop Percentage', 'Parameters', 'Pooling Layers', 'Last Layer Parameters', 'First Layer Parameters', 'Output Features', 'Residual Blocks', 'Attention Layers', 'Layers', 'Conv Layers', 'Normalization Layers', 'Highest Internal Layer Parameters', 'Year Made']
+
+
+
+In total: 42In total: 42
+
+where Missing data columns: 35where Missing data columns: 35
+
+
+
+                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0                        Attribute        Type  Empty data  Unique values
+                           Family Categorical           0             81
+                 Training Dataset Categorical           0              6
+                           Layers  Continuous           0            283
+                       Parameters  Continuous           0            564
+                           Origin Categorical           0              4
+                            Model Categorical           0            674
+                  Output Features  Continuous           0              9
+                   Pooling Layers  Continuous           3             22
+                  Residual Blocks  Continuous           3             41
+             Normalization Layers  Continuous           3            119
+                     Dense Layers  Continuous           3             54
+                      Conv Layers  Continuous           3            143
+                 Attention Layers  Continuous           3             33
+                      Bottlenecks  Continuous           3             30
+                 Recurrent Layers  Continuous           3              4
+             Has Recurrent Layers      Binary          13              1
+             Has Skip Connections      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                     Pooling Type Categorical          13              8
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+                    Learning Type Categorical          13              2
+             Has Attention Layers      Binary          13              2
+                            Other Categorical          13              3
+              Primary Application Categorical          13              7
+                        Year Made  Continuous          13              9
+              Has Residual Blocks      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+            Last Layer Parameters  Continuous          60             89
+                     Architecture Categorical          60            614
+           First Layer Parameters  Continuous          60            141
+                  Crop Percentage  Continuous          63             22
+ Lowest Internal Layer Parameters  Continuous          72            188
+Highest Internal Layer Parameters  Continuous          72            382
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+                           Max RF      Binary         674              0
+
+                        Attribute        Type  Empty data  Unique values
+                            Model Categorical           0            674
+                   Pooling Layers  Continuous           0             22
+                  Residual Blocks  Continuous           0             41
+                       Parameters  Continuous           0            564
+                           Layers  Continuous           0            283
+            Last Layer Parameters  Continuous           0             89
+             Normalization Layers  Continuous           0            119
+ Lowest Internal Layer Parameters  Continuous           0            188
+                 Recurrent Layers  Continuous           0              4
+                 Training Dataset Categorical           0              6
+                           Family Categorical           0             81
+                           Origin Categorical           0              4
+                  Crop Percentage  Continuous           0             22
+                     Dense Layers  Continuous           0             54
+           First Layer Parameters  Continuous           0            141
+Highest Internal Layer Parameters  Continuous           0            383
+                  Output Features  Continuous           0              9
+                 Attention Layers  Continuous           0             33
+                      Bottlenecks  Continuous           0             30
+                      Conv Layers  Continuous           0            143
+                        Year Made  Continuous           0              9
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+             Has Skip Connections      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+              Has Residual Blocks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                    Learning Type Categorical          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+             Has Recurrent Layers      Binary          13              1
+             Has Attention Layers      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+              Primary Application Categorical          13              7
+                            Other Categorical          13              3
+                     Pooling Type Categorical          13              8
+                     Architecture Categorical          60            614
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1                        Attribute        Type  Empty data  Unique values
+                            Model Categorical           0            674
+                   Pooling Layers  Continuous           0             22
+                  Residual Blocks  Continuous           0             41
+                       Parameters  Continuous           0            564
+                           Layers  Continuous           0            283
+            Last Layer Parameters  Continuous           0             89
+             Normalization Layers  Continuous           0            119
+ Lowest Internal Layer Parameters  Continuous           0            188
+                 Recurrent Layers  Continuous           0              4
+                 Training Dataset Categorical           0              6
+                           Family Categorical           0             81
+                           Origin Categorical           0              4
+                  Crop Percentage  Continuous           0             22
+                     Dense Layers  Continuous           0             54
+           First Layer Parameters  Continuous           0            141
+Highest Internal Layer Parameters  Continuous           0            383
+                  Output Features  Continuous           0              9
+                 Attention Layers  Continuous           0             33
+                      Bottlenecks  Continuous           0             30
+                      Conv Layers  Continuous           0            143
+                        Year Made  Continuous           0              9
+                        Tokenized      Binary          13              2
+                      Transformer      Binary          13              2
+             Has Skip Connections      Binary          13              2
+                 Has Dense Layers      Binary          13              2
+              Has Residual Blocks      Binary          13              2
+       Key Distinguishing Feature Categorical          13             77
+                    Learning Type Categorical          13              2
+         Has Convolutional Layers      Binary          13              2
+                         Has ReLU      Binary          13              2
+                         Has GeLU      Binary          13              2
+             Has Recurrent Layers      Binary          13              1
+             Has Attention Layers      Binary          13              2
+                  Has Bottlenecks      Binary          13              2
+              Primary Application Categorical          13              7
+                            Other Categorical          13              3
+                     Pooling Type Categorical          13              8
+                     Architecture Categorical          60            614
+                           MAX RF      Binary         673              1
+                RF25 Layer Number      Binary         673              1
+                  RF25 Layer Name Categorical         673              1
+
+...Plotting Family......Plotting Family...
+
+Number of unique models: 81Number of unique models: 81
+
+Total rows: 674Total rows: 674
+
+...Plotting Bottlenecks......Plotting Bottlenecks...
+
+...Plotting Training Dataset......Plotting Training Dataset...
+
+Number of unique models: 6Number of unique models: 6
+
+Total rows: 674Total rows: 674
+
+...Plotting Lowest Internal Layer Parameters......Plotting Lowest Internal Layer Parameters...
+
+Skipping RF25 Layer Name because more than half of the rows are missing.Skipping RF25 Layer Name because more than half of the rows are missing.
+
+...Plotting Recurrent Layers......Plotting Recurrent Layers...
+
+...Plotting Architecture......Plotting Architecture...
+
+Number of unique models: 614Number of unique models: 614
+
+Total rows: 674Total rows: 674
+
+Number of unique models after combining: 30Number of unique models after combining: 30
+
+Total rows after combining: 614Total rows after combining: 614
+
+...Plotting Dense Layers......Plotting Dense Layers...
+
+...Plotting Crop Percentage......Plotting Crop Percentage...
+
+...Plotting Parameters......Plotting Parameters...
+
+...Plotting Pooling Layers......Plotting Pooling Layers...
+
+...Plotting Last Layer Parameters......Plotting Last Layer Parameters...
+
+...Plotting First Layer Parameters......Plotting First Layer Parameters...
+
+...Plotting Output Features......Plotting Output Features...
+
+...Plotting Model......Plotting Model...
+
+Number of unique models: 674Number of unique models: 674
+
+Total rows: 674Total rows: 674
+
+Alert: Model has unique values for each row. Skipping for plotting.Alert: Model has unique values for each row. Skipping for plotting.
+
+...Plotting Origin......Plotting Origin...
+
+Number of unique models: 4Number of unique models: 4
+
+Total rows: 674Total rows: 674
+
+...Plotting Residual Blocks......Plotting Residual Blocks...
+
+Skipping MAX RF because more than half of the rows are missing.Skipping MAX RF because more than half of the rows are missing.
+
+...Plotting Attention Layers......Plotting Attention Layers...
+
+...Plotting Layers......Plotting Layers...
+
+...Plotting Conv Layers......Plotting Conv Layers...
+
+...Plotting Normalization Layers......Plotting Normalization Layers...
+
+Skipping RF25 Layer Number because more than half of the rows are missing.Skipping RF25 Layer Number because more than half of the rows are missing.
+
+...Plotting Highest Internal Layer Parameters......Plotting Highest Internal Layer Parameters...
+
+...Plotting Has Convolutional Layers......Plotting Has Convolutional Layers...
+
+...Plotting Has Residual Blocks......Plotting Has Residual Blocks...
+
+...Plotting Has Dense Layers......Plotting Has Dense Layers...
+
+...Plotting Has Bottlenecks......Plotting Has Bottlenecks...
+
+...Plotting Has Recurrent Layers......Plotting Has Recurrent Layers...
+
+...Plotting Has Skip Connections......Plotting Has Skip Connections...
+
+...Plotting Has Attention Layers......Plotting Has Attention Layers...
+
+...Plotting Tokenized......Plotting Tokenized...
+
+...Plotting Transformer......Plotting Transformer...
+
+...Plotting Has ReLU......Plotting Has ReLU...
+
+...Plotting Has GeLU......Plotting Has GeLU...
+
+...Plotting Other......Plotting Other...
+
+Number of unique models: 3Number of unique models: 3
+
+Total rows: 674Total rows: 674
+
+...Plotting Year Made......Plotting Year Made...
+
+...Plotting Learning Type......Plotting Learning Type...
+
+Number of unique models: 2Number of unique models: 2
+
+Total rows: 674Total rows: 674
+
+...Plotting Primary Application......Plotting Primary Application...
+
+Number of unique models: 7Number of unique models: 7
+
+Total rows: 674Total rows: 674
+
+...Plotting Key Distinguishing Feature......Plotting Key Distinguishing Feature...
+
+Number of unique models: 77Number of unique models: 77
+
+Total rows: 674Total rows: 674
+
+...Plotting Pooling Type......Plotting Pooling Type...
+
+Number of unique models: 8Number of unique models: 8
+
+Total rows: 674Total rows: 674
+
+
+
+Analyzing 17 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Crop Percentage', 'Output Features', 'Residual Blocks', 'Year Made']Analyzing 17 continuous columns: ['Parameters', 'First Layer Parameters', 'Highest Internal Layer Parameters', 'Last Layer Parameters', 'Lowest Internal Layer Parameters', 'Layers', 'Attention Layers', 'Conv Layers', 'Dense Layers', 'Normalization Layers', 'Pooling Layers', 'Recurrent Layers', 'Bottlenecks', 'Crop Percentage', 'Output Features', 'Residual Blocks', 'Year Made']
+

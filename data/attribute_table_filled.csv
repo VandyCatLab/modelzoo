@@ -1,0 +1,35 @@
+Attribute,Attribute Type,Empty data,Unique values,Factor Type
+Transformer,Binary,0,2,NA
+Has Attention Layers,Binary,0,2,Binary
+Has Bottlenecks,Binary,0,2,Binary
+Has Convolutional Layers,Binary,0,1,Binary
+Has Dense Layers,Binary,0,2,Binary
+Has Residual Blocks,Binary,0,2,Binary
+Has Skip Connections,Binary,0,2,Binary
+Tokenized,Binary,0,2,Binary
+Architecture Family,Categorical,0,81,Categorical
+Origin,Categorical,0,4,NA
+Primary Application,Categorical,0,8,Categorical
+Training Dataset,Categorical,0,6,Categorical
+Most Common Activation Function,Categorical,0,4,Categorical
+Model,Categorical,0,674,NA
+Key Distinguishing Feature,Categorical,0,78,NA
+Training Type,Categorical,0,3,Categorical
+Most Common Pooling Type,Categorical,0,9,Categorical
+Number of Parameters,Continuous,0,564,Continuous
+Number of Output Features,Continuous,0,9,Continuous
+Number of Layers,Continuous,0,283,Continuous
+Number of Recurrent Layers,Continuous,3,4,NA
+Number of Pooling Layers,Continuous,3,22,Continuous
+Number of Dense Layers,Continuous,3,54,Continuous
+Number of Residual Blocks,Continuous,3,41,NA
+Number of Attention Layers,Continuous,3,33,Continuous
+Number of Convolutional Layers,Continuous,3,143,Continuous
+Number of Bottlenecks,Continuous,3,30,NA
+Number of Normalization Layers,Continuous,3,119,Continuous
+Year Made,Continuous,13,9,NA
+Number of First Layer Parameters,Continuous,60,141,Continuous
+Number of Last Layer Parameters,Continuous,60,89,Continuous
+Crop Percentage,Continuous,63,22,NA
+Number of Highest Internal Layer Parameters,Continuous,72,382,Continuous
+Number of Lowest Internal Layer Parameters,Continuous,72,188,Continuous

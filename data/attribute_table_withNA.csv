@@ -1,0 +1,44 @@
+Attribute,Attribute Type,Empty data,Unique values,Factor Type
+Has GeLU,Binary,0,2,NA
+Has ReLU,Binary,0,2,NA
+Origin,Categorical,0,4,NA
+Number of Output Features,Continuous,0,9,Continuous
+Number of Parameters,Continuous,0,564,Continuous
+Model,Categorical,0,674,NA
+Architecture Family,Categorical,0,81,Categorical
+Training Dataset,Categorical,0,6,Categorical
+Number of Layers,Continuous,0,283,Continuous
+Residual Blocks,Continuous,3,41,NA
+Recurrent Layers,Continuous,3,4,NA
+Number of Pooling Layers,Continuous,3,22,Continuous
+Number of Dense Layers,Continuous,3,54,Continuous
+Number of Normalization Layers,Continuous,3,119,Continuous
+Number of Convolutional Layers,Continuous,3,143,Continuous
+Number of Attention Layers,Continuous,3,33,Continuous
+Bottlenecks,Continuous,3,30,NA
+Has Skip Connections,Binary,13,2,Binary
+Most Common Pooling Type,Categorical,13,8,Categorical
+Other,Categorical,13,3,NA
+Has Attention Layers,Binary,13,2,Binary
+Primary Application,Categorical,13,7,Categorical
+Has Dense Layers,Binary,13,2,Binary
+Has Residual Blocks,Binary,13,2,Binary
+Training Type,Categorical,13,2,Categorical
+Key Distinguishing Feature,Categorical,13,77,NA
+Year Made,Continuous,13,9,NA
+Has Recurrent Layers,Continuous,13,1,NA
+Tokenized,Binary,13,2,Binary
+Has Convolutional Layers,Binary,13,2,Binary
+Has Bottlenecks,Binary,13,2,Binary
+Transformer,Binary,13,2,NA
+Architecture,Categorical,60,614,NA
+Number of Last Layer Parameters,Continuous,60,89,Continuous
+Number of First Layer Parameters,Continuous,60,141,Continuous
+Most Common Activation Function,Categorical,61,3,Categorical
+Crop Percentage,Continuous,63,22,NA
+Number of Highest Internal Layer Parameters,Continuous,72,382,Continuous
+Number of Lowest Internal Layer Parameters,Continuous,72,188,Continuous
+RF25 Layer Name,Categorical,673,1,NA
+RF25 Layer Number,Continuous,673,1,NA
+MAX RF,Continuous,673,1,NA
+Max RF,Continuous,674,0,NA
